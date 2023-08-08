@@ -32,7 +32,7 @@ export default function client(projectKey: string, clientId: string, clientSecre
     .withHttpMiddleware(httpMiddlewareOptions)
     .withClientCredentialsFlow(authMiddlewareOptions)
     .withUserAgentMiddleware({
-      libraryName: `stackblitz-env-${date}-typescript-sdk-v2`,
+      libraryName: `${date}-typescript-sdk-v2`,
     })
     .withLoggerMiddleware()
     .build();
