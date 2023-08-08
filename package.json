@@ -15,6 +15,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@commercetools/platform-sdk": "^4.11.0",
+    "@commercetools/sdk-client-v2": "^2.2.0",
     "@reduxjs/toolkit": "^1.8.1",
     "@testing-library/jest-dom": "^5.17.0",
     "react": "^18.2.0",
@@ -42,6 +44,7 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^8.0.3",
+    "isomorphic-fetch": "^3.0.0",
     "jsdom": "^21.1.0",
     "lint-staged": "^13.2.3",
     "prettier": "^2.7.1",
