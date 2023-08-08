@@ -17,4 +17,9 @@ export default defineConfig({
     setupFiles: 'src/setupTests',
     mockReset: true,
   },
+  resolve: {
+    alias: {
+      'node-fetch': 'isomorphic-fetch',
+    },
+  },
 });
