@@ -1,21 +1,25 @@
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
-import client from './client';
+import { getAnonimousFlowClient, getPasswordFlowClient } from './clients';
+import ACCESSES from './Accesses';
 
-export type Credentials = {
-  projectKey: string;
-  clientID: string;
-  clientSecret: string;
-  scopes: string;
-};
+async function createClientApiRoot(email: string, password: string) {
+  const client = getPasswordFlowClient(email, password);
 
-export default function rootApi({
-  projectKey,
-  clientID,
-  clientSecret,
-  scopes,
-}: Credentials): ByProjectKeyRequestBuilder {
-  return createApiBuilderFromCtpClient(client(projectKey, clientID, clientSecret, scopes)).withProjectKey({
-    projectKey,
-  });
+  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ACCESSES.READONLY.projectKey });
+  try {
+    const res = await apiRoot.me().get().execute();
+    localStorage.setItem('clientId', res.body.id);
+    return apiRoot;
+  } catch {
+    throw new Error('Yoo!');
+  }
 }
+
+async function createAnonApiRoot() {
+  const client = getAnonimousFlowClient();
+  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ACCESSES.READONLY.projectKey });
+  console.log(await apiRoot.customers().get().execute());
+  return apiRoot;
+}
+
+export { createClientApiRoot, createAnonApiRoot };
