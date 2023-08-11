@@ -1,5 +1,5 @@
 import './App.css';
-import TempComponent from './components/TempComponent';
+import TempComponent from './sdk/TempComponent';
 
 function App() {
   // return <h1>Our page</h1>;

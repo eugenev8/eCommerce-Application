@@ -1,25 +1,28 @@
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
-import { getAnonimousFlowClient, getPasswordFlowClient } from './clients';
-import ACCESSES from './Accesses';
+import { TokenStore } from '@commercetools/sdk-client-v2';
+import { getAnonymousFlowClient, getPasswordFlowClient, getTokenFlowClient } from './clients';
+import ADMIN_ACCESS from './AdminAccess';
 
-async function createClientApiRoot(email: string, password: string) {
-  const client = getPasswordFlowClient(email, password);
-
-  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ACCESSES.READONLY.projectKey });
-  try {
-    const res = await apiRoot.me().get().execute();
-    localStorage.setItem('clientId', res.body.id);
-    return apiRoot;
-  } catch {
-    throw new Error('Yoo!');
-  }
-}
-
-async function createAnonApiRoot() {
-  const client = getAnonimousFlowClient();
-  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ACCESSES.READONLY.projectKey });
-  console.log(await apiRoot.customers().get().execute());
+async function createAnonymousApiRoot(anonymousId: string) {
+  const client = getAnonymousFlowClient(anonymousId);
+  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ADMIN_ACCESS.projectKey });
   return apiRoot;
 }
 
-export { createClientApiRoot, createAnonApiRoot };
+async function createPasswordApiRoot(
+  email: string,
+  password: string,
+  setCustomerTokenCallback: (tokenStore: TokenStore) => void
+) {
+  const client = getPasswordFlowClient(email, password, setCustomerTokenCallback);
+  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ADMIN_ACCESS.projectKey });
+  return apiRoot;
+}
+
+async function createTokenApiRoot(token: string) {
+  const client = getTokenFlowClient(token);
+  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey: ADMIN_ACCESS.projectKey });
+  return apiRoot;
+}
+
+export { createAnonymousApiRoot, createPasswordApiRoot, createTokenApiRoot };
