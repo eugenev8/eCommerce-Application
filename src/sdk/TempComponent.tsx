@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import { TokenStore } from '@commercetools/sdk-client-v2';
-import { createAnonymousApiRoot, createPasswordApiRoot, createTokenApiRoot } from './root';
+import { /* createAnonymousApiRoot, */ createPasswordApiRoot, createTokenApiRoot } from './root';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { anonymousLogin } from '../reducers/ActionCreators';
 
 export default function TempComponent() {
-  const [anonymousId, setAnonymousId] = useState<string>('');
+  // const [anonymousId, setAnonymousId] = useState<string>('');
 
   const [email, setEmail] = useState<string>('test_email@gmial.com');
   const [password, setPassword] = useState<string>('123456');
@@ -18,21 +20,21 @@ export default function TempComponent() {
 
   const [curRootApi, setCurRootApi] = useState<ByProjectKeyRequestBuilder>();
 
-  function handleAnonymousLogin() {
-    async function log() {
-      try {
-        setErrorMessage('');
-        const newAnonymousId = crypto.randomUUID();
-        const rootApi = await createAnonymousApiRoot(newAnonymousId);
-        setCurRootApi(rootApi);
-        setAnonymousId(newAnonymousId);
-      } catch (e) {
-        if (e instanceof Error) setErrorMessage(e.message);
-      }
-    }
+  // function handleAnonymousLogin() {
+  //   async function log() {
+  //     try {
+  //       setErrorMessage('');
+  //       const newAnonymousId = crypto.randomUUID();
+  //       const rootApi = await createAnonymousApiRoot(newAnonymousId);
+  //       setCurRootApi(rootApi);
+  //       // setAnonymousId(newAnonymousId);
+  //     } catch (e) {
+  //       if (e instanceof Error) setErrorMessage(e.message);
+  //     }
+  //   }
 
-    log();
-  }
+  //   log();
+  // }
 
   function handlePasswordLogin() {
     async function log() {
@@ -47,7 +49,7 @@ export default function TempComponent() {
         const rootApi = await createPasswordApiRoot(email, password, setCustomerTokenCallback);
         const res = await rootApi.me().get().execute();
         setCustomerId(res.body.id);
-        setAnonymousId('');
+        // setAnonymousId('');
       } catch (e) {
         if (e instanceof Error) setErrorMessage(e.message);
       }
@@ -57,7 +59,7 @@ export default function TempComponent() {
   }
 
   function handleLogout() {
-    setAnonymousId('');
+    // setAnonymousId('');
     setCustomerId('');
     setCustomerName('');
     setCustomerToken('');
@@ -81,6 +83,13 @@ export default function TempComponent() {
     getProductsCount();
   }
 
+  const dispatch = useAppDispatch();
+  const anonymousId = useAppSelector((store) => store.authReducer.anonymousId);
+
+  useEffect(() => {
+    dispatch(anonymousLogin());
+  }, [dispatch]);
+
   return (
     <>
       <p>AnonimousId: {anonymousId}</p>
@@ -89,7 +98,9 @@ export default function TempComponent() {
       <p>CustomerName: {customerName}</p>
       <p style={{ color: 'red', fontWeight: 700 }}>Error: {errorMessage}</p>
       <button
-        onClick={() => handleAnonymousLogin()}
+        onClick={() => {
+          dispatch(anonymousLogin());
+        }}
         type="button"
         disabled={Boolean(anonymousId) || Boolean(customerId)}
       >
