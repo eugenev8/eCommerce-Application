@@ -4,49 +4,27 @@ import {
   type HttpMiddlewareOptions,
   type PasswordAuthMiddlewareOptions,
   type AnonymousAuthMiddlewareOptions,
+  TokenStore,
 } from '@commercetools/sdk-client-v2';
 
-import ACCESSES from './Accesses';
+import ADMIN_ACCESS from './AdminAccess';
 
-const { projectKey, clientId, clientSecret, scopes } = ACCESSES.ADMIN;
+const { projectKey, clientId, clientSecret, scopes, apiLink, authLink } = ADMIN_ACCESS;
 const scopesArr = scopes.split(',');
 
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
-  host: 'https://api.europe-west1.gcp.commercetools.com',
+  host: apiLink,
   fetch,
 };
 
-function getPasswordFlowClient(username: string, password: string): Client {
-  const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
-    host: 'https://auth.europe-west1.gcp.commercetools.com',
-    projectKey,
-    credentials: {
-      clientId,
-      clientSecret,
-      user: {
-        username,
-        password,
-      },
-    },
-    scopes: scopesArr,
-    fetch,
-  };
-
-  return new ClientBuilder()
-    .withProjectKey(projectKey)
-    .withHttpMiddleware(httpMiddlewareOptions)
-    .withPasswordFlow(passwordAuthMiddlewareOptions)
-    .build();
-}
-
-function getAnonimousFlowClient(): Client {
+function getAnonymousFlowClient(anonymousId: string): Client {
   const anonymousAuthMiddlewareOptions: AnonymousAuthMiddlewareOptions = {
-    host: 'https://auth.europe-west1.gcp.commercetools.com',
+    host: authLink,
     projectKey,
     credentials: {
       clientId,
       clientSecret,
-      anonymousId: 'AAAaaaSSSsss!',
+      anonymousId,
     },
     scopes: scopesArr,
     fetch,
@@ -59,4 +37,43 @@ function getAnonimousFlowClient(): Client {
     .build();
 }
 
-export { getAnonimousFlowClient, getPasswordFlowClient };
+function getPasswordFlowClient(
+  username: string,
+  password: string,
+  setCustomerTokenCallback: (tokenStore: TokenStore) => void
+): Client {
+  const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
+    host: authLink,
+    projectKey,
+    credentials: {
+      clientId,
+      clientSecret,
+      user: {
+        username,
+        password,
+      },
+    },
+    tokenCache: {
+      get: () => ({ token: '', expirationTime: 0 }),
+      set: setCustomerTokenCallback,
+    },
+    scopes: scopesArr,
+    fetch,
+  };
+
+  return new ClientBuilder()
+    .withProjectKey(projectKey)
+    .withHttpMiddleware(httpMiddlewareOptions)
+    .withPasswordFlow(passwordAuthMiddlewareOptions)
+    .build();
+}
+
+function getTokenFlowClient(token: string): Client {
+  return new ClientBuilder()
+    .withProjectKey(projectKey)
+    .withHttpMiddleware(httpMiddlewareOptions)
+    .withExistingTokenFlow(`Bearer ${token}`, { force: true })
+    .build();
+}
+
+export { getAnonymousFlowClient, getPasswordFlowClient, getTokenFlowClient };
