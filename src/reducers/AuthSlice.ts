@@ -67,8 +67,14 @@ export const authSlice = createSlice({
       state.apiRoot = action.payload.apiRoot;
     },
     authorizationLogout(state) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      state = initialState;
+      state.isLoading = false;
+      state.status = AuthStatus.Start;
+      state.anonymousId = '';
+      state.customerId = '';
+      state.customerToken = '';
+      state.refreshToken = '';
+      state.error = '';
+      state.apiRoot = undefined;
     },
   },
 });

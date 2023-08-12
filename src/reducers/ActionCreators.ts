@@ -30,6 +30,7 @@ const loginPassword = (email: string, password: string) => async (dispatch: AppD
   }
 
   try {
+    dispatch(authSlice.actions.authorization());
     const apiRoot = await createPasswordApiRoot(email, password, setCustomerTokenCallback);
     await apiRoot.me().get().execute();
   } catch (e) {

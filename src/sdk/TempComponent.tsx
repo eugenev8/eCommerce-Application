@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { /* useEffect, */ useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { loginAnonymous, loginPassword } from '../reducers/ActionCreators';
 import { authSlice } from '../reducers/AuthSlice';
@@ -7,31 +7,51 @@ export default function TempComponent() {
   const [email, setEmail] = useState<string>('test_email@gmial.com');
   const [password, setPassword] = useState<string>('123456');
   const [productsCount, setProductsCount] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  const { anonymousId, customerId, customerToken, refreshToken, error, apiRoot } = useAppSelector(
+  const { anonymousId, customerToken, refreshToken, error, apiRoot, isLoading } = useAppSelector(
     (store) => store.authReducer
   );
 
-  useEffect(() => {
-    dispatch(loginAnonymous());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(loginAnonymous());
+  // }, [dispatch]);
 
   function handleGetProductsCount() {
     async function getProductsCount() {
       if (!apiRoot) {
         dispatch(authSlice.actions.authorizationError('You need to log in!'));
+        setProductsCount('');
         return;
       }
       try {
         const res = await apiRoot.products().get().execute();
-        setProductsCount(`${String(res.body.count)} ========== ${new Date().toLocaleString()}`);
+        setProductsCount(`${String(res.body.count)} (${new Date().toLocaleString()})`);
       } catch (e) {
         if (e instanceof Error) dispatch(authSlice.actions.authorizationError(e.message));
       }
     }
 
     getProductsCount();
+  }
+
+  function handleGetUserName() {
+    async function getUserName() {
+      if (!apiRoot) {
+        dispatch(authSlice.actions.authorizationError('You need to log in!'));
+        setProductsCount('');
+        return;
+      }
+      try {
+        const res = await apiRoot.me().get().execute();
+        setUserName(`${res.body.firstName} ${res.body.lastName}  (${new Date().toLocaleString()})`);
+      } catch (e) {
+        if (e instanceof Error) dispatch(authSlice.actions.authorizationError(e.message));
+      }
+    }
+
+    getUserName();
   }
 
   return (
@@ -45,13 +65,17 @@ export default function TempComponent() {
           dispatch(loginAnonymous());
         }}
         type="button"
-        disabled={Boolean(anonymousId) || Boolean(customerId)}
+        disabled={Boolean(anonymousId) || Boolean(customerToken) || isLoading}
       >
         Login Anon
       </button>
       <br />
       <br />
-      <button onClick={() => dispatch(loginPassword(email, password))} type="button" disabled={Boolean(customerToken)}>
+      <button
+        onClick={() => dispatch(loginPassword(email, password))}
+        type="button"
+        disabled={Boolean(customerToken) || isLoading}
+      >
         Login
       </button>
 
@@ -61,18 +85,31 @@ export default function TempComponent() {
       <br />
       <br />
       {apiRoot && (
-        <button onClick={() => dispatch(authSlice.actions.authorizationLogout())} type="button">
+        <button
+          onClick={() => {
+            dispatch(authSlice.actions.authorizationLogout());
+          }}
+          type="button"
+        >
           Logout
         </button>
       )}
       <br />
       <br />
-      <button onClick={() => handleGetProductsCount()} type="button">
+      <button onClick={() => handleGetProductsCount()} type="button" disabled={isLoading}>
         Get products count
       </button>
       <br />
       <br />
-      {productsCount && <p>Products: {productsCount}</p>}
+      <p>Products: {productsCount}</p>
+      <br />
+      <br />
+      <button onClick={() => handleGetUserName()} type="button" disabled={isLoading}>
+        get user name
+      </button>
+      <br />
+      <br />
+      <p>User Name: {userName}</p>
     </>
   );
 }
