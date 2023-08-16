@@ -1,5 +1,7 @@
+import './ErrorPage.css';
+
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
-import Navigation from './components/navigation/Navigation';
+import Navigation from '../../components/navigation/Navigation';
 
 export default function ErrorPage() {
   const error = useRouteError();
@@ -9,9 +11,9 @@ export default function ErrorPage() {
       return (
         <>
           <Navigation />
-          <div id="error-page">
-            <h1>Oops! {error.status}</h1>
-            <p>Page not found!</p>
+          <div id="ErrorPage">
+            <h1>Oops!</h1>
+            <p>{error.status}: Page not found!</p>
           </div>
         </>
       );
@@ -20,9 +22,11 @@ export default function ErrorPage() {
     return (
       <>
         <Navigation />
-        <div id="error-page">
-          <h1>Oops! {error.status}</h1>
-          <p>{error.statusText}</p>
+        <div id="ErrorPage">
+          <h1>Oops!</h1>
+          <p>
+            {error.status}: {error.statusText}
+          </p>
           {error.data?.message && (
             <p>
               <i>{error.data.message}</i>
@@ -36,7 +40,7 @@ export default function ErrorPage() {
     return (
       <>
         <Navigation />
-        <div id="error-page">
+        <div id="ErrorPage">
           <h1>Oops! Unexpected Error</h1>
           <p>Something went wrong.</p>
           <p>

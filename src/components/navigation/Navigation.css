@@ -4,6 +4,9 @@ nav ul {
   gap: 20px;
 
   list-style-type: none;
+
+  padding: 0;
+  margin: 2rem;
 }
 
 nav ul a {

@@ -28,7 +28,7 @@ export default function Navigation() {
         </li>
         <li className="navbar__register-link">
           <NavLink to="/register" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
-            Register
+            Sign up
           </NavLink>
         </li>
       </ul>
