@@ -1,11 +1,11 @@
+import './RegisterForm.css';
+
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 import EmailInput from '../inputs/EmailInput';
 import PasswordInput from '../inputs/PasswordInput';
-
-import './RegisterForm.css';
 import CommonInput from '../inputs/CommonInput';
 import AgeInput from '../inputs/AgeInput';
 import AdressInputContainer from '../inputs/AdressInput';
