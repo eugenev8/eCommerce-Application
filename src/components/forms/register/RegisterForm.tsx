@@ -9,6 +9,7 @@ import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
 import AgeInput from '../inputs/AgeInput';
 import AdressInputContainer from '../inputs/AdressInput';
+import { EmailValidation, PasswordValidation } from '../CommonValidation';
 
 interface RegisterFormValues {
   email: string;
@@ -51,13 +52,8 @@ const initialValues: RegisterFormValues = {
 };
 
 const validationSchema = Yup.object({
-  email: Yup.string().email('Invalid email address').required('Email is required'),
-  password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
-    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .matches(/[0-9]/, 'Password must contain at least one number')
-    .required('Password is required'),
+  email: EmailValidation,
+  password: PasswordValidation,
   firstName: Yup.string()
     .min(1, 'First name must contain at least one character')
     .matches(/^[a-zA-Z]*$/, 'First name must not contain special characters or numbers')
@@ -93,13 +89,8 @@ const validationSchema = Yup.object({
   }),
 });
 const validationSchemaSingleAdress = Yup.object({
-  email: Yup.string().email('Invalid email address').required('Email is required'),
-  password: Yup.string()
-    .min(8, 'Password must be at least 8 characters')
-    .matches(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .matches(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .matches(/[0-9]/, 'Password must contain at least one number')
-    .required('Password is required'),
+  email: EmailValidation,
+  password: PasswordValidation,
   firstName: Yup.string()
     .min(1, 'First name must contain at least one character')
     .matches(/^[a-zA-Z]*$/, 'First name must not contain special characters or numbers')
