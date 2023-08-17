@@ -1,7 +1,11 @@
-import './App.css';
+import { Outlet } from 'react-router-dom';
+import Navigation from './components/navigation/Navigation';
 
-function App() {
-  return <h1>Our page</h1>;
+export default function App() {
+  return (
+    <>
+      <Navigation />
+      <Outlet />
+    </>
+  );
 }
-
-export default App;

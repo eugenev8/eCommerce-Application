@@ -127,7 +127,7 @@ export default function RegisterForm() {
 
   return (
     <div className="registerForm">
-      <h2 className="registerForm__header">Register</h2>
+      <h2 className="registerForm__header">Sign up</h2>
       <Formik
         initialValues={initialValues}
         validationSchema={isBillingEqualShipping ? validationSchemaSingleAdress : validationSchema}
@@ -192,7 +192,7 @@ export default function RegisterForm() {
           )}
 
           <button type="submit" className="registerForm__submitButton">
-            Register
+            Sign up
           </button>
         </Form>
       </Formik>
