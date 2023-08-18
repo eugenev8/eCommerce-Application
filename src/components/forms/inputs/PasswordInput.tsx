@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ErrorMessage, Field } from 'formik';
+import { ErrorMessage, Field, useField } from 'formik';
 
 interface PasswordInputProps {
   labelText: string;
@@ -11,6 +11,17 @@ interface PasswordInputProps {
 
 export default function PasswordInput({ labelText, parentClassName, placeholder, id, name }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const [field, meta] = useField(name);
+
+  const toggleErrorClass = () => {
+    if (!meta.touched) {
+      return '';
+    }
+    if (meta.error) {
+      return 'input_error';
+    }
+    return 'input_valid';
+  };
 
   return (
     <div className={`${parentClassName}__inputContainer ${parentClassName}__${id}`}>
@@ -19,15 +30,18 @@ export default function PasswordInput({ labelText, parentClassName, placeholder,
       </label>
       <div className={`${parentClassName}__passwordWrapper`}>
         <Field
+          onBlur={field.onBlur}
+          onChange={field.onChange}
+          value={field.value}
           placeholder={placeholder}
           type={showPassword ? 'text' : 'password'}
           id={id}
           name={name}
           aria-describedby={`${id}-error`}
-          className={`${parentClassName}__input ${parentClassName}__${id}Input`}
+          className={`${parentClassName}__input ${parentClassName}__${id}Input ${toggleErrorClass()}`}
         />
         <button
-          className={`${parentClassName}__passwordToggle`}
+          className={`input__passwordToggle ${parentClassName}__passwordToggle`}
           type="button"
           onClick={() => setShowPassword(!showPassword)}
         >
@@ -35,7 +49,7 @@ export default function PasswordInput({ labelText, parentClassName, placeholder,
         </button>
       </div>
 
-      <div className={`${parentClassName}__errorMessage`}>
+      <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
         <ErrorMessage name={id} id={`${id}-error`} />
       </div>
     </div>

@@ -1,0 +1,71 @@
+h1 {
+  font-size: var(--desktop-amp--tablet---h1);
+
+  line-height: 120%;
+
+  font-weight: 700;
+}
+
+h2 {
+  font-size: var(--desktop-amp--tablet---h2);
+
+  line-height: 120%;
+
+  font-weight: 700;
+}
+
+h3 {
+  font-size: var(--desktop-amp--tablet---h3);
+
+  line-height: 120%;
+
+  font-weight: 500;
+}
+
+h4 {
+  font-size: var(--desktop-amp--tablet---h4);
+
+  line-height: 120%;
+
+  font-weight: 500;
+}
+
+h5 {
+  font-size: var(--desktop-amp--tablet---h5);
+
+  line-height: 120%;
+
+  font-weight: 500;
+}
+
+h6 {
+  font-size: var(--desktop-amp--tablet---h6);
+
+  line-height: 120%;
+
+  font-weight: 500;
+}
+
+p {
+  font-size: var(--desktop-amp--tablet---body);
+
+  line-height: 140%;
+}
+
+button {
+  font-size: var(--desktop-amp--tablet---body);
+
+  line-height: 120%;
+
+  text-transform: uppercase;
+}
+
+a {
+  h6 {
+    font-size: var(--desktop-amp--tablet---body);
+
+    line-height: 120%;
+
+    font-weight: 500;
+  }
+}
