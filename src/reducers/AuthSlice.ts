@@ -1,38 +1,26 @@
 /* eslint-disable no-param-reassign */
-import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export type AnonymousAuthProps = {
-  apiRoot: ByProjectKeyRequestBuilder;
-  anonymousId: string;
-};
-
-export type LoginAuthProps = {
-  apiRoot: ByProjectKeyRequestBuilder;
-  customerToken: string;
-  refreshToken: string;
-};
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { loginAnonymous, loginPassword } from './ActionCreators';
 
 enum AuthStatus {
-  Start,
-  Anonymous,
-  Customer,
+  CredentialsFlow = 'CredentialsFlow',
+  AnonymousFlow = 'AnonymousFlow',
+  TokenFlow = 'TokenFlow',
 }
 
-interface AuthState {
+interface State {
   isLoading: boolean;
-  status: AuthStatus;
+  authStatus: AuthStatus;
   anonymousId: string;
   customerId: string;
   customerToken: string;
   error: string;
   refreshToken: string;
-  apiRoot?: ByProjectKeyRequestBuilder;
 }
 
-const initialState: AuthState = {
+const initialState: State = {
   isLoading: false,
-  status: AuthStatus.Start,
+  authStatus: AuthStatus.CredentialsFlow,
   anonymousId: '',
   customerId: '',
   customerToken: '',
@@ -44,38 +32,37 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    authorization(state) {
-      state.error = '';
-      state.isLoading = true;
-    },
-    authorizationError(state, action: PayloadAction<string>) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-    authorizationAnonymousSuccess(state, action: PayloadAction<AnonymousAuthProps>) {
-      state.isLoading = false;
-      state.status = AuthStatus.Anonymous;
-      state.apiRoot = action.payload.apiRoot;
-      state.anonymousId = action.payload.anonymousId;
-    },
-    authorizationLoginSuccess(state, action: PayloadAction<LoginAuthProps>) {
-      state.isLoading = false;
-      state.anonymousId = '';
-      state.status = AuthStatus.Customer;
-      state.customerToken = action.payload.customerToken;
-      state.refreshToken = action.payload.refreshToken;
-      state.apiRoot = action.payload.apiRoot;
-    },
-    authorizationLogout(state) {
-      state.isLoading = false;
-      state.status = AuthStatus.Start;
+    logout(state) {
       state.anonymousId = '';
       state.customerId = '';
       state.customerToken = '';
       state.refreshToken = '';
       state.error = '';
-      state.apiRoot = undefined;
+      state.authStatus = AuthStatus.CredentialsFlow;
     },
+    authorizationError(state, action: PayloadAction<string>) {
+      state.error = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(loginAnonymous.fulfilled, (state, action) => {
+      state.error = '';
+      state.anonymousId = action.payload;
+      state.authStatus = AuthStatus.AnonymousFlow;
+    });
+    builder.addCase(loginAnonymous.rejected, (state, action) => {
+      state.error = action.payload || '';
+    });
+    builder.addCase(loginPassword.fulfilled, (state, action) => {
+      state.error = '';
+      state.anonymousId = '';
+      state.customerToken = action.payload.token;
+      state.refreshToken = action.payload.refreshToken || '';
+      state.authStatus = AuthStatus.TokenFlow;
+    });
+    builder.addCase(loginPassword.rejected, (state, action) => {
+      state.error = action.payload || '';
+    });
   },
 });
 

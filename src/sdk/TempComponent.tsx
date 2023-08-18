@@ -1,7 +1,8 @@
-import { /* useEffect, */ useState } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { loginAnonymous, loginPassword } from '../reducers/ActionCreators';
-import { authSlice } from '../reducers/AuthSlice';
+import { authSlice } from '../reducers/authSlice';
+import { apiRoots } from './roots';
 
 export default function TempComponent() {
   const [email, setEmail] = useState<string>('test_email@gmial.com');
@@ -10,42 +11,37 @@ export default function TempComponent() {
   const [userName, setUserName] = useState<string>('');
 
   const dispatch = useAppDispatch();
-  const { anonymousId, customerToken, refreshToken, error, apiRoot, isLoading } = useAppSelector(
+  const { anonymousId, customerToken, refreshToken, error, isLoading, authStatus } = useAppSelector(
     (store) => store.authReducer
   );
 
-  // useEffect(() => {
-  //   dispatch(loginAnonymous());
-  // }, [dispatch]);
-
   function handleGetProductsCount() {
     async function getProductsCount() {
-      if (!apiRoot) {
-        dispatch(authSlice.actions.authorizationError('You need to log in!'));
+      if (!apiRoots[authStatus]) {
+        dispatch(authSlice.actions.authorizationError('!apiRoots[authStatus]'));
         setProductsCount('');
         return;
       }
       try {
-        const res = await apiRoot.products().get().execute();
-        setProductsCount(`${String(res.body.count)} (${new Date().toLocaleString()})`);
+        const res = await apiRoots[authStatus]?.products().get().execute();
+        if (res) setProductsCount(`${String(res.body.count)} (${new Date().toLocaleString()})`);
       } catch (e) {
         if (e instanceof Error) dispatch(authSlice.actions.authorizationError(e.message));
       }
     }
-
     getProductsCount();
   }
 
   function handleGetUserName() {
     async function getUserName() {
-      if (!apiRoot) {
-        dispatch(authSlice.actions.authorizationError('You need to log in!'));
+      if (!apiRoots[authStatus]) {
+        dispatch(authSlice.actions.authorizationError('!apiRoots[authStatus]'));
         setProductsCount('');
         return;
       }
       try {
-        const res = await apiRoot.me().get().execute();
-        setUserName(`${res.body.firstName} ${res.body.lastName}  (${new Date().toLocaleString()})`);
+        const name = await apiRoots[authStatus]?.me().get().execute();
+        if (name) setUserName(`${name.body.firstName}  (${new Date().toLocaleString()})`);
       } catch (e) {
         if (e instanceof Error) dispatch(authSlice.actions.authorizationError(e.message));
       }
@@ -56,12 +52,13 @@ export default function TempComponent() {
 
   return (
     <>
+      <p>AuthStatus: {authStatus}</p>
       <p>AnonimousId: {anonymousId}</p>
       <p>CustomerToken: {customerToken}</p>
       <p>RefreshToken: {refreshToken}</p>
       <p style={{ color: 'red', fontWeight: 700 }}>Error: {error}</p>
       <button
-        onClick={() => {
+        onClick={async () => {
           dispatch(loginAnonymous());
         }}
         type="button"
@@ -72,7 +69,9 @@ export default function TempComponent() {
       <br />
       <br />
       <button
-        onClick={() => dispatch(loginPassword(email, password))}
+        onClick={async () => {
+          dispatch(loginPassword({ username: email, password }));
+        }}
         type="button"
         disabled={Boolean(customerToken) || isLoading}
       >
@@ -84,16 +83,16 @@ export default function TempComponent() {
 
       <br />
       <br />
-      {apiRoot && (
-        <button
-          onClick={() => {
-            dispatch(authSlice.actions.authorizationLogout());
-          }}
-          type="button"
-        >
-          Logout
-        </button>
-      )}
+
+      <button
+        onClick={() => {
+          dispatch(authSlice.actions.logout());
+        }}
+        type="button"
+      >
+        Logout
+      </button>
+
       <br />
       <br />
       <button onClick={() => handleGetProductsCount()} type="button" disabled={isLoading}>
