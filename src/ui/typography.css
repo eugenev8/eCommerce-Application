@@ -61,11 +61,9 @@ button {
 }
 
 a {
-  h6 {
-    font-size: var(--desktop-amp--tablet---body);
+  font-size: var(--desktop-amp--tablet---body);
 
-    line-height: 120%;
+  line-height: 120%;
 
-    font-weight: 500;
-  }
+  font-weight: 500;
 }
