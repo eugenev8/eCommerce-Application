@@ -47,13 +47,13 @@ const initialValues: RegisterFormValues = {
     street: '',
     city: '',
     postal: '',
-    country: '',
+    country: 'US',
   },
   shippingAdress: {
     street: '',
     city: '',
     postal: '',
-    country: '',
+    country: 'US',
   },
 };
 

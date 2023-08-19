@@ -17,16 +17,32 @@ input {
   outline: none;
 }
 
-input:hover {
+select {
+  box-sizing: border-box;
+
+  border: 1px solid var(--light-gray);
+  color: var(--black);
+
+  padding: 20px 16px;
+
+  transition: all 250ms ease;
+
+  outline: none;
+}
+
+input:hover,
+select:hover {
   border: 1px solid var(--gray);
 }
 
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   border: 1px solid var(--black);
   color: var(--black);
 }
 
-input:disabled {
+input:disabled,
+select:disabled {
   background-color: var(--extra--light);
   border: var(--light-gray);
 }

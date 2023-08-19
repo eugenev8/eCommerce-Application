@@ -15,7 +15,7 @@ export const EmailValidation = Yup.string()
   .required('Email is required')
   .matches(/^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format or missing domain');
 
-export const AddressValidaiton = Yup.object({
+export const AddressValidaiton = Yup.object().shape({
   street: Yup.string()
     .min(1, 'Street must contain at least one character')
     .required('Street is required')
@@ -24,10 +24,30 @@ export const AddressValidaiton = Yup.object({
     .min(1, 'City must contain at least one character')
     .matches(/^[a-zA-Z\s]*$/, 'City must not contain special characters or numbers')
     .required('City is required'),
-  postal: Yup.string().required('Postal code is required').matches(/^\d+$/, 'Postal code must contain only numbers'),
-  country: Yup.string()
-    .required('Country is required')
-    .matches(/^[a-zA-Z0-9!@#$%^&*]*$/, 'Country must only contain Latin symbols, digits, and special characters'),
+  postal: Yup.string()
+    .test('postalCode', 'Invalid postal code format', function validatePostalCode(value) {
+      const { country } = this.parent;
+      if (!country) {
+        return true;
+      }
+
+      const formatChecks: Record<string, RegExp> = {
+        US: /^\d{5}$/,
+        CA: /^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/,
+        AU: /^\d{4}$/,
+        DE: /^\d{5}$/,
+        ES: /^(?:0[1-9]|[1-4]\d|5[0-2])\d{3}$/,
+      };
+
+      const formatRegex = formatChecks[country];
+      if (!formatRegex) {
+        return true;
+      }
+
+      return formatRegex.test(value || '');
+    })
+    .required('Postal code is required'),
+  country: Yup.string().required('Country is required'),
 });
 
 export const FirstNameValidation = Yup.string()

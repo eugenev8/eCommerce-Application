@@ -1,4 +1,5 @@
 import { ErrorMessage, Field, useField } from 'formik';
+import CountryInput from './CountryInput';
 
 interface AdressFieldProps {
   labelText: string;
@@ -77,7 +78,7 @@ export default function AdressInputContainer({ name, parentClassName, heading }:
         parentClassName={parentClassName}
         placeholder="Type your postal"
       />
-      <AdressField
+      <CountryInput
         id={`${name}.country`}
         labelText="Country"
         name={`${name}.country`}
