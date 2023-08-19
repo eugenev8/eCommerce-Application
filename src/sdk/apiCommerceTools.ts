@@ -10,10 +10,12 @@ import {
 import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
-import ADMIN_ACCESS from './AdminAccess';
-
-const { projectKey, clientId, clientSecret, scopes, apiLink, authLink } = ADMIN_ACCESS;
-const scopesArr = scopes.split(',');
+const apiLink = import.meta.env.VITE_SDK_API_LINK;
+const authLink = import.meta.env.VITE_SDK_AUTH_LINK;
+const projectKey = import.meta.env.VITE_SDK_PROJECT_KEY;
+const clientId = import.meta.env.VITE_SDK_CLIENT_ID;
+const clientSecret = import.meta.env.VITE_SDK_CLIENT_SECRET;
+const scopes = import.meta.env.VITE_SDK_SCOPES.split(',');
 
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
   host: apiLink,
@@ -28,7 +30,7 @@ function getCredentialsFlowApiRoot(): ByProjectKeyRequestBuilder {
       clientId,
       clientSecret,
     },
-    scopes: scopesArr,
+    scopes,
     fetch,
   };
 
@@ -50,7 +52,7 @@ function getAnonymousFlowApiRoot(anonymousId: string): ByProjectKeyRequestBuilde
       clientSecret,
       anonymousId,
     },
-    scopes: scopesArr,
+    scopes,
     fetch,
   };
 
@@ -59,34 +61,6 @@ function getAnonymousFlowApiRoot(anonymousId: string): ByProjectKeyRequestBuilde
     .withAnonymousSessionFlow(anonymousAuthMiddlewareOptions)
     .build();
 
-  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
-  return apiRoot;
-}
-
-function getPasswordFlowApiRoot(
-  user: UserAuthOptions,
-  setCustomerTokenCallback: (tokenStore: TokenStore) => void
-): ByProjectKeyRequestBuilder {
-  const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
-    host: authLink,
-    projectKey,
-    credentials: {
-      clientId,
-      clientSecret,
-      user,
-    },
-    tokenCache: {
-      get: () => ({ token: '', expirationTime: 0 }),
-      set: setCustomerTokenCallback,
-    },
-    scopes: scopesArr,
-    fetch,
-  };
-
-  const client = new ClientBuilder()
-    .withHttpMiddleware(httpMiddlewareOptions)
-    .withPasswordFlow(passwordAuthMiddlewareOptions)
-    .build();
   const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
   return apiRoot;
 }
@@ -115,7 +89,7 @@ async function getCustomerToken(user: UserAuthOptions): Promise<TokenStore> {
         get: () => ({ token: '', expirationTime: 0 }),
         set: (data) => resolve(data),
       },
-      scopes: scopesArr,
+      scopes,
       fetch,
     };
     const client = new ClientBuilder()
@@ -132,10 +106,19 @@ async function getCustomerToken(user: UserAuthOptions): Promise<TokenStore> {
         if (e instanceof Error) {
           reject(e);
         } else {
-          reject(new Error('errrr'));
+          reject(new Error('Unknown error!'));
         }
       });
   });
+}
+
+async function getCustomerData(token: string) {
+  try {
+    const apiRoot = getTokenFlowApiRoot(token);
+    return await apiRoot.me().get().execute();
+  } catch {
+    return null;
+  }
 }
 
 type ApiRoots = {
@@ -153,8 +136,8 @@ const apiRoots: ApiRoots = {
 export {
   getCredentialsFlowApiRoot,
   getAnonymousFlowApiRoot,
-  getPasswordFlowApiRoot,
   getTokenFlowApiRoot,
   apiRoots,
   getCustomerToken,
+  getCustomerData,
 };

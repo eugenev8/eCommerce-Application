@@ -20,14 +20,15 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
   }
 );
 
-const loginPassword = createAsyncThunk<TokenStore, UserAuthOptions, { rejectValue: string }>(
+const loginWithPassword = createAsyncThunk<TokenStore, UserAuthOptions, { rejectValue: string }>(
   'auth/loginPassword',
   async (user, { rejectWithValue }) => {
     try {
-      const token = await getCustomerToken(user);
-      const apiRoot = getTokenFlowApiRoot(token.token);
+      const tokenStore = await getCustomerToken(user);
+      const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
-      return token;
+      localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
+      return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
         return rejectWithValue(e.message);
@@ -37,4 +38,4 @@ const loginPassword = createAsyncThunk<TokenStore, UserAuthOptions, { rejectValu
   }
 );
 
-export { loginAnonymous, loginPassword };
+export { loginAnonymous, loginWithPassword };

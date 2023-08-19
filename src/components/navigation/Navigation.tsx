@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import './Navigation.css';
+import { useAppSelector } from '../../hooks/redux';
 
 const isLoggedIn = false;
 
@@ -91,12 +92,15 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
           Shop
         </NavLink>
       </div>
+
       {renderLoginLinks()}
     </div>
   );
 }
 
 export default function Navigation() {
+  const { isLoading, customerToken, error, authStatus } = useAppSelector((store) => store.authReducer);
+
   const [isMenuShown, setIsMenuShown] = useState(false);
 
   const handleOnClick = () => {
@@ -143,6 +147,14 @@ export default function Navigation() {
             Shop
           </NavLink>
         </div>
+      </div>
+      <div>
+        <p>authStatus={authStatus}</p>
+        <p>isLoading={isLoading.toString()}</p>
+      </div>
+      <div>
+        <p>customerToken= {customerToken}</p>
+        <p style={{ fontWeight: 700, color: 'red' }}>error= {error}</p>
       </div>
 
       <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
