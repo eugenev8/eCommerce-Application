@@ -112,32 +112,20 @@ async function getCustomerToken(user: UserAuthOptions): Promise<TokenStore> {
   });
 }
 
-async function getCustomerData(token: string) {
+async function checkCustomerToken(token: string) {
   try {
     const apiRoot = getTokenFlowApiRoot(token);
-    return await apiRoot.me().get().execute();
+    await apiRoot.me().get().execute();
+    return true;
   } catch {
-    return null;
+    return false;
   }
 }
-
-type ApiRoots = {
-  CredentialsFlow: ByProjectKeyRequestBuilder;
-  AnonymousFlow: ByProjectKeyRequestBuilder | null;
-  TokenFlow: ByProjectKeyRequestBuilder | null;
-};
-
-const apiRoots: ApiRoots = {
-  CredentialsFlow: getCredentialsFlowApiRoot(),
-  AnonymousFlow: null,
-  TokenFlow: null,
-};
 
 export {
   getCredentialsFlowApiRoot,
   getAnonymousFlowApiRoot,
   getTokenFlowApiRoot,
-  apiRoots,
   getCustomerToken,
-  getCustomerData,
+  checkCustomerToken,
 };

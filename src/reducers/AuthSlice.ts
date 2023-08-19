@@ -1,7 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { loginAnonymous, loginWithPassword } from './ActionCreators';
-import { apiRoots, getCustomerData, getTokenFlowApiRoot } from '../sdk/apiCommerceTools';
+import { checkCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
+import apiRoots from '../sdk/apiRoots';
 
 enum AuthStatus {
   CredentialsFlow = 'CredentialsFlow',
@@ -27,19 +28,22 @@ const initialState: AuthState = {
   error: '',
 };
 
-async function loadInititialState() {
+async function loadAuthState() {
   const customerToken = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+
   if (!customerToken) return initialState;
-  const customer = await getCustomerData(customerToken);
-  if (!customer) return initialState;
+
+  const result = await checkCustomerToken(customerToken);
+  if (!result) return initialState;
+
   apiRoots.TokenFlow = getTokenFlowApiRoot(customerToken);
-  const authState = { ...initialState, authStatus: AuthStatus.TokenFlow, customerToken, customerId: customer.body.id };
+  const authState = { ...initialState, authStatus: AuthStatus.TokenFlow, customerToken };
   return authState;
 }
 
 export const authSlice = createSlice({
   name: 'auth',
-  initialState: await loadInititialState(),
+  initialState: await loadAuthState(),
   reducers: {
     logout(state) {
       state.anonymousId = '';
