@@ -4,12 +4,18 @@ import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
-import EmailInput from '../inputs/EmailInput';
 import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
-import AgeInput from '../inputs/AgeInput';
 import AdressInputContainer from '../inputs/AdressInput';
-import { EmailValidation, PasswordValidation } from '../CommonValidation';
+import {
+  AddressValidaiton,
+  AgeValidation,
+  EmailValidation,
+  FirstNameValidation,
+  LastNameValidation,
+  PasswordValidation,
+} from '../CommonValidation';
+import Button from '../../../ui/buttons/Buttons';
 
 interface RegisterFormValues {
   email: string;
@@ -41,80 +47,32 @@ const initialValues: RegisterFormValues = {
     street: '',
     city: '',
     postal: '',
-    country: '',
+    country: 'US',
   },
   shippingAdress: {
     street: '',
     city: '',
     postal: '',
-    country: '',
+    country: 'US',
   },
 };
 
 const validationSchema = Yup.object({
   email: EmailValidation,
   password: PasswordValidation,
-  firstName: Yup.string()
-    .min(1, 'First name must contain at least one character')
-    .matches(/^[a-zA-Z]*$/, 'First name must not contain special characters or numbers')
-    .required('First name is required'),
-  lastName: Yup.string()
-    .min(1, 'Last name must contain at least one character')
-    .matches(/^[a-zA-Z]*$/, 'Last name must not contain special characters or numbers')
-    .required('Last name is required'),
-  dateOfBirth: Yup.date()
-    .required('Date of birth is required')
-    .min(new Date(new Date().getFullYear() - 130, 0, 1), 'You must be at most 130 years old')
-    .max(
-      new Date(new Date().getFullYear() - 13, new Date().getMonth(), new Date().getDate()),
-      'You must be at least 13 years old'
-    ),
-  billingAdress: Yup.object({
-    street: Yup.string().min(1, 'Street must contain at least one character').required('Street is required'),
-    city: Yup.string()
-      .min(1, 'City must contain at least one character')
-      .matches(/^[a-zA-Z\s]*$/, 'City must not contain special characters or numbers')
-      .required('City is required'),
-    postal: Yup.string().required('Postal code is required'),
-    country: Yup.string().required('Country is required'),
-  }),
-  shippingAdress: Yup.object({
-    street: Yup.string().min(1, 'Street must contain at least one character').required('Street is required'),
-    city: Yup.string()
-      .min(1, 'City must contain at least one character')
-      .matches(/^[a-zA-Z\s]*$/, 'City must not contain special characters or numbers')
-      .required('City is required'),
-    postal: Yup.string().required('Postal code is required'),
-    country: Yup.string().required('Country is required'),
-  }),
+  firstName: FirstNameValidation,
+  lastName: LastNameValidation,
+  dateOfBirth: AgeValidation,
+  billingAdress: AddressValidaiton,
+  shippingAdress: AddressValidaiton,
 });
 const validationSchemaSingleAdress = Yup.object({
   email: EmailValidation,
   password: PasswordValidation,
-  firstName: Yup.string()
-    .min(1, 'First name must contain at least one character')
-    .matches(/^[a-zA-Z]*$/, 'First name must not contain special characters or numbers')
-    .required('First name is required'),
-  lastName: Yup.string()
-    .min(1, 'Last name must contain at least one character')
-    .matches(/^[a-zA-Z]*$/, 'Last name must not contain special characters or numbers')
-    .required('Last name is required'),
-  dateOfBirth: Yup.date()
-    .required('Date of birth is required')
-    .min(new Date(new Date().getFullYear() - 130, 0, 1), 'You must be at most 130 years old')
-    .max(
-      new Date(new Date().getFullYear() - 13, new Date().getMonth(), new Date().getDate()),
-      'You must be at least 13 years old'
-    ),
-  billingAdress: Yup.object({
-    street: Yup.string().min(1, 'Street must contain at least one character').required('Street is required'),
-    city: Yup.string()
-      .min(1, 'City must contain at least one character')
-      .matches(/^[a-zA-Z\s]*$/, 'City must not contain special characters or numbers')
-      .required('City is required'),
-    postal: Yup.string().required('Postal code is required'),
-    country: Yup.string().required('Country is required'),
-  }),
+  firstName: FirstNameValidation,
+  lastName: LastNameValidation,
+  dateOfBirth: AgeValidation,
+  billingAdress: AddressValidaiton,
 });
 
 export default function RegisterForm() {
@@ -136,64 +94,89 @@ export default function RegisterForm() {
         onSubmit={handleSubmit}
       >
         <Form className="registerForm__formContainer">
-          <EmailInput
-            labelText="Email"
-            placeholder="Type your email"
-            id="email"
-            name="email"
-            parentClassName="registerForm"
+          <div className="registerForm__block registerForm__userData">
+            <div className="registerForm__subBlock">
+              <CommonInput
+                type="email"
+                labelText="Email"
+                placeholder="Type your email"
+                id="email"
+                name="email"
+                parentClassName="registerForm"
+              />
+
+              <PasswordInput
+                labelText="Password"
+                placeholder="Type your password"
+                id="password"
+                name="password"
+                parentClassName="registerForm"
+              />
+            </div>
+            <div className="registerForm__subBlock">
+              <CommonInput
+                id="firstName"
+                labelText="First name"
+                name="firstName"
+                placeholder="Type your first name"
+                type="text"
+                parentClassName="registerForm"
+              />
+
+              <CommonInput
+                id="lastName"
+                labelText="Last name"
+                name="lastName"
+                placeholder="Type your last name"
+                type="text"
+                parentClassName="registerForm"
+              />
+
+              <CommonInput
+                type="date"
+                id="dateOfBirth"
+                labelText="Date of birth"
+                name="dateOfBirth"
+                placeholder="Type your date of birth"
+                parentClassName="registerForm"
+              />
+            </div>
+          </div>
+
+          <div className="registerForm__block">
+            <div className="registerForm__subBlock">
+              <AdressInputContainer name="billingAdress" heading="Billing adress" parentClassName="registerForm" />
+
+              <label className="registerForm__checkboxLabel" htmlFor="sameAdress">
+                Use same adress for shipping
+                <input
+                  id="sameAdress"
+                  type="checkbox"
+                  onClick={() => setBillingEqualShipping(!isBillingEqualShipping)}
+                />
+              </label>
+            </div>
+            <div className="registerForm__subBlock">
+              {isBillingEqualShipping ? (
+                <>
+                  <div className="registerForm__adressHeading">
+                    <h3>Shipping adress</h3>
+                  </div>
+                  <p>Billing adress will be used for shipping</p>
+                </>
+              ) : (
+                <AdressInputContainer name="shippingAdress" heading="Shipping adress" parentClassName="registerForm" />
+              )}
+            </div>
+          </div>
+
+          <Button
+            innerText="Join us"
+            styling="primary"
+            type="submit"
+            variant="default"
+            addedClass="registerForm__submitButton"
           />
-
-          <PasswordInput
-            labelText="Password"
-            placeholder="Type your password"
-            id="password"
-            name="password"
-            parentClassName="registerForm"
-          />
-
-          <CommonInput
-            id="firstName"
-            labelText="First name"
-            name="firstName"
-            placeholder="Type your first name"
-            type="text"
-            parentClassName="registerForm"
-          />
-
-          <CommonInput
-            id="lastName"
-            labelText="Last name"
-            name="lastName"
-            placeholder="Type your last name"
-            type="text"
-            parentClassName="registerForm"
-          />
-
-          <AgeInput
-            id="dateOfBirth"
-            labelText="Date of birth"
-            name="dateOfBirth"
-            placeholder="Type your date of birth"
-            parentClassName="registerForm"
-          />
-
-          <AdressInputContainer name="billingAdress" heading="Billing adress" parentClassName="registerForm" />
-
-          <label htmlFor="sameAdress">
-            Use same adress for shipping
-            <input id="sameAdress" type="checkbox" onClick={() => setBillingEqualShipping(!isBillingEqualShipping)} />
-          </label>
-
-          {isBillingEqualShipping ? (
-            'Billing adress will be used for shipping'
-          ) : (
-            <AdressInputContainer name="shippingAdress" heading="Shipping adress" parentClassName="registerForm" />
-          )}
-
-          <button type="submit" className="registerForm__submitButton">
-            Sign up
-          </button>
         </Form>
       </Formik>
     </div>

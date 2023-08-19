@@ -3,9 +3,10 @@ import './LoginForm.css';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import EmailInput from '../inputs/EmailInput';
 import PasswordInput from '../inputs/PasswordInput';
 import { EmailValidation, PasswordValidation } from '../CommonValidation';
+import Button from '../../../ui/buttons/Buttons';
+import CommonInput from '../inputs/CommonInput';
 
 interface LoginFormValues {
   email: string;
@@ -30,7 +31,7 @@ function LoginForm() {
 
   return (
     <div className="loginForm">
-      <h2 className="loginForm__header">Login</h2>
+      <h2 className="loginForm__header">Greetings! Welcome to shop.</h2>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -39,7 +40,8 @@ function LoginForm() {
         onSubmit={handleSubmit}
       >
         <Form className="loginForm__formContainer">
-          <EmailInput
+          <CommonInput
+            type="email"
             labelText="Email"
             placeholder="Type your email"
             id="email"
@@ -55,9 +57,13 @@ function LoginForm() {
             parentClassName="loginForm"
           />
 
-          <button type="submit" className="loginForm__submitButton">
-            Login
-          </button>
+          <Button
+            innerText="Login"
+            styling="primary"
+            type="submit"
+            variant="default"
+            addedClass="loginForm__submitButton"
+          />
         </Form>
       </Formik>
     </div>
