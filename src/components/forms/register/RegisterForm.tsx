@@ -1,3 +1,4 @@
+import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 import './RegisterForm.css';
 
 import React, { useState } from 'react';
@@ -6,7 +7,7 @@ import * as Yup from 'yup';
 
 import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
-import AdressInputContainer from '../inputs/AdressInput';
+import AddressInputContainer from '../inputs/AddressInput';
 import {
   AddressValidaiton,
   AgeValidation,
@@ -16,6 +17,8 @@ import {
   PasswordValidation,
 } from '../CommonValidation';
 import Button from '../../../ui/buttons/Buttons';
+import { useAppDispatch } from '../../../hooks/redux';
+import { signupCustomer } from '../../../reducers/ActionCreators';
 
 interface RegisterFormValues {
   email: string;
@@ -23,17 +26,39 @@ interface RegisterFormValues {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  billingAdress: {
+  billingAddress: {
     street: string;
     city: string;
     postal: string;
     country: string;
   };
-  shippingAdress: {
+  shippingAddress: {
     street: string;
     city: string;
     postal: string;
     country: string;
+  };
+}
+
+function createTempValues(): RegisterFormValues {
+  return {
+    email: `fgd${Math.random().toFixed(5)}@get.com}`, // 'aaabbb@gmail.com',
+    password: 'Aa123456!',
+    firstName: 'dfsa',
+    lastName: 'dfsh',
+    dateOfBirth: '2001-02-02',
+    billingAddress: {
+      street: 'gdfs',
+      city: 'dsfg',
+      postal: '245665',
+      country: 'US',
+    },
+    shippingAddress: {
+      street: 'sgghfsd',
+      city: 'dsfhdfg',
+      postal: '235443',
+      country: 'US',
+    },
   };
 }
 
@@ -43,13 +68,13 @@ const initialValues: RegisterFormValues = {
   firstName: '',
   lastName: '',
   dateOfBirth: '',
-  billingAdress: {
+  billingAddress: {
     street: '',
     city: '',
     postal: '',
     country: 'US',
   },
-  shippingAdress: {
+  shippingAddress: {
     street: '',
     city: '',
     postal: '',
@@ -76,12 +101,40 @@ const validationSchemaSingleAdress = Yup.object({
 });
 
 export default function RegisterForm() {
+  const dispatch = useAppDispatch();
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
 
-  const handleSubmit = (values: RegisterFormValues) => {
-    // Handle login logic here
+  const handleSubmit = async (values: RegisterFormValues) => {
     alert(JSON.stringify(values, null, 2));
   };
+
+  async function handleSignUpTemp(values: RegisterFormValues) {
+    const shippingAddress: BaseAddress = {
+      country: values.shippingAddress.country,
+      city: values.shippingAddress.city,
+      postalCode: values.shippingAddress.postal,
+      streetName: values.shippingAddress.street,
+    };
+    const billingAddress: BaseAddress = {
+      country: values.billingAddress.country,
+      city: values.billingAddress.city,
+      postalCode: values.billingAddress.postal,
+      streetName: values.billingAddress.street,
+    };
+    const customerDraft: CustomerDraft = {
+      email: values.email,
+      password: values.password,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      dateOfBirth: values.dateOfBirth,
+      addresses: [shippingAddress, billingAddress],
+      defaultShippingAddress: 0,
+      shippingAddresses: [0],
+      defaultBillingAddress: 1,
+      billingAddresses: [1],
+    };
+    dispatch(signupCustomer(customerDraft));
+  }
 
   return (
     <div className="registerForm">
@@ -145,7 +198,7 @@ export default function RegisterForm() {
 
           <div className="registerForm__block">
             <div className="registerForm__subBlock">
-              <AdressInputContainer name="billingAdress" heading="Billing adress" parentClassName="registerForm" />
+              <AddressInputContainer name="billingAdress" heading="Billing adress" parentClassName="registerForm" />
 
               <label className="registerForm__checkboxLabel" htmlFor="sameAdress">
                 Use same adress for shipping
@@ -165,7 +218,11 @@ export default function RegisterForm() {
                   <p>Billing adress will be used for shipping</p>
                 </>
               ) : (
-                <AdressInputContainer name="shippingAdress" heading="Shipping adress" parentClassName="registerForm" />
+                <AddressInputContainer
+                  name="shippingAddress"
+                  heading="Shipping address"
+                  parentClassName="registerForm"
+                />
               )}
             </div>
           </div>
@@ -179,6 +236,9 @@ export default function RegisterForm() {
           />
         </Form>
       </Formik>
+      <button type="button" onClick={() => handleSignUpTemp(createTempValues())}>
+        Temp
+      </button>
     </div>
   );
 }

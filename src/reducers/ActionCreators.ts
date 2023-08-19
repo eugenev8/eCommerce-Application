@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { CustomerDraft } from '@commercetools/platform-sdk';
 import { TokenStore, UserAuthOptions } from '@commercetools/sdk-client-v2';
 import { getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
@@ -22,7 +23,7 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
 );
 
 const loginWithPassword = createAsyncThunk<TokenStore, UserAuthOptions, { rejectValue: string }>(
-  'auth/loginPassword',
+  'auth/loginWithPassword',
   async (user, { rejectWithValue }) => {
     try {
       const tokenStore = await getCustomerToken(user);
@@ -39,4 +40,23 @@ const loginWithPassword = createAsyncThunk<TokenStore, UserAuthOptions, { reject
   }
 );
 
-export { loginAnonymous, loginWithPassword };
+const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue: string }>(
+  'auth/signupCustomer',
+  async (customerDraft, { rejectWithValue }) => {
+    try {
+      await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
+      const tokenStore = await getCustomerToken({ username: customerDraft.email, password: customerDraft.password! });
+      const apiRoot = getTokenFlowApiRoot(tokenStore.token);
+      apiRoots.TokenFlow = apiRoot;
+      localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
+      return tokenStore;
+    } catch (e) {
+      if (e instanceof Error) {
+        return rejectWithValue(e.message);
+      }
+      return rejectWithValue('Unknown Error!');
+    }
+  }
+);
+
+export { loginAnonymous, loginWithPassword, signupCustomer };
