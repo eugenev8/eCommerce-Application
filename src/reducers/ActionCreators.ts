@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { TokenStore, UserAuthOptions } from '@commercetools/sdk-client-v2';
-import { apiRoots, getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/roots';
+import { apiRoots, getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/apiCommerceTools';
 
 const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string }>(
   'auth/loginAnonymous',

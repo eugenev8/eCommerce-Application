@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { loginAnonymous, loginPassword } from '../reducers/ActionCreators';
 import { authSlice } from '../reducers/authSlice';
-import { apiRoots } from './roots';
+import { apiRoots } from './apiCommerceTools';
 
 export default function TempComponent() {
   const [email, setEmail] = useState<string>('test_email@gmial.com');
