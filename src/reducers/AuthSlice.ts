@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { AnyAction, PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { loginAnonymous, loginWithPassword, signupCustomer } from './ActionCreators';
-import { checkCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
+import { getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 
 enum AuthStatus {
@@ -27,16 +27,16 @@ const initialState: AuthState = {
   error: '',
 };
 
-async function loadAuthState() {
+function loadAuthState() {
   const customerToken = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
 
   if (!customerToken) return initialState;
 
-  const result = await checkCustomerToken(customerToken);
-  if (!result) {
-    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
-    return initialState;
-  }
+  // const result = await checkCustomerToken(customerToken);
+  // if (!result) {
+  //   localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+  //   return initialState;
+  // }
 
   apiRoots.TokenFlow = getTokenFlowApiRoot(customerToken);
   const authState = { ...initialState, authStatus: AuthStatus.TokenFlow, customerToken };
@@ -53,7 +53,7 @@ function isPending(action: AnyAction) {
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: await loadAuthState(),
+  initialState: loadAuthState(),
   reducers: {
     logout(state) {
       state.error = '';
@@ -94,4 +94,5 @@ const authSlice = createSlice({
 });
 
 export { authSlice, AuthStatus };
+
 export default authSlice.reducer;

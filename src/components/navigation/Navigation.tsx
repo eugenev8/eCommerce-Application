@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 
 import './Navigation.css';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { AuthStatus, authSlice } from '../../reducers/authSlice';
+import { AuthStatus, authSlice } from '../../reducers/AuthSlice';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
