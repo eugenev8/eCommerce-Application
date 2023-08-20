@@ -61,10 +61,6 @@ const authSlice = createSlice({
       state.customerToken = '';
       state.authStatus = AuthStatus.CredentialsFlow;
     },
-    authorizationError(state, action: PayloadAction<string>) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(loginAnonymous.fulfilled, (state, action) => {

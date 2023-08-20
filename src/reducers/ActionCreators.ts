@@ -3,6 +3,7 @@ import { CustomerDraft } from '@commercetools/platform-sdk';
 import { TokenStore, UserAuthOptions } from '@commercetools/sdk-client-v2';
 import { getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
+import toaster from '../services/toaster';
 
 const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string }>(
   'auth/loginAnonymous',
@@ -15,8 +16,10 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
       return anonymousId;
     } catch (e) {
       if (e instanceof Error) {
+        toaster.showError(e.message);
         return rejectWithValue(e.message);
       }
+      toaster.showError('Unknown Error!');
       return rejectWithValue('Unknown Error!');
     }
   }
@@ -30,11 +33,14 @@ const loginWithPassword = createAsyncThunk<TokenStore, UserAuthOptions, { reject
       const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
       localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
+      toaster.showSuccess('Success!');
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
+        toaster.showError(e.message);
         return rejectWithValue(e.message);
       }
+      toaster.showError('Unknown Error!');
       return rejectWithValue('Unknown Error!');
     }
   }
@@ -49,11 +55,14 @@ const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue
       const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
       localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
+      toaster.showSuccess('Success!');
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
+        toaster.showError(e.message);
         return rejectWithValue(e.message);
       }
+      toaster.showError('Unknown Error!');
       return rejectWithValue('Unknown Error!');
     }
   }
