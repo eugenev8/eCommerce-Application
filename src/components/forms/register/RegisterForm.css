@@ -67,7 +67,9 @@
   gap: 20px;
 }
 
-#sameAddress {
+#sameAddress,
+#defaultShippingAddress,
+#defaultBillingAddress {
   height: 100%;
   width: 20px;
 }
