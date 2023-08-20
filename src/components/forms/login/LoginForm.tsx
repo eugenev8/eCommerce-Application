@@ -7,6 +7,8 @@ import PasswordInput from '../inputs/PasswordInput';
 import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../../ui/buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
+import { useAppDispatch } from '../../../hooks/redux';
+import { loginWithPassword } from '../../../reducers/ActionCreators';
 
 interface LoginFormValues {
   email: string;
@@ -14,8 +16,8 @@ interface LoginFormValues {
 }
 
 const initialValues: LoginFormValues = {
-  email: '',
-  password: '',
+  email: 'aaabbb@gmail.com',
+  password: 'Aa123456!',
 };
 
 const validationSchema = Yup.object({
@@ -24,9 +26,10 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm() {
+  const dispatch = useAppDispatch();
+
   const handleSubmit = (values: LoginFormValues) => {
-    // Handle login logic here
-    alert(JSON.stringify(values, null, 2));
+    dispatch(loginWithPassword({ username: values.email, password: values.password }));
   };
 
   return (

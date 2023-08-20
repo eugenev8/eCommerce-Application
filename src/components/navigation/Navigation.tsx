@@ -2,8 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import './Navigation.css';
-
-const isLoggedIn = false;
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { AuthStatus, authSlice } from '../../reducers/AuthSlice';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -32,6 +32,13 @@ type BurgerMenuProps = {
 
 function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
+  const { authStatus } = useAppSelector((store) => store.authReducer);
+  const dispatch = useAppDispatch();
+
+  function handleLogout() {
+    dispatch(authSlice.actions.logout());
+    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+  }
 
   useEffect(() => {
     function useClickOutside(event: MouseEvent) {
@@ -47,7 +54,7 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
   }, [closeMenu, isMenuShown]);
 
   const renderLoginLinks = () => {
-    if (!isLoggedIn) {
+    if (authStatus !== AuthStatus.TokenFlow) {
       return (
         <>
           <div className="navbar__menuLink">
@@ -74,7 +81,9 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
 
     return (
       <div className="navbar__menuLink">
-        <p>Logout (mock)</p>
+        <button type="button" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     );
   };
@@ -91,12 +100,20 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
           Shop
         </NavLink>
       </div>
+
       {renderLoginLinks()}
     </div>
   );
 }
 
 export default function Navigation() {
+  const { isLoading, customerToken, error, authStatus } = useAppSelector((store) => store.authReducer);
+  const dispatch = useAppDispatch();
+
+  function handleLogout() {
+    dispatch(authSlice.actions.logout());
+    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+  }
   const [isMenuShown, setIsMenuShown] = useState(false);
 
   const handleOnClick = () => {
@@ -108,7 +125,7 @@ export default function Navigation() {
   };
 
   const renderLoginLinks = () => {
-    if (!isLoggedIn) {
+    if (authStatus !== AuthStatus.TokenFlow) {
       return (
         <>
           <div className="navbar__link">
@@ -127,7 +144,9 @@ export default function Navigation() {
 
     return (
       <div className="navbar__link">
-        <p>Logout (mock)</p>
+        <button type="button" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     );
   };
@@ -143,6 +162,14 @@ export default function Navigation() {
             Shop
           </NavLink>
         </div>
+      </div>
+      <div>
+        <p>authStatus={authStatus}</p>
+        <p>isLoading={isLoading.toString()}</p>
+      </div>
+      <div>
+        <p>customerToken= {customerToken}</p>
+        <p style={{ fontWeight: 700, color: 'red' }}>error= {error}</p>
       </div>
 
       <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>

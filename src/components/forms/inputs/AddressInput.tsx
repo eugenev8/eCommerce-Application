@@ -1,7 +1,7 @@
 import { ErrorMessage, Field, useField } from 'formik';
 import CountryInput from './CountryInput';
 
-interface AdressFieldProps {
+interface AddressFieldProps {
   labelText: string;
   parentClassName: string;
   placeholder: string;
@@ -9,7 +9,7 @@ interface AdressFieldProps {
   name: string;
 }
 
-function AdressField({ labelText, parentClassName, placeholder, id, name }: AdressFieldProps) {
+function AddressField({ labelText, parentClassName, placeholder, id, name }: AddressFieldProps) {
   const [field, meta] = useField(name);
 
   const toggleErrorClass = () => {
@@ -45,33 +45,33 @@ function AdressField({ labelText, parentClassName, placeholder, id, name }: Adre
   );
 }
 
-interface AdressContainerProps {
+interface AddressContainerProps {
   name: string;
   parentClassName: string;
   heading: string;
 }
 
-export default function AdressInputContainer({ name, parentClassName, heading }: AdressContainerProps) {
+export default function AddressInputContainer({ name, parentClassName, heading }: AddressContainerProps) {
   return (
-    <div className={`${parentClassName}__adressContainer`}>
-      <div className={`${parentClassName}__adressHeading`}>
+    <div className={`${parentClassName}__addressContainer`}>
+      <div className={`${parentClassName}__addressHeading`}>
         <h3>{heading}</h3>
       </div>
-      <AdressField
+      <AddressField
         id={`${name}.street`}
         labelText="Street"
         name={`${name}.street`}
         parentClassName={parentClassName}
         placeholder="Type your street"
       />
-      <AdressField
+      <AddressField
         id={`${name}.city`}
         labelText="City"
         name={`${name}.city`}
         parentClassName={parentClassName}
         placeholder="Type your city"
       />
-      <AdressField
+      <AddressField
         id={`${name}.postal`}
         labelText="Postal"
         name={`${name}.postal`}
