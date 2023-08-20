@@ -40,44 +40,50 @@ interface RegisterFormValues {
   };
 }
 
-function createTempValues(): RegisterFormValues {
-  return {
-    email: `fgd${Math.random().toFixed(5)}@get.com}`, // 'aaabbb@gmail.com',
-    password: 'Aa123456!',
-    firstName: 'dfsa',
-    lastName: 'dfsh',
-    dateOfBirth: '2001-02-02',
-    billingAddress: {
-      street: 'gdfs',
-      city: 'dsfg',
-      postal: '245665',
-      country: 'US',
-    },
-    shippingAddress: {
-      street: 'sgghfsd',
-      city: 'dsfhdfg',
-      postal: '235443',
-      country: 'US',
-    },
+function createCustomerDraft(values: RegisterFormValues) {
+  const shippingAddress: BaseAddress = {
+    country: values.shippingAddress.country,
+    city: values.shippingAddress.city,
+    postalCode: values.shippingAddress.postal,
+    streetName: values.shippingAddress.street,
   };
+  const billingAddress: BaseAddress = {
+    country: values.billingAddress.country,
+    city: values.billingAddress.city,
+    postalCode: values.billingAddress.postal,
+    streetName: values.billingAddress.street,
+  };
+  const customerDraft: CustomerDraft = {
+    email: values.email,
+    password: values.password,
+    firstName: values.firstName,
+    lastName: values.lastName,
+    dateOfBirth: values.dateOfBirth,
+    addresses: [shippingAddress, billingAddress],
+    defaultShippingAddress: 0,
+    shippingAddresses: [0],
+    defaultBillingAddress: 1,
+    billingAddresses: [1],
+  };
+  return customerDraft;
 }
 
 const initialValues: RegisterFormValues = {
-  email: '',
-  password: '',
-  firstName: '',
-  lastName: '',
-  dateOfBirth: '',
+  email: `fgd${Math.random().toFixed(5)}@get.com`, // 'aaabbb@gmail.com',
+  password: 'Aa123456!',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  dateOfBirth: '2001-02-02',
   billingAddress: {
-    street: '',
-    city: '',
-    postal: '',
+    street: 'street',
+    city: 'city',
+    postal: '12345',
     country: 'US',
   },
   shippingAddress: {
-    street: '',
-    city: '',
-    postal: '',
+    street: 'street',
+    city: 'city',
+    postal: '12345',
     country: 'US',
   },
 };
@@ -88,16 +94,16 @@ const validationSchema = Yup.object({
   firstName: FirstNameValidation,
   lastName: LastNameValidation,
   dateOfBirth: AgeValidation,
-  billingAdress: AddressValidaiton,
-  shippingAdress: AddressValidaiton,
+  billingAddress: AddressValidaiton,
+  shippingAddress: AddressValidaiton,
 });
-const validationSchemaSingleAdress = Yup.object({
+const validationSchemaSingleAddress = Yup.object({
   email: EmailValidation,
   password: PasswordValidation,
   firstName: FirstNameValidation,
   lastName: LastNameValidation,
   dateOfBirth: AgeValidation,
-  billingAdress: AddressValidaiton,
+  billingAddress: AddressValidaiton,
 });
 
 export default function RegisterForm() {
@@ -105,43 +111,16 @@ export default function RegisterForm() {
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
 
   const handleSubmit = async (values: RegisterFormValues) => {
-    alert(JSON.stringify(values, null, 2));
-  };
-
-  async function handleSignUpTemp(values: RegisterFormValues) {
-    const shippingAddress: BaseAddress = {
-      country: values.shippingAddress.country,
-      city: values.shippingAddress.city,
-      postalCode: values.shippingAddress.postal,
-      streetName: values.shippingAddress.street,
-    };
-    const billingAddress: BaseAddress = {
-      country: values.billingAddress.country,
-      city: values.billingAddress.city,
-      postalCode: values.billingAddress.postal,
-      streetName: values.billingAddress.street,
-    };
-    const customerDraft: CustomerDraft = {
-      email: values.email,
-      password: values.password,
-      firstName: values.firstName,
-      lastName: values.lastName,
-      dateOfBirth: values.dateOfBirth,
-      addresses: [shippingAddress, billingAddress],
-      defaultShippingAddress: 0,
-      shippingAddresses: [0],
-      defaultBillingAddress: 1,
-      billingAddresses: [1],
-    };
+    const customerDraft = createCustomerDraft(values);
     dispatch(signupCustomer(customerDraft));
-  }
+  };
 
   return (
     <div className="registerForm">
       <h2 className="registerForm__header">Sign up</h2>
       <Formik
         initialValues={initialValues}
-        validationSchema={isBillingEqualShipping ? validationSchemaSingleAdress : validationSchema}
+        validationSchema={isBillingEqualShipping ? validationSchemaSingleAddress : validationSchema}
         validateOnChange
         validateOnMount
         onSubmit={handleSubmit}
@@ -198,12 +177,12 @@ export default function RegisterForm() {
 
           <div className="registerForm__block">
             <div className="registerForm__subBlock">
-              <AddressInputContainer name="billingAdress" heading="Billing adress" parentClassName="registerForm" />
+              <AddressInputContainer name="billingAddress" heading="Billing address" parentClassName="registerForm" />
 
-              <label className="registerForm__checkboxLabel" htmlFor="sameAdress">
-                Use same adress for shipping
+              <label className="registerForm__checkboxLabel" htmlFor="sameAddress">
+                Use same address for shipping
                 <input
-                  id="sameAdress"
+                  id="sameAddress"
                   type="checkbox"
                   onClick={() => setBillingEqualShipping(!isBillingEqualShipping)}
                 />
@@ -212,10 +191,10 @@ export default function RegisterForm() {
             <div className="registerForm__subBlock">
               {isBillingEqualShipping ? (
                 <>
-                  <div className="registerForm__adressHeading">
-                    <h3>Shipping adress</h3>
+                  <div className="registerForm__addressHeading">
+                    <h3>Shipping address</h3>
                   </div>
-                  <p>Billing adress will be used for shipping</p>
+                  <p>Billing address will be used for shipping</p>
                 </>
               ) : (
                 <AddressInputContainer
@@ -236,9 +215,6 @@ export default function RegisterForm() {
           />
         </Form>
       </Formik>
-      <button type="button" onClick={() => handleSignUpTemp(createTempValues())}>
-        Temp
-      </button>
     </div>
   );
 }
