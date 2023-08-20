@@ -10,6 +10,7 @@ import MainPage from './pages/main/MainPage';
 import LoginPage from './pages/login/LoginPage';
 import RegisterPage from './pages/register/RegisterPage';
 import ErrorPage from './pages/error/ErrorPage';
+import AuthGuardLoader from './pages/AuthGuardLoader';
 
 const store = setupStore();
 
@@ -32,10 +33,12 @@ const router = createBrowserRouter([
       {
         path: routesPaths.login,
         element: <LoginPage />,
+        loader: AuthGuardLoader,
       },
       {
         path: routesPaths.register,
         element: <RegisterPage />,
+        loader: AuthGuardLoader,
       },
     ],
   },
@@ -48,5 +51,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </Provider>
   </React.StrictMode>
 );
-
-export default routesPaths;
