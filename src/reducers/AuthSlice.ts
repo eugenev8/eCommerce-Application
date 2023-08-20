@@ -13,9 +13,9 @@ enum AuthStatus {
 interface AuthState {
   isLoading: boolean;
   authStatus: AuthStatus;
-  anonymousId: string;
   customerToken: string;
   error: string;
+  anonymousId?: string;
   customerId?: string;
   refreshToken?: string;
 }
@@ -23,7 +23,6 @@ interface AuthState {
 const initialState: AuthState = {
   isLoading: false,
   authStatus: AuthStatus.CredentialsFlow,
-  anonymousId: '',
   customerToken: '',
   error: '',
 };
@@ -34,7 +33,10 @@ async function loadAuthState() {
   if (!customerToken) return initialState;
 
   const result = await checkCustomerToken(customerToken);
-  if (!result) return initialState;
+  if (!result) {
+    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+    return initialState;
+  }
 
   apiRoots.TokenFlow = getTokenFlowApiRoot(customerToken);
   const authState = { ...initialState, authStatus: AuthStatus.TokenFlow, customerToken };
@@ -49,16 +51,15 @@ function isPending(action: AnyAction) {
   return action.type.endsWith('pending');
 }
 
-export const authSlice = createSlice({
+const authSlice = createSlice({
   name: 'auth',
   initialState: await loadAuthState(),
   reducers: {
     logout(state) {
-      state.anonymousId = '';
-      state.customerToken = '';
       state.error = '';
-      state.authStatus = AuthStatus.CredentialsFlow;
       state.isLoading = false;
+      state.customerToken = '';
+      state.authStatus = AuthStatus.CredentialsFlow;
     },
     authorizationError(state, action: PayloadAction<string>) {
       state.isLoading = false;
@@ -74,7 +75,6 @@ export const authSlice = createSlice({
     });
     builder.addCase(loginWithPassword.fulfilled, (state, action) => {
       state.error = '';
-      state.anonymousId = '';
       state.isLoading = false;
       state.customerToken = action.payload.token;
       state.refreshToken = action.payload.refreshToken || '';
@@ -82,7 +82,6 @@ export const authSlice = createSlice({
     });
     builder.addCase(signupCustomer.fulfilled, (state, action) => {
       state.error = '';
-      state.anonymousId = '';
       state.isLoading = false;
       state.customerToken = action.payload.token;
       state.refreshToken = action.payload.refreshToken || '';
@@ -98,4 +97,5 @@ export const authSlice = createSlice({
   },
 });
 
+export { authSlice, AuthStatus };
 export default authSlice.reducer;
