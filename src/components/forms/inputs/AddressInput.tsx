@@ -1,4 +1,4 @@
-import { ErrorMessage, Field, useField } from 'formik';
+import { Field, useField } from 'formik';
 import CountryInput from './CountryInput';
 
 interface AddressFieldProps {
@@ -13,9 +13,6 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
   const [field, meta] = useField(name);
 
   const toggleErrorClass = () => {
-    if (!meta.touched) {
-      return '';
-    }
     if (meta.error) {
       return 'input_error';
     }
@@ -39,7 +36,7 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
         className={`${parentClassName}__input ${parentClassName}__${id}Input ${toggleErrorClass()}`}
       />
       <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
-        <ErrorMessage name={id} id={`${id}-error`} />
+        <div id={`${id}-error`}>{meta.error}</div>
       </div>
     </>
   );
