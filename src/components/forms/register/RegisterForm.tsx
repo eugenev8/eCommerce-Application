@@ -243,7 +243,7 @@ export default function RegisterForm() {
                     heading="Billing address"
                     parentClassName="registerForm"
                   />
-                  <label className="registerForm__checkboxLabel" htmlFor="defaultShippingAddress">
+                  <label className="registerForm__checkboxLabel" htmlFor="defaultBillingAddress">
                     Set as default billing address
                     <input
                       id="defaultBillingAddress"
