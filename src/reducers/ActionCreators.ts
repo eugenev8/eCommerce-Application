@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CustomerDraft } from '@commercetools/platform-sdk';
-import { TokenStore, UserAuthOptions } from '@commercetools/sdk-client-v2';
+import { CustomerDraft, CustomerSignin } from '@commercetools/platform-sdk';
+import { TokenStore } from '@commercetools/sdk-client-v2';
 import { getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import toaster from '../services/toaster';
+import getUserFriedlyAuthErrorMessage from '../utils/getAuthErrorMessage';
 
 const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string }>(
   'auth/loginAnonymous',
@@ -16,16 +17,15 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
       return anonymousId;
     } catch (e) {
       if (e instanceof Error) {
-        toaster.showError(e.message);
-        return rejectWithValue(e.message);
+        const errorMessage = getUserFriedlyAuthErrorMessage(e.message);
+        return rejectWithValue(errorMessage);
       }
-      toaster.showError('Unknown Error!');
       return rejectWithValue('Unknown Error!');
     }
   }
 );
 
-const loginWithPassword = createAsyncThunk<TokenStore, UserAuthOptions, { rejectValue: string }>(
+const loginWithPassword = createAsyncThunk<TokenStore, CustomerSignin, { rejectValue: string }>(
   'auth/loginWithPassword',
   async (user, { rejectWithValue }) => {
     try {
@@ -33,14 +33,13 @@ const loginWithPassword = createAsyncThunk<TokenStore, UserAuthOptions, { reject
       const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
       localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
-      toaster.showSuccess('Success!');
+      toaster.showSuccess('Login successeful!');
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
-        toaster.showError(e.message);
-        return rejectWithValue(e.message);
+        const errorMessage = getUserFriedlyAuthErrorMessage(e.message);
+        return rejectWithValue(errorMessage);
       }
-      toaster.showError('Unknown Error!');
       return rejectWithValue('Unknown Error!');
     }
   }
@@ -51,18 +50,18 @@ const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue
   async (customerDraft, { rejectWithValue }) => {
     try {
       await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
-      const tokenStore = await getCustomerToken({ username: customerDraft.email, password: customerDraft.password! });
+      const tokenStore = await getCustomerToken({ email: customerDraft.email, password: customerDraft.password! });
       const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
       localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
-      toaster.showSuccess('Success!');
+
+      toaster.showSuccess("Registration successful! You're now loggin in!");
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
-        toaster.showError(e.message);
-        return rejectWithValue(e.message);
+        const errorMessage = getUserFriedlyAuthErrorMessage(e.message);
+        return rejectWithValue(errorMessage);
       }
-      toaster.showError('Unknown Error!');
       return rejectWithValue('Unknown Error!');
     }
   }

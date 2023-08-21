@@ -4,6 +4,8 @@ import { NavLink } from 'react-router-dom';
 import './Navigation.css';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { AuthStatus, authSlice } from '../../reducers/AuthSlice';
+import toaster from '../../services/toaster';
+import useLoginStatus from '../../hooks/useLoginStatus';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -107,7 +109,9 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
 }
 
 export default function Navigation() {
-  const { isLoading, customerToken, error, authStatus } = useAppSelector((store) => store.authReducer);
+  const { error } = useAppSelector((store) => store.authReducer);
+
+  const isLoggedIn = useLoginStatus();
   const dispatch = useAppDispatch();
 
   function handleLogout() {
@@ -124,8 +128,14 @@ export default function Navigation() {
     setIsMenuShown(false);
   };
 
+  useEffect(() => {
+    if (error !== '') {
+      toaster.showError(error);
+    }
+  }, [error]);
+
   const renderLoginLinks = () => {
-    if (authStatus !== AuthStatus.TokenFlow) {
+    if (isLoggedIn) {
       return (
         <>
           <div className="navbar__link">
@@ -162,14 +172,6 @@ export default function Navigation() {
             Shop
           </NavLink>
         </div>
-      </div>
-      <div>
-        <p>authStatus={authStatus}</p>
-        <p>isLoading={isLoading.toString()}</p>
-      </div>
-      <div>
-        <p>customerToken= {customerToken}</p>
-        <p style={{ fontWeight: 700, color: 'red' }}>error= {error}</p>
       </div>
 
       <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
