@@ -1,15 +1,17 @@
 .registerForm {
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
   max-width: 1000px;
+  width: 90%;
 
   border: 1px solid var(--black);
 
-  margin: 0 auto 2%;
-  padding: 2% 10% 3%;
+  padding: 2% 5% 3%;
 }
 
 .registerForm__formContainer {
