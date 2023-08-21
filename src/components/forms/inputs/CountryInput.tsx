@@ -1,4 +1,4 @@
-import { ErrorMessage, Field, useField } from 'formik';
+import { Field, useField } from 'formik';
 
 interface CountryInputProps {
   labelText: string;
@@ -48,9 +48,6 @@ export default function CountryInput({ labelText, parentClassName, placeholder, 
   const [field, meta] = useField(name);
 
   const toggleErrorClass = () => {
-    if (!meta.touched) {
-      return '';
-    }
     if (meta.error) {
       return 'input_error';
     }
@@ -76,7 +73,7 @@ export default function CountryInput({ labelText, parentClassName, placeholder, 
         {Object.keys(Countries).map((countryName) => selectionOption(Countries[countryName]))}
       </Field>
       <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
-        <ErrorMessage name={name} id={`${id}-error`} />
+        <div id={`${id}-error`}>{meta.error}</div>
       </div>
     </div>
   );

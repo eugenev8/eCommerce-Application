@@ -39,21 +39,21 @@ interface NewCustomerAddresses {
 }
 
 const initialValues: RegisterFormValues = {
-  email: `fgd${Math.random().toFixed(5).replace('.', '')}@get.com`, // 'aaabbb@gmail.com',
-  password: 'Aa123456!',
-  firstName: 'firstName',
-  lastName: 'lastName',
-  dateOfBirth: '2001-02-02',
+  email: ``, // 'aaabbb@gmail.com',
+  password: '',
+  firstName: '',
+  lastName: '',
+  dateOfBirth: '',
   billingAddress: {
-    streetName: 'BillingStreet',
-    city: 'city',
-    postalCode: '12345',
+    streetName: '',
+    city: '',
+    postalCode: '',
     country: 'US',
   },
   shippingAddress: {
-    streetName: 'ShippingStreet',
-    city: 'city',
-    postalCode: '12345',
+    streetName: '',
+    city: '',
+    postalCode: '',
     country: 'US',
   },
 };
@@ -158,7 +158,7 @@ export default function RegisterForm() {
           <div className="registerForm__block registerForm__userData">
             <div className="registerForm__subBlock">
               <CommonInput
-                type="email"
+                type="text"
                 labelText="Email"
                 placeholder="Type your email"
                 id="email"

@@ -13,7 +13,14 @@ export const PasswordValidation = Yup.string()
 export const EmailValidation = Yup.string()
   .email('Invalid email address')
   .required('Email is required')
-  .matches(/^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format or missing domain');
+  .matches(
+    /^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/,
+    'Invalid email format or missing domain'
+  )
+  .matches(
+    /^[\w!#$%&'*+\-/=?^_`{|}~]+(?:\.[\w!#$%&'*+\-/=?^_`{|}~]+)*@[\w-]+(?:\.[\w-]+)*(?:\.[a-zA-Z]{2,})?$/,
+    'Invalid local-part format'
+  );
 
 export const AddressValidaiton = Yup.object().shape({
   streetName: Yup.string()
