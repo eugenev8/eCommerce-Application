@@ -3,6 +3,7 @@ import './LoginForm.css';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import { CustomerSignin } from '@commercetools/platform-sdk';
 import PasswordInput from '../inputs/PasswordInput';
 import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../../ui/buttons/Buttons';
@@ -10,12 +11,7 @@ import CommonInput from '../inputs/CommonInput';
 import { useAppDispatch } from '../../../hooks/redux';
 import { loginWithPassword } from '../../../reducers/ActionCreators';
 
-interface LoginFormValues {
-  email: string;
-  password: string;
-}
-
-const initialValues: LoginFormValues = {
+const initialValues: CustomerSignin = {
   email: '',
   password: '',
 };
@@ -28,8 +24,8 @@ const validationSchema = Yup.object({
 function LoginForm() {
   const dispatch = useAppDispatch();
 
-  const handleSubmit = (values: LoginFormValues) => {
-    dispatch(loginWithPassword({ username: values.email, password: values.password }));
+  const handleSubmit = (values: CustomerSignin) => {
+    dispatch(loginWithPassword({ email: values.email, password: values.password }));
   };
 
   return (

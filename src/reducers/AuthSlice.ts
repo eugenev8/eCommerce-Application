@@ -64,20 +64,17 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(loginAnonymous.fulfilled, (state, action) => {
-      state.error = '';
       state.isLoading = false;
       state.anonymousId = action.payload;
       state.authStatus = AuthStatus.AnonymousFlow;
     });
     builder.addCase(loginWithPassword.fulfilled, (state, action) => {
-      state.error = '';
       state.isLoading = false;
       state.customerToken = action.payload.token;
       state.refreshToken = action.payload.refreshToken || '';
       state.authStatus = AuthStatus.TokenFlow;
     });
     builder.addCase(signupCustomer.fulfilled, (state, action) => {
-      state.error = '';
       state.isLoading = false;
       state.customerToken = action.payload.token;
       state.refreshToken = action.payload.refreshToken || '';
@@ -88,6 +85,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     });
     builder.addMatcher(isPending, (state) => {
+      state.error = '';
       state.isLoading = true;
     });
   },

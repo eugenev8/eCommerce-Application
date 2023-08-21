@@ -5,9 +5,8 @@ import {
   AnonymousAuthMiddlewareOptions,
   TokenStore,
   AuthMiddlewareOptions,
-  UserAuthOptions,
 } from '@commercetools/sdk-client-v2';
-import { createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import { CustomerSignin, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
 const apiLink = import.meta.env.VITE_SDK_API_LINK;
@@ -75,7 +74,7 @@ function getTokenFlowApiRoot(token: string): ByProjectKeyRequestBuilder {
   return apiRoot;
 }
 
-async function getCustomerToken(user: UserAuthOptions): Promise<TokenStore> {
+async function getCustomerToken(customerSignin: CustomerSignin): Promise<TokenStore> {
   return new Promise<TokenStore>((resolve, reject) => {
     const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
       host: authLink,
@@ -83,7 +82,7 @@ async function getCustomerToken(user: UserAuthOptions): Promise<TokenStore> {
       credentials: {
         clientId,
         clientSecret,
-        user,
+        user: { username: customerSignin.email, password: customerSignin.password },
       },
       tokenCache: {
         get: () => ({ token: '', expirationTime: 0 }),
@@ -100,7 +99,7 @@ async function getCustomerToken(user: UserAuthOptions): Promise<TokenStore> {
 
     apiRoot
       .login()
-      .post({ body: { email: user.username, password: user.password } })
+      .post({ body: customerSignin })
       .execute()
       .catch((e) => {
         if (e instanceof Error) {
