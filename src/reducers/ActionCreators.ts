@@ -4,7 +4,7 @@ import { TokenStore } from '@commercetools/sdk-client-v2';
 import { getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import toaster from '../services/toaster';
-import getUserFriedlyAuthErrorMessage from '../utils/getAuthErrorMessage';
+import getAuthErrorMessage from '../utils/getAuthErrorMessage';
 
 const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string }>(
   'auth/loginAnonymous',
@@ -17,7 +17,7 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
       return anonymousId;
     } catch (e) {
       if (e instanceof Error) {
-        const errorMessage = getUserFriedlyAuthErrorMessage(e.message);
+        const errorMessage = getAuthErrorMessage(e.message);
         return rejectWithValue(errorMessage);
       }
       return rejectWithValue('Unknown Error!');
@@ -37,7 +37,7 @@ const loginWithPassword = createAsyncThunk<TokenStore, CustomerSignin, { rejectV
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
-        const errorMessage = getUserFriedlyAuthErrorMessage(e.message);
+        const errorMessage = getAuthErrorMessage(e.message);
         return rejectWithValue(errorMessage);
       }
       return rejectWithValue('Unknown Error!');
@@ -59,7 +59,7 @@ const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
-        const errorMessage = getUserFriedlyAuthErrorMessage(e.message);
+        const errorMessage = getAuthErrorMessage(e.message);
         return rejectWithValue(errorMessage);
       }
       return rejectWithValue('Unknown Error!');

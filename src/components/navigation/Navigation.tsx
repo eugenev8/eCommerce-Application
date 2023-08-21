@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import './Navigation.css';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { AuthStatus, authSlice } from '../../reducers/AuthSlice';
-import toaster from '../../services/toaster';
+import { useAppDispatch } from '../../hooks/redux';
+import { authSlice } from '../../reducers/AuthSlice';
 import useLoginStatus from '../../hooks/useLoginStatus';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
@@ -29,18 +28,13 @@ export function checkActiveLink(isActive: boolean, isPending: boolean) {
 
 type BurgerMenuProps = {
   isMenuShown: boolean;
+  isLoggedIn: boolean;
   closeMenu: () => void;
+  handleLogout: () => void;
 };
 
-function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
+function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: BurgerMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-  const { authStatus } = useAppSelector((store) => store.authReducer);
-  const dispatch = useAppDispatch();
-
-  function handleLogout() {
-    dispatch(authSlice.actions.logout());
-    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
-  }
 
   useEffect(() => {
     function useClickOutside(event: MouseEvent) {
@@ -56,7 +50,7 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
   }, [closeMenu, isMenuShown]);
 
   const renderLoginLinks = () => {
-    if (authStatus !== AuthStatus.TokenFlow) {
+    if (!isLoggedIn) {
       return (
         <>
           <div className="navbar__menuLink">
@@ -109,16 +103,14 @@ function BurgerMenu({ isMenuShown, closeMenu }: BurgerMenuProps) {
 }
 
 export default function Navigation() {
-  const { error } = useAppSelector((store) => store.authReducer);
-
+  const [isMenuShown, setIsMenuShown] = useState(false);
   const isLoggedIn = useLoginStatus();
   const dispatch = useAppDispatch();
 
-  function handleLogout() {
+  const handleLogout = () => {
     dispatch(authSlice.actions.logout());
     localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
-  }
-  const [isMenuShown, setIsMenuShown] = useState(false);
+  };
 
   const handleOnClick = () => {
     setIsMenuShown(!isMenuShown);
@@ -128,14 +120,8 @@ export default function Navigation() {
     setIsMenuShown(false);
   };
 
-  useEffect(() => {
-    if (error !== '') {
-      toaster.showError(error);
-    }
-  }, [error]);
-
   const renderLoginLinks = () => {
-    if (isLoggedIn) {
+    if (!isLoggedIn) {
       return (
         <>
           <div className="navbar__link">
@@ -164,7 +150,7 @@ export default function Navigation() {
   return (
     <nav>
       <BurgerIcon onClick={handleOnClick} />
-      <BurgerMenu isMenuShown={isMenuShown} closeMenu={closeMenu} />
+      <BurgerMenu isMenuShown={isMenuShown} closeMenu={closeMenu} handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
 
       <div className="navbar__block navbar__leftBlock">
         <div className="navbar__link">

@@ -10,11 +10,10 @@ import Button from '../../../ui/buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
 import { useAppDispatch } from '../../../hooks/redux';
 import { loginWithPassword } from '../../../reducers/ActionCreators';
-import toaster from '../../../services/toaster';
 
 const initialValues: CustomerSignin = {
-  email: 'aaabbb@gmail.com',
-  password: 'Aa123456!',
+  email: '',
+  password: '',
 };
 
 const validationSchema = Yup.object({
@@ -66,12 +65,6 @@ function LoginForm() {
           />
         </Form>
       </Formik>
-      <button type="button" onClick={() => toaster.showSuccess('Success!!!!')}>
-        Success
-      </button>
-      <button type="button" onClick={() => toaster.showError('Error!!!!')}>
-        Error
-      </button>
     </div>
   );
 }
