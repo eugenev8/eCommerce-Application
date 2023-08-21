@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ErrorMessage, Field, useField } from 'formik';
+import { Field, useField } from 'formik';
 
 interface PasswordInputProps {
   labelText: string;
@@ -14,9 +14,6 @@ export default function PasswordInput({ labelText, parentClassName, placeholder,
   const [field, meta] = useField(name);
 
   const toggleErrorClass = () => {
-    if (!meta.touched) {
-      return '';
-    }
     if (meta.error) {
       return 'input_error';
     }
@@ -50,7 +47,7 @@ export default function PasswordInput({ labelText, parentClassName, placeholder,
       </div>
 
       <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
-        <ErrorMessage name={id} id={`${id}-error`} />
+        <div id={`${id}-error`}>{meta.error}</div>
       </div>
     </div>
   );

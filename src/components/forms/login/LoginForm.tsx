@@ -40,7 +40,7 @@ function LoginForm() {
       >
         <Form className="loginForm__formContainer">
           <CommonInput
-            type="email"
+            type="text"
             labelText="Email"
             placeholder="Type your email"
             id="email"
