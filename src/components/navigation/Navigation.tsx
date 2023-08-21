@@ -5,6 +5,7 @@ import './Navigation.css';
 import { useAppDispatch } from '../../hooks/redux';
 import { authSlice } from '../../reducers/AuthSlice';
 import useLoginStatus from '../../hooks/useLoginStatus';
+import Button from '../../ui/buttons/Buttons';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -77,9 +78,14 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
 
     return (
       <div className="navbar__menuLink">
-        <button type="button" onClick={handleLogout}>
-          Logout
-        </button>
+        <Button
+          addedClass=""
+          innerText="Logout"
+          styling="secondary"
+          type="button"
+          variant="default"
+          onClick={handleLogout}
+        />
       </div>
     );
   };
@@ -139,11 +145,14 @@ export default function Navigation() {
     }
 
     return (
-      <div className="navbar__link">
-        <button type="button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+      <Button
+        addedClass=""
+        innerText="Logout"
+        styling="secondary"
+        type="button"
+        variant="default"
+        onClick={handleLogout}
+      />
     );
   };
 
