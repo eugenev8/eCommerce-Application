@@ -26,64 +26,34 @@ interface RegisterFormValues {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  billingAddress: {
-    street: string;
-    city: string;
-    postal: string;
-    country: string;
-  };
-  shippingAddress: {
-    street: string;
-    city: string;
-    postal: string;
-    country: string;
-  };
+  shippingAddress: BaseAddress;
+  billingAddress: BaseAddress;
 }
 
-function createCustomerDraft(values: RegisterFormValues) {
-  const shippingAddress: BaseAddress = {
-    country: values.shippingAddress.country,
-    city: values.shippingAddress.city,
-    postalCode: values.shippingAddress.postal,
-    streetName: values.shippingAddress.street,
-  };
-  const billingAddress: BaseAddress = {
-    country: values.billingAddress.country,
-    city: values.billingAddress.city,
-    postalCode: values.billingAddress.postal,
-    streetName: values.billingAddress.street,
-  };
-  const customerDraft: CustomerDraft = {
-    email: values.email,
-    password: values.password,
-    firstName: values.firstName,
-    lastName: values.lastName,
-    dateOfBirth: values.dateOfBirth,
-    addresses: [shippingAddress, billingAddress],
-    defaultShippingAddress: 0,
-    shippingAddresses: [0],
-    defaultBillingAddress: 1,
-    billingAddresses: [1],
-  };
-  return customerDraft;
+interface NewCustomerAddresses {
+  addresses: BaseAddress[];
+  shippingAddresses: number[];
+  billingAddresses: number[];
+  defaultShippingAddress?: number;
+  defaultBillingAddress?: number;
 }
 
 const initialValues: RegisterFormValues = {
-  email: `fgd${Math.random().toFixed(5)}@get.com`, // 'aaabbb@gmail.com',
+  email: `fgd${Math.random().toFixed(5).replace('.', '')}@get.com`, // 'aaabbb@gmail.com',
   password: 'Aa123456!',
   firstName: 'firstName',
   lastName: 'lastName',
   dateOfBirth: '2001-02-02',
   billingAddress: {
-    street: 'street',
+    streetName: 'BillingStreet',
     city: 'city',
-    postal: '12345',
+    postalCode: '12345',
     country: 'US',
   },
   shippingAddress: {
-    street: 'street',
+    streetName: 'ShippingStreet',
     city: 'city',
-    postal: '12345',
+    postalCode: '12345',
     country: 'US',
   },
 };
@@ -103,14 +73,73 @@ const validationSchemaSingleAddress = Yup.object({
   firstName: FirstNameValidation,
   lastName: LastNameValidation,
   dateOfBirth: AgeValidation,
-  billingAddress: AddressValidaiton,
+  shippingAddress: AddressValidaiton,
 });
 
 export default function RegisterForm() {
   const dispatch = useAppDispatch();
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
+  const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
+  const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
 
-  const handleSubmit = async (values: RegisterFormValues) => {
+  function handleChangeDefaultShippingAddress() {
+    if (isBillingEqualShipping) {
+      setIsDefaultBillingAddress(!isDefaultShippingAddress);
+    }
+    setIsDefaultShippingAddress(!isDefaultShippingAddress);
+  }
+
+  function handleSetBillingEqualShipping() {
+    if (!isBillingEqualShipping) {
+      setIsDefaultBillingAddress(isDefaultShippingAddress);
+    }
+    setBillingEqualShipping(!isBillingEqualShipping);
+  }
+
+  function createNewCustomerAddresses(shippingAddress: BaseAddress, billingAddress: BaseAddress) {
+    if (isBillingEqualShipping) {
+      const newCustomerAddresses: NewCustomerAddresses = {
+        addresses: [shippingAddress],
+        shippingAddresses: [0],
+        billingAddresses: [0],
+      };
+      if (isDefaultShippingAddress) {
+        newCustomerAddresses.defaultBillingAddress = 0;
+        newCustomerAddresses.defaultShippingAddress = 0;
+      }
+      return newCustomerAddresses;
+    }
+
+    const newCustomerAddresses: NewCustomerAddresses = {
+      addresses: [shippingAddress, billingAddress],
+      shippingAddresses: [0],
+      billingAddresses: [1],
+    };
+    if (isDefaultShippingAddress) {
+      newCustomerAddresses.defaultShippingAddress = 0;
+    }
+    if (isDefaultBillingAddress) {
+      newCustomerAddresses.defaultBillingAddress = 1;
+    }
+    return newCustomerAddresses;
+  }
+
+  function createCustomerDraft(values: RegisterFormValues) {
+    const newCustomerAddresses = createNewCustomerAddresses(values.shippingAddress, values.billingAddress);
+
+    const customerDraft: CustomerDraft = {
+      email: values.email,
+      password: values.password,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      dateOfBirth: values.dateOfBirth,
+      ...newCustomerAddresses,
+    };
+
+    return customerDraft;
+  }
+
+  const handleSubmit = (values: RegisterFormValues) => {
     const customerDraft = createCustomerDraft(values);
     dispatch(signupCustomer(customerDraft));
   };
@@ -177,14 +206,25 @@ export default function RegisterForm() {
 
           <div className="registerForm__block">
             <div className="registerForm__subBlock">
-              <AddressInputContainer name="billingAddress" heading="Billing address" parentClassName="registerForm" />
+              <AddressInputContainer name="shippingAddress" heading="Shipping address" parentClassName="registerForm" />
+
+              <label className="registerForm__checkboxLabel" htmlFor="defaultShippingAddress">
+                Set as default shipping address
+                <input
+                  id="defaultShippingAddress"
+                  type="checkbox"
+                  checked={isDefaultShippingAddress}
+                  onChange={handleChangeDefaultShippingAddress}
+                />
+              </label>
 
               <label className="registerForm__checkboxLabel" htmlFor="sameAddress">
-                Use same address for shipping
+                Use same address for billing
                 <input
                   id="sameAddress"
                   type="checkbox"
-                  onClick={() => setBillingEqualShipping(!isBillingEqualShipping)}
+                  checked={isBillingEqualShipping}
+                  onChange={handleSetBillingEqualShipping}
                 />
               </label>
             </div>
@@ -192,16 +232,27 @@ export default function RegisterForm() {
               {isBillingEqualShipping ? (
                 <>
                   <div className="registerForm__addressHeading">
-                    <h3>Shipping address</h3>
+                    <h3>Billing address</h3>
                   </div>
-                  <p>Billing address will be used for shipping</p>
+                  <p>Shipping address will be used for billing</p>
                 </>
               ) : (
-                <AddressInputContainer
-                  name="shippingAddress"
-                  heading="Shipping address"
-                  parentClassName="registerForm"
-                />
+                <>
+                  <AddressInputContainer
+                    name="billingAddress"
+                    heading="Billing address"
+                    parentClassName="registerForm"
+                  />
+                  <label className="registerForm__checkboxLabel" htmlFor="defaultShippingAddress">
+                    Set as default billing address
+                    <input
+                      id="defaultBillingAddress"
+                      type="checkbox"
+                      checked={isDefaultBillingAddress}
+                      onChange={() => setIsDefaultBillingAddress(!isDefaultBillingAddress)}
+                    />
+                  </label>
+                </>
               )}
             </div>
           </div>
