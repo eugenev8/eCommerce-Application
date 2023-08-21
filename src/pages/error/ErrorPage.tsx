@@ -1,6 +1,6 @@
 import './ErrorPage.css';
 
-import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { NavLink, isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import Navigation from '../../components/navigation/Navigation';
 
 export default function ErrorPage() {
@@ -14,6 +14,7 @@ export default function ErrorPage() {
           <div id="ErrorPage">
             <h1>Oops!</h1>
             <p>{error.status}: Page not found!</p>
+            <NavLink to="/">Return to main page</NavLink>
           </div>
         </>
       );
@@ -32,6 +33,7 @@ export default function ErrorPage() {
               <i>{error.data.message}</i>
             </p>
           )}
+          <NavLink to="/">Return to main page</NavLink>
         </div>
       </>
     );
@@ -46,6 +48,7 @@ export default function ErrorPage() {
           <p>
             <i>{error.message}</i>
           </p>
+          <NavLink to="/">Return to main page</NavLink>
         </div>
       </>
     );
@@ -54,6 +57,7 @@ export default function ErrorPage() {
     <>
       <Navigation />
       <h1>Unknown Error!</h1>
+      <NavLink to="/">Return to main page</NavLink>
     </>
   );
 }
