@@ -58,9 +58,9 @@ export default function AddressInputContainer({ name, parentClassName, heading }
         <h3>{heading}</h3>
       </div>
       <AddressField
-        id={`${name}.street`}
+        id={`${name}.streetName`}
         labelText="Street"
-        name={`${name}.street`}
+        name={`${name}.streetName`}
         parentClassName={parentClassName}
         placeholder="Type your street"
       />
@@ -72,9 +72,9 @@ export default function AddressInputContainer({ name, parentClassName, heading }
         placeholder="Type your city"
       />
       <AddressField
-        id={`${name}.postal`}
+        id={`${name}.postalCode`}
         labelText="Postal"
-        name={`${name}.postal`}
+        name={`${name}.postalCode`}
         parentClassName={parentClassName}
         placeholder="Type your postal"
       />

@@ -26,18 +26,8 @@ interface RegisterFormValues {
   firstName: string;
   lastName: string;
   dateOfBirth: string;
-  billingAddress: {
-    street: string;
-    city: string;
-    postal: string;
-    country: string;
-  };
-  shippingAddress: {
-    street: string;
-    city: string;
-    postal: string;
-    country: string;
-  };
+  shippingAddress: BaseAddress;
+  billingAddress: BaseAddress;
 }
 
 interface NewCustomerAddresses {
@@ -55,15 +45,15 @@ const initialValues: RegisterFormValues = {
   lastName: 'lastName',
   dateOfBirth: '2001-02-02',
   billingAddress: {
-    street: 'BillingStreet',
+    streetName: 'BillingStreet',
     city: 'city',
-    postal: '12345',
+    postalCode: '12345',
     country: 'US',
   },
   shippingAddress: {
-    street: 'ShippingStreet',
+    streetName: 'ShippingStreet',
     city: 'city',
-    postal: '12345',
+    postalCode: '12345',
     country: 'US',
   },
 };
@@ -93,10 +83,17 @@ export default function RegisterForm() {
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
 
   function handleChangeDefaultShippingAddress() {
-    setIsDefaultShippingAddress(!isDefaultShippingAddress);
     if (isBillingEqualShipping) {
       setIsDefaultBillingAddress(!isDefaultShippingAddress);
     }
+    setIsDefaultShippingAddress(!isDefaultShippingAddress);
+  }
+
+  function handleSetBillingEqualShipping() {
+    if (!isBillingEqualShipping) {
+      setIsDefaultBillingAddress(isDefaultShippingAddress);
+    }
+    setBillingEqualShipping(!isBillingEqualShipping);
   }
 
   function createNewCustomerAddresses(shippingAddress: BaseAddress, billingAddress: BaseAddress) {
@@ -128,19 +125,7 @@ export default function RegisterForm() {
   }
 
   function createCustomerDraft(values: RegisterFormValues) {
-    const shippingAddress: BaseAddress = {
-      country: values.shippingAddress.country,
-      city: values.shippingAddress.city,
-      postalCode: values.shippingAddress.postal,
-      streetName: values.shippingAddress.street,
-    };
-    const billingAddress: BaseAddress = {
-      country: values.billingAddress.country,
-      city: values.billingAddress.city,
-      postalCode: values.billingAddress.postal,
-      streetName: values.billingAddress.street,
-    };
-    const newCustomerAddresses = createNewCustomerAddresses(shippingAddress, billingAddress);
+    const newCustomerAddresses = createNewCustomerAddresses(values.shippingAddress, values.billingAddress);
 
     const customerDraft: CustomerDraft = {
       email: values.email,
@@ -148,13 +133,13 @@ export default function RegisterForm() {
       firstName: values.firstName,
       lastName: values.lastName,
       dateOfBirth: values.dateOfBirth,
+      ...newCustomerAddresses,
     };
-    Object.assign(customerDraft, newCustomerAddresses);
 
     return customerDraft;
   }
 
-  const handleSubmit = async (values: RegisterFormValues) => {
+  const handleSubmit = (values: RegisterFormValues) => {
     const customerDraft = createCustomerDraft(values);
     dispatch(signupCustomer(customerDraft));
   };
@@ -229,7 +214,7 @@ export default function RegisterForm() {
                   id="defaultShippingAddress"
                   type="checkbox"
                   checked={isDefaultShippingAddress}
-                  onChange={() => handleChangeDefaultShippingAddress()}
+                  onChange={handleChangeDefaultShippingAddress}
                 />
               </label>
 
@@ -238,7 +223,8 @@ export default function RegisterForm() {
                 <input
                   id="sameAddress"
                   type="checkbox"
-                  onClick={() => setBillingEqualShipping(!isBillingEqualShipping)}
+                  checked={isBillingEqualShipping}
+                  onChange={handleSetBillingEqualShipping}
                 />
               </label>
             </div>

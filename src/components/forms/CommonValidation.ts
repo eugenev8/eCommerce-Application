@@ -16,7 +16,7 @@ export const EmailValidation = Yup.string()
   .matches(/^[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format or missing domain');
 
 export const AddressValidaiton = Yup.object().shape({
-  street: Yup.string()
+  streetName: Yup.string()
     .min(1, 'Street must contain at least one character')
     .required('Street is required')
     .matches(/^[a-zA-Z\s]*$/, 'Street must not contain special characters or numbers'),
@@ -24,7 +24,7 @@ export const AddressValidaiton = Yup.object().shape({
     .min(1, 'City must contain at least one character')
     .matches(/^[a-zA-Z\s]*$/, 'City must not contain special characters or numbers')
     .required('City is required'),
-  postal: Yup.string()
+  postalCode: Yup.string()
     .test('postalCode', 'Invalid postal code format', function validatePostalCode(value) {
       const { country } = this.parent;
       if (!country) {
