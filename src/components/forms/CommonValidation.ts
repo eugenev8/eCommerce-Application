@@ -26,7 +26,7 @@ export const AddressValidaiton = Yup.object().shape({
   streetName: Yup.string()
     .min(1, 'Street must contain at least one character')
     .required('Street is required')
-    .matches(/^[a-zA-Z\s]*$/, 'Street must not contain special characters or numbers'),
+    .matches(/^[a-zA-Z0-9\s]*$/, 'Street must not contain special characters or numbers'),
   city: Yup.string()
     .min(1, 'City must contain at least one character')
     .matches(/^[a-zA-Z\s]*$/, 'City must not contain special characters or numbers')
@@ -59,12 +59,12 @@ export const AddressValidaiton = Yup.object().shape({
 
 export const FirstNameValidation = Yup.string()
   .min(1, 'First name must contain at least one character')
-  .matches(/^[a-zA-Z]*$/, 'First name must not contain special characters or numbers')
+  .matches(/^[a-zA-Z]+(?:[-\s][a-zA-Z]+)*$/, 'First name must not contain special characters or numbers')
   .required('First name is required');
 
 export const LastNameValidation = Yup.string()
   .min(1, 'Last name must contain at least one character')
-  .matches(/^[a-zA-Z]*$/, 'Last name must not contain special characters or numbers')
+  .matches(/^[a-zA-Z]+(?:[-\s][a-zA-Z]+)*$/, 'Last name must not contain special characters or numbers')
   .required('Last name is required');
 
 export const AgeValidation = Yup.date()
