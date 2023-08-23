@@ -1,4 +1,5 @@
 import { Field, useField } from 'formik';
+import { useState } from 'react';
 import CountryInput from './CountryInput';
 
 interface AddressFieldProps {
@@ -11,12 +12,19 @@ interface AddressFieldProps {
 
 function AddressField({ labelText, parentClassName, placeholder, id, name }: AddressFieldProps) {
   const [field, meta] = useField(name);
+  const [didFocus, setDidFocus] = useState(false);
+
+  const handleFocus = () => setDidFocus(true);
+  const showFeedback = (!!didFocus && field.value.trim().length > 1) || meta.touched;
 
   const toggleErrorClass = () => {
-    if (meta.error) {
-      return 'input_error';
+    if (showFeedback) {
+      if (meta.error) {
+        return 'input_error';
+      }
+      return 'input_valid';
     }
-    return 'input_valid';
+    return '';
   };
 
   return (
@@ -27,6 +35,7 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
       <Field
         onBlur={field.onBlur}
         onChange={field.onChange}
+        onFocus={handleFocus}
         value={field.value}
         placeholder={placeholder}
         type="text"
@@ -36,7 +45,7 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
         className={`${parentClassName}__input ${parentClassName}__${id}Input ${toggleErrorClass()}`}
       />
       <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
-        <div id={`${id}-error`}>{meta.error}</div>
+        <div id={`${id}-error`}>{showFeedback && meta.error}</div>
       </div>
     </>
   );

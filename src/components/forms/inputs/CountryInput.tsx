@@ -1,4 +1,5 @@
 import { Field, useField } from 'formik';
+import { useState } from 'react';
 
 interface CountryInputProps {
   labelText: string;
@@ -46,12 +47,19 @@ function selectionOption({ name, code }: CountryInfo) {
 
 export default function CountryInput({ labelText, parentClassName, placeholder, id, name }: CountryInputProps) {
   const [field, meta] = useField(name);
+  const [didFocus, setDidFocus] = useState(false);
+
+  const handleFocus = () => setDidFocus(true);
+  const showFeedback = (!!didFocus && field.value.trim().length > 1) || meta.touched;
 
   const toggleErrorClass = () => {
-    if (meta.error) {
-      return 'input_error';
+    if (showFeedback) {
+      if (meta.error) {
+        return 'input_error';
+      }
+      return 'input_valid';
     }
-    return 'input_valid';
+    return '';
   };
 
   return (
@@ -63,6 +71,7 @@ export default function CountryInput({ labelText, parentClassName, placeholder, 
         component="select"
         onBlur={field.onBlur}
         onChange={field.onChange}
+        onFocus={handleFocus}
         value={field.value || 'AU'}
         placeholder={placeholder}
         id={id}
@@ -73,7 +82,7 @@ export default function CountryInput({ labelText, parentClassName, placeholder, 
         {Object.keys(Countries).map((countryName) => selectionOption(Countries[countryName]))}
       </Field>
       <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
-        <div id={`${id}-error`}>{meta.error}</div>
+        <div id={`${id}-error`}>{showFeedback && meta.error}</div>
       </div>
     </div>
   );
