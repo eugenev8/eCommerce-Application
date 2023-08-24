@@ -1,9 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CustomerDraft, CustomerSignin } from '@commercetools/platform-sdk';
+import { Customer, CustomerDraft, CustomerSignin } from '@commercetools/platform-sdk';
 import { TokenStore } from '@commercetools/sdk-client-v2';
 import { getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import toaster from '../services/toaster';
+import { customerSlice } from './CustomerSlice';
 import getAuthErrorMessage from '../utils/getAuthErrorMessage';
 
 const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string }>(
@@ -27,13 +28,17 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
 
 const loginWithPassword = createAsyncThunk<TokenStore, CustomerSignin, { rejectValue: string }>(
   'auth/loginWithPassword',
-  async (user, { rejectWithValue }) => {
+  async (user, { rejectWithValue, dispatch }) => {
+    function setCustomer(customer: Customer) {
+      dispatch(customerSlice.actions.initCustomerData(customer));
+    }
     try {
-      const tokenStore = await getCustomerToken(user);
+      const tokenStore = await getCustomerToken(user, setCustomer);
       const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
       localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
       toaster.showSuccess('Login successeful!');
+
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
@@ -47,10 +52,17 @@ const loginWithPassword = createAsyncThunk<TokenStore, CustomerSignin, { rejectV
 
 const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue: string }>(
   'auth/signupCustomer',
-  async (customerDraft, { rejectWithValue }) => {
+  async (customerDraft, { rejectWithValue, dispatch }) => {
+    function setCustomerDataCallback(customer: Customer) {
+      dispatch(customerSlice.actions.initCustomerData(customer));
+    }
+
     try {
       await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
-      const tokenStore = await getCustomerToken({ email: customerDraft.email, password: customerDraft.password! });
+      const tokenStore = await getCustomerToken(
+        { email: customerDraft.email, password: customerDraft.password! },
+        setCustomerDataCallback
+      );
       const apiRoot = getTokenFlowApiRoot(tokenStore.token);
       apiRoots.TokenFlow = apiRoot;
       localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);

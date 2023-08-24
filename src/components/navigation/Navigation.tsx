@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import './Navigation.css';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { authSlice } from '../../reducers/AuthSlice';
 import useLoginStatus from '../../hooks/useLoginStatus';
 import Button from '../../ui/buttons/Buttons';
+import { customerSlice } from '../../reducers/CustomerSlice';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -112,9 +113,11 @@ export default function Navigation() {
   const [isMenuShown, setIsMenuShown] = useState(false);
   const isLoggedIn = useLoginStatus();
   const dispatch = useAppDispatch();
+  const { firstName } = useAppSelector((state) => state.customerReducer);
 
   const handleLogout = () => {
     dispatch(authSlice.actions.logout());
+    dispatch(customerSlice.actions.clearCustomerData());
     localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
   };
 
@@ -168,7 +171,7 @@ export default function Navigation() {
           </NavLink>
         </div>
       </div>
-
+      <p>First name:{firstName || '$$$$$$$$$$'}</p>
       <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
     </nav>
   );

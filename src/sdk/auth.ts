@@ -6,7 +6,7 @@ import {
   TokenStore,
   AuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
-import { CustomerSignin, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
+import { Customer, CustomerSignin, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
 const apiLink = import.meta.env.VITE_SDK_API_LINK;
@@ -74,7 +74,10 @@ function getTokenFlowApiRoot(token: string): ByProjectKeyRequestBuilder {
   return apiRoot;
 }
 
-async function getCustomerToken(customerSignin: CustomerSignin): Promise<TokenStore> {
+async function getCustomerToken(
+  customerSignin: CustomerSignin,
+  setCustomerDataCallback: (customer: Customer) => void
+): Promise<TokenStore> {
   return new Promise<TokenStore>((resolve, reject) => {
     const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
       host: authLink,
@@ -101,6 +104,9 @@ async function getCustomerToken(customerSignin: CustomerSignin): Promise<TokenSt
       .login()
       .post({ body: customerSignin })
       .execute()
+      .then((customerRes) => {
+        setCustomerDataCallback(customerRes.body.customer);
+      })
       .catch((e) => {
         if (e instanceof Error) {
           reject(e);
@@ -111,20 +117,4 @@ async function getCustomerToken(customerSignin: CustomerSignin): Promise<TokenSt
   });
 }
 
-async function checkCustomerToken(token: string) {
-  try {
-    const apiRoot = getTokenFlowApiRoot(token);
-    await apiRoot.me().get().execute();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export {
-  getCredentialsFlowApiRoot,
-  getAnonymousFlowApiRoot,
-  getTokenFlowApiRoot,
-  getCustomerToken,
-  checkCustomerToken,
-};
+export { getCredentialsFlowApiRoot, getAnonymousFlowApiRoot, getTokenFlowApiRoot, getCustomerToken };
