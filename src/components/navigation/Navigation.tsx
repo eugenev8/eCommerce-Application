@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import './Navigation.css';
+import './Navigation.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { authSlice } from '../../reducers/AuthSlice';
 import useLoginStatus from '../../hooks/useLoginStatus';
 import Button from '../../ui/buttons/Buttons';
 import { customerSlice } from '../../reducers/CustomerSlice';
+import Wrapper from '../wrapper/Wrapper';
+import FlexContainer from '../containers/FlexContainer';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -161,18 +163,27 @@ export default function Navigation() {
 
   return (
     <nav>
-      <BurgerIcon onClick={handleOnClick} />
-      <BurgerMenu isMenuShown={isMenuShown} closeMenu={closeMenu} handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
+      <Wrapper>
+        <FlexContainer style={{ gap: '2rem', justifyContent: 'space-between' }}>
+          <BurgerIcon onClick={handleOnClick} />
+          <BurgerMenu
+            isMenuShown={isMenuShown}
+            closeMenu={closeMenu}
+            handleLogout={handleLogout}
+            isLoggedIn={isLoggedIn}
+          />
 
-      <div className="navbar__block navbar__leftBlock">
-        <div className="navbar__link">
-          <NavLink to="/" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
-            Shop
-          </NavLink>
-        </div>
-      </div>
-      <p>First name:{customer?.firstName || '$$$$$$$$$$'}</p>
-      <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
+          <div className="navbar__block navbar__leftBlock">
+            <div className="navbar__link">
+              <NavLink to="/" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
+                Shop
+              </NavLink>
+            </div>
+          </div>
+
+          <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
+        </FlexContainer>
+      </Wrapper>
     </nav>
   );
 }

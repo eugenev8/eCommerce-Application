@@ -1,4 +1,4 @@
-import './ErrorPage.css';
+import './ErrorPage.scss';
 
 import { NavLink, isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import Navigation from '../../components/navigation/Navigation';

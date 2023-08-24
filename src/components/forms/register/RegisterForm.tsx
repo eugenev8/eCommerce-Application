@@ -1,5 +1,5 @@
 import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
-import './RegisterForm.css';
+import './RegisterForm.scss';
 
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';

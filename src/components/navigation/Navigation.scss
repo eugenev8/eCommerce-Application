@@ -1,43 +1,20 @@
 nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
   width: 100%;
   height: 80px;
-
-  border-bottom: 1px solid var(--black);
-
-  background-color: var(--white);
-
-  user-select: none;
-  -webkit-user-select: none;
-
-  z-index: 1;
 }
 
 .navbar__block {
   display: flex;
-
-  height: 100%;
+  justify-content: center;
+  align-items: center;
 }
 
 .navbar__link {
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.navbar__link a {
-  padding: 18% 60px;
-}
-
-.navbar__leftBlock .navbar__link {
-  border-right: 1px solid var(--black);
-}
-
-.navbar__rightBlock .navbar__link {
-  border-left: 1px solid var(--black);
+  height: 100%;
 }
 
 .navbar__link a {
@@ -49,10 +26,6 @@ nav {
   text-decoration: none;
 
   transition: all 0.2s ease;
-}
-
-.navbar__link a.active {
-  color: var(--succeess);
 }
 
 .burgerButton {
