@@ -53,6 +53,7 @@
     "jsdom": "^21.1.0",
     "lint-staged": "^13.2.3",
     "prettier": "^2.7.1",
+    "sass": "^1.66.1",
     "typescript": "^5.0.2",
     "vite": "^4.0.0",
     "vitest": "^0.30.1"

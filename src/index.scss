@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,600;8..144,700&display=swap');
 @import 'normalize.css';
-@import './ui/typography.css';
-@import './ui/inputs.css';
+@import './ui/typography.scss';
+@import './ui/inputs.scss';
 
 body {
   font-family: 'Roboto Flex', sans-serif;

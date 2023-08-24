@@ -1,5 +1,4 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import './LoginForm.css';
+import './LoginForm.scss';
 
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
