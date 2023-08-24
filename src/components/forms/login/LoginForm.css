@@ -1,0 +1,43 @@
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  max-width: 600px;
+
+  border: 1px solid var(--black);
+
+  margin: auto;
+  padding: 2% 10% 3%;
+}
+
+.loginForm__formContainer {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.loginForm__inputContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.loginForm__passwordWrapper {
+  display: flex;
+  flex-wrap: wrap;
+
+  width: 100%;
+}
+
+.loginForm__passwordInput {
+  flex: 1 1 80%;
+}
+
+.loginForm__passwordToggle {
+  flex: 1 1 10px;
+}
+
+.loginForm .loginForm__submitButton {
+  width: 100%;
+}

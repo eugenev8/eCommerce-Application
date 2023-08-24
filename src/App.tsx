@@ -1,7 +1,17 @@
-import './App.css';
+import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Navigation from './components/navigation/Navigation';
+import useToasterErrorMessage from './hooks/useToasterErrorMessage';
 
-function App() {
-  return <h1>Our page</h1>;
+export default function App() {
+  useToasterErrorMessage();
+
+  return (
+    <>
+      <Navigation />
+      <Outlet />
+      <ToastContainer />
+    </>
+  );
 }
-
-export default App;

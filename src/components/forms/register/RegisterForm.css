@@ -1,0 +1,96 @@
+.registerForm {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  max-width: 1000px;
+  width: 90%;
+
+  border: 1px solid var(--black);
+
+  padding: 2% 5% 3%;
+}
+
+.registerForm__formContainer {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.registerForm__block {
+  display: flex;
+  flex-wrap: wrap;
+
+  width: 100%;
+}
+
+.registerForm__subBlock {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1 1 100px;
+  padding: 2% 10%;
+}
+
+.registerForm__inputContainer {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.registerForm__addressContainer {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+}
+
+.registerForm__addressHeading {
+  display: flex;
+
+  height: 6rem;
+}
+
+.registerForm__addressHeading h3 {
+  margin: 0;
+}
+
+.registerForm__checkboxLabel {
+  display: flex;
+  align-items: center;
+
+  height: 3rem;
+
+  gap: 20px;
+}
+
+#sameAddress,
+#defaultShippingAddress,
+#defaultBillingAddress {
+  height: 100%;
+  width: 20px;
+}
+
+.registerForm__passwordWrapper {
+  display: flex;
+  flex-wrap: wrap;
+
+  width: 100%;
+}
+
+.registerForm__passwordInput {
+  flex: 1 1 80%;
+}
+
+.registerForm__passwordToggle {
+  flex: 1 1 10px;
+}
+
+.registerForm__submitButton {
+  width: 80%;
+}
