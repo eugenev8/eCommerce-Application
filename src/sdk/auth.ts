@@ -3,11 +3,11 @@ import {
   HttpMiddlewareOptions,
   PasswordAuthMiddlewareOptions,
   AnonymousAuthMiddlewareOptions,
-  TokenStore,
   AuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 import { CustomerSignin, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
+import { tokenCache } from './tokenStore';
 
 const apiLink = import.meta.env.VITE_SDK_API_LINK;
 const authLink = import.meta.env.VITE_SDK_AUTH_LINK;
@@ -74,57 +74,26 @@ function getTokenFlowApiRoot(token: string): ByProjectKeyRequestBuilder {
   return apiRoot;
 }
 
-async function getCustomerToken(customerSignin: CustomerSignin): Promise<TokenStore> {
-  return new Promise<TokenStore>((resolve, reject) => {
-    const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
-      host: authLink,
-      projectKey,
-      credentials: {
-        clientId,
-        clientSecret,
-        user: { username: customerSignin.email, password: customerSignin.password },
-      },
-      tokenCache: {
-        get: () => ({ token: '', expirationTime: 0 }),
-        set: (data) => resolve(data),
-      },
-      scopes,
-      fetch,
-    };
-    const client = new ClientBuilder()
-      .withHttpMiddleware(httpMiddlewareOptions)
-      .withPasswordFlow(passwordAuthMiddlewareOptions)
-      .build();
-    const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
+async function getCustomerData(customerSignin: CustomerSignin) {
+  const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
+    host: authLink,
+    projectKey,
+    credentials: {
+      clientId,
+      clientSecret,
+      user: { username: customerSignin.email, password: customerSignin.password },
+    },
+    tokenCache,
+    scopes,
+    fetch,
+  };
+  const client = new ClientBuilder()
+    .withHttpMiddleware(httpMiddlewareOptions)
+    .withPasswordFlow(passwordAuthMiddlewareOptions)
+    .build();
+  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 
-    apiRoot
-      .login()
-      .post({ body: customerSignin })
-      .execute()
-      .catch((e) => {
-        if (e instanceof Error) {
-          reject(e);
-        } else {
-          reject(new Error('Unknown error!'));
-        }
-      });
-  });
+  return apiRoot.login().post({ body: customerSignin }).execute();
 }
 
-async function checkCustomerToken(token: string) {
-  try {
-    const apiRoot = getTokenFlowApiRoot(token);
-    await apiRoot.me().get().execute();
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-export {
-  getCredentialsFlowApiRoot,
-  getAnonymousFlowApiRoot,
-  getTokenFlowApiRoot,
-  getCustomerToken,
-  checkCustomerToken,
-};
+export { getCredentialsFlowApiRoot, getAnonymousFlowApiRoot, getTokenFlowApiRoot, getCustomerData };
