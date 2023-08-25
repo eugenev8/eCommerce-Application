@@ -13,15 +13,23 @@ export default function useLoadStateValues() {
       try {
         const customerToken = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
         if (!customerToken) return;
+
+        dispatch(authSlice.actions.isPending());
+
         const apiRoot = getTokenFlowApiRoot(customerToken);
         const customerRes = await apiRoot.me().get().execute();
-        if (customerRes) {
-          apiRoots.TokenFlow = apiRoot;
-          dispatch(authSlice.actions.setLoadedToken(customerToken));
-          dispatch(customerSlice.actions.initCustomerData(customerRes.body));
+
+        apiRoots.TokenFlow = apiRoot;
+        dispatch(authSlice.actions.authSuccess());
+        dispatch(customerSlice.actions.initCustomerData(customerRes.body));
+      } catch (e) {
+        if (e instanceof Error) {
+          if (e.message === 'invalid_token') {
+            localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+          } else {
+            throw e;
+          }
         }
-      } catch {
-        localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
       }
     }
     initState();
