@@ -3,7 +3,7 @@ import { Customer, CustomerDraft, CustomerSignin } from '@commercetools/platform
 import { getCustomerData, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import toaster from '../services/toaster';
-import getAuthErrorMessage from '../utils/getAuthErrorMessage';
+import getErrorMessageForUser from '../utils/getErrorMessageForUser';
 import tokenStore from '../sdk/tokenStore';
 import { authSlice } from './AuthSlice';
 
@@ -20,10 +20,10 @@ const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectVal
       toaster.showSuccess('Login successeful!');
       return customerRes.body.customer;
     } catch (e) {
-      if (e instanceof Error) {
-        return rejectWithValue(getAuthErrorMessage(e.message));
-      }
-      return rejectWithValue('Unknown Error!');
+      const errorMessage =
+        e instanceof Error ? getErrorMessageForUser(e.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -43,10 +43,10 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
       toaster.showSuccess("Registration successful! You're now loggin in!");
       return customerRes.body.customer;
     } catch (e) {
-      if (e instanceof Error) {
-        return rejectWithValue(getAuthErrorMessage(e.message));
-      }
-      return rejectWithValue('Unknown Error!');
+      const errorMessage =
+        e instanceof Error ? getErrorMessageForUser(e.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
     }
   }
 );
