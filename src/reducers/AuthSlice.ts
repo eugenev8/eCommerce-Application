@@ -28,8 +28,8 @@ const authSlice = createSlice({
       state.authStatus = AuthStatus.TokenFlow;
     },
     isPending(state) {
-      state.isLoading = false;
-      state.authStatus = AuthStatus.TokenFlow;
+      state.isLoading = true;
+      state.error = '';
     },
     authError(state, action: PayloadAction<string>) {
       state.isLoading = false;
