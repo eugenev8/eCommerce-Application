@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
-import './Navigation.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { authSlice } from '../../reducers/AuthSlice';
 import useLoginStatus from '../../hooks/useLoginStatus';
-import Button from '../../ui/buttons/Buttons';
-import { customerSlice } from '../../reducers/CustomerSlice';
+import Button from '../buttons/Buttons';
 import Wrapper from '../wrapper/Wrapper';
 import FlexContainer from '../containers/FlexContainer';
+import styles from './Navigation.module.scss';
+import { customerSlice } from '../../reducers/CustomerSlice';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
-    <div className="burgerButton" onClick={onClick} aria-hidden>
+    <div className={`${styles.navbar__burgerButton}`} onClick={onClick} aria-hidden>
       <span />
       <span />
       <span />
@@ -21,13 +21,9 @@ function BurgerIcon({ onClick }: { onClick: () => void }) {
 }
 
 export function checkActiveLink(isActive: boolean, isPending: boolean) {
-  if (isActive) {
-    return 'active';
-  }
-  if (isPending) {
-    return 'pending';
-  }
-  return '';
+  const activeClass = isActive ? styles.active : '';
+  const pendingClass = isPending ? styles.pending : '';
+  return `${activeClass} ${pendingClass}`;
 }
 
 type BurgerMenuProps = {
@@ -57,7 +53,7 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
     if (!isLoggedIn) {
       return (
         <>
-          <div className="navbar__menuLink">
+          <div className={`${styles.navbar__menuLink}`}>
             <NavLink
               to="/login"
               onClick={closeMenu}
@@ -66,7 +62,7 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
               Login
             </NavLink>
           </div>
-          <div className="navbar__menuLink">
+          <div className={`${styles.navbar__menuLink}`}>
             <NavLink
               to="/register"
               onClick={closeMenu}
@@ -80,7 +76,7 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
     }
 
     return (
-      <div className="navbar__menuLink">
+      <div className={`${styles.navbar__menuLink}`}>
         <Button
           addedClass=""
           innerText="Logout"
@@ -94,9 +90,9 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
   };
 
   return (
-    <div className={`navbar__menu ${isMenuShown ? 'navbar__menu_open' : ''}`} ref={menuRef}>
+    <div className={`${styles.navbar__menu} ${isMenuShown ? styles.navbar__menu_open : ''}`} ref={menuRef}>
       <BurgerIcon onClick={closeMenu} />
-      <div className="navbar__menuLink">
+      <div className={`${styles.navbar__menuLink}`}>
         <NavLink
           to="/"
           onClick={closeMenu}
@@ -135,12 +131,12 @@ export default function Navigation() {
     if (!isLoggedIn) {
       return (
         <>
-          <div className="navbar__link">
+          <div className={`${styles.navbar__link}`}>
             <NavLink to="/login" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
               Login
             </NavLink>
           </div>
-          <div className="navbar__link">
+          <div className={`${styles.navbar__link}`}>
             <NavLink to="/register" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
               Sign up
             </NavLink>
@@ -162,7 +158,7 @@ export default function Navigation() {
   };
 
   return (
-    <nav>
+    <nav className={`${styles.navbar}`}>
       <Wrapper>
         <FlexContainer style={{ gap: '2rem', justifyContent: 'space-between' }}>
           <BurgerIcon onClick={handleOnClick} />
@@ -173,15 +169,15 @@ export default function Navigation() {
             isLoggedIn={isLoggedIn}
           />
 
-          <div className="navbar__block navbar__leftBlock">
-            <div className="navbar__link">
+          <div className={`${styles.navbar__block} ${styles.navbar__leftBlock}`}>
+            <div className={`${styles.navbar__link}`}>
               <NavLink to="/" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
                 Shop
               </NavLink>
             </div>
           </div>
 
-          <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
+          <div className={`${styles.navbar__block} ${styles.navbar__rightBlock}`}>{renderLoginLinks()}</div>
         </FlexContainer>
       </Wrapper>
     </nav>

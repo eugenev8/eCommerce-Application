@@ -1,9 +1,9 @@
 import { Field, useField } from 'formik';
 import { useState } from 'react';
+import styles from './inputs.module.scss';
 
 interface CountryInputProps {
   labelText: string;
-  parentClassName: string;
   placeholder: string;
   id: string;
   name: string;
@@ -45,7 +45,7 @@ function selectionOption({ name, code }: CountryInfo) {
   );
 }
 
-export default function CountryInput({ labelText, parentClassName, placeholder, id, name }: CountryInputProps) {
+export default function CountryInput({ labelText, placeholder, id, name }: CountryInputProps) {
   const [field, meta] = useField(name);
   const [didFocus, setDidFocus] = useState(false);
 
@@ -55,16 +55,16 @@ export default function CountryInput({ labelText, parentClassName, placeholder, 
   const toggleErrorClass = () => {
     if (showFeedback) {
       if (meta.error) {
-        return 'input_error';
+        return styles.input_error;
       }
-      return 'input_valid';
+      return styles.input_valid;
     }
     return '';
   };
 
   return (
-    <div className={`${parentClassName}__inputContainer ${parentClassName}__${id}`}>
-      <label className={`${parentClassName}__label`} htmlFor={field.name}>
+    <div className={`${styles.inputContainer} ${styles[`${id}`]}`}>
+      <label className={styles.label} htmlFor={field.name}>
         {labelText}
       </label>
       <Field
@@ -77,11 +77,11 @@ export default function CountryInput({ labelText, parentClassName, placeholder, 
         id={id}
         name={name}
         aria-describedby={`${id}-error`}
-        className={`${parentClassName}__input ${parentClassName}__${id}Input ${toggleErrorClass()}`}
+        className={`${styles.input} ${styles[`${id}Input`]} ${toggleErrorClass()}`}
       >
         {Object.keys(Countries).map((countryName) => selectionOption(Countries[countryName]))}
       </Field>
-      <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
+      <div className={`${styles.input__errorMessage}`}>
         <div id={`${id}-error`}>{showFeedback && meta.error}</div>
       </div>
     </div>

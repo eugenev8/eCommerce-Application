@@ -1,9 +1,9 @@
 import { NavLink } from 'react-router-dom';
-import './MainPage.scss';
+import styles from './MainPage.module.scss';
 
 function MainPage() {
   return (
-    <div id="MainPage">
+    <div className={`${styles.mainPage}`}>
       <h1>Main page</h1>
       <NavLink to="/">Main (you are here)</NavLink>
       <br />
