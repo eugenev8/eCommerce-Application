@@ -11,6 +11,9 @@ import LoginPage from './pages/login/LoginPage';
 import RegisterPage from './pages/register/RegisterPage';
 import ErrorPage from './pages/error/ErrorPage';
 import AuthGuardLoader from './pages/AuthGuardLoader';
+import UserProfile from './pages/user/UserPage';
+import UserDashboard from './pages/user/dashboard/UserDashboard';
+import UserAddresses from './pages/user/adresses/UserAddresses';
 
 const store = setupStore();
 
@@ -18,6 +21,7 @@ const routesPaths = {
   main: '/',
   login: '/login',
   register: '/register',
+  userProfile: '/profile',
 };
 
 const router = createBrowserRouter([
@@ -39,6 +43,20 @@ const router = createBrowserRouter([
         path: routesPaths.register,
         element: <RegisterPage />,
         loader: AuthGuardLoader,
+      },
+      {
+        path: routesPaths.userProfile,
+        element: <UserProfile />,
+        children: [
+          {
+            index: true,
+            element: <UserDashboard />,
+          },
+          {
+            path: 'address',
+            element: <UserAddresses />,
+          },
+        ],
       },
     ],
   },
