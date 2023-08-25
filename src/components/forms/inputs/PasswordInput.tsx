@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Field, useField } from 'formik';
-import styles from './inputs.module.scss';
+import IconVisibility from '../../icons/IconVisibility';
+
+import styles from './PasswordInput.module.scss';
 
 interface PasswordInputProps {
   labelText: string;
@@ -28,11 +30,11 @@ export default function PasswordInput({ labelText, placeholder, id, name }: Pass
   };
 
   return (
-    <div className={`${styles.inputContainer} ${styles[`${id}`]}`}>
+    <div className={`${styles.inputContainer}`}>
       <label className={styles.label} htmlFor={id}>
         {labelText}
       </label>
-      <div className={`${styles.input__passwordWrapper}`}>
+      <div className={`${styles.input__passwordWrapper} ${toggleErrorClass()}`}>
         <Field
           onBlur={field.onBlur}
           onChange={field.onChange}
@@ -43,19 +45,19 @@ export default function PasswordInput({ labelText, placeholder, id, name }: Pass
           id={id}
           name={name}
           aria-describedby={`${id}-error`}
-          className={`${styles.input} ${toggleErrorClass()}`}
+          className={`${styles.input} ${styles.input__passwordInput} `}
         />
         <button
-          className={`${styles.input__passwordToggle}`}
+          className={`${styles.input__passwordToggle} ${showPassword ? styles.input__passwordToggle_toggled : ''}`}
           type="button"
           onClick={() => setShowPassword(!showPassword)}
         >
-          {showPassword ? 'Hide' : 'Show'}
+          <IconVisibility />
         </button>
       </div>
 
       <div className={`${styles.input__errorMessage}`}>
-        <div id={`${id}-error`}>{showFeedback && meta.error}</div>
+        {showFeedback ? <div id={`${id}-error`}>{meta.error}</div> : ''}
       </div>
     </div>
   );

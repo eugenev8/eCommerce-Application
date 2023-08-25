@@ -18,6 +18,7 @@ import {
 import Button from '../../buttons/Buttons';
 import { useAppDispatch } from '../../../hooks/redux';
 import { signupCustomer } from '../../../reducers/ActionCreators';
+import CheckboxInput from '../inputs/CheckboxInput';
 
 interface RegisterFormValues {
   email: string;
@@ -81,19 +82,19 @@ export default function RegisterForm() {
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
 
-  function handleChangeDefaultShippingAddress() {
+  const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
       setIsDefaultBillingAddress(!isDefaultShippingAddress);
     }
     setIsDefaultShippingAddress(!isDefaultShippingAddress);
-  }
+  };
 
-  function handleSetBillingEqualShipping() {
+  const handleSetBillingEqualShipping = () => {
     if (!isBillingEqualShipping) {
       setIsDefaultBillingAddress(isDefaultShippingAddress);
     }
     setBillingEqualShipping(!isBillingEqualShipping);
-  }
+  };
 
   function createNewCustomerAddresses(shippingAddress: BaseAddress, billingAddress: BaseAddress) {
     if (isBillingEqualShipping) {
@@ -153,14 +154,14 @@ export default function RegisterForm() {
         validateOnMount
         onSubmit={handleSubmit}
       >
-        <Form className={`${styles.registerForm}__formContainer`}>
-          <div className={`${styles.registerForm}__block ${styles.registerForm}__userData`}>
-            <div className={`${styles.registerForm}__subBlock`}>
+        <Form className={`${styles.registerForm__formContainer}`}>
+          <div className={`${styles.registerForm__block}`}>
+            <div className={`${styles.registerForm__subBlock}`}>
               <CommonInput type="text" labelText="Email" placeholder="Type your email" id="email" name="email" />
 
               <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
             </div>
-            <div className={`${styles.registerForm}__subBlock`}>
+            <div className={`${styles.registerForm__subBlock}`}>
               <CommonInput
                 id="firstName"
                 labelText="First name"
@@ -187,31 +188,25 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          <div className={`${styles.registerForm}__block`}>
-            <div className={`${styles.registerForm}__subBlock`}>
+          <div className={`${styles.registerForm__block}`}>
+            <div className={`${styles.registerForm__subBlock}`}>
               <AddressInputContainer name="shippingAddress" heading="Shipping address" />
 
-              <label className="registerForm__checkboxLabel" htmlFor="defaultShippingAddress">
-                Set as default shipping address
-                <input
-                  id="defaultShippingAddress"
-                  type="checkbox"
-                  checked={isDefaultShippingAddress}
-                  onChange={handleChangeDefaultShippingAddress}
-                />
-              </label>
+              <CheckboxInput
+                checked={isDefaultShippingAddress}
+                onChange={handleChangeDefaultShippingAddress}
+                labelText="Set as default shipping address"
+                id="defaultShippingAddress"
+              />
 
-              <label className="registerForm__checkboxLabel" htmlFor="sameAddress">
-                Use same address for billing
-                <input
-                  id="sameAddress"
-                  type="checkbox"
-                  checked={isBillingEqualShipping}
-                  onChange={handleSetBillingEqualShipping}
-                />
-              </label>
+              <CheckboxInput
+                checked={isBillingEqualShipping}
+                onChange={handleSetBillingEqualShipping}
+                labelText="Use same address for billing"
+                id="sameAddress"
+              />
             </div>
-            <div className={`${styles.registerForm}__subBlock`}>
+            <div className={`${styles.registerForm__subBlock}`}>
               {isBillingEqualShipping ? (
                 <>
                   <div className="registerForm__addressHeading">
@@ -222,27 +217,18 @@ export default function RegisterForm() {
               ) : (
                 <>
                   <AddressInputContainer name="billingAddress" heading="Billing address" />
-                  <label className="registerForm__checkboxLabel" htmlFor="defaultBillingAddress">
-                    Set as default billing address
-                    <input
-                      id="defaultBillingAddress"
-                      type="checkbox"
-                      checked={isDefaultBillingAddress}
-                      onChange={() => setIsDefaultBillingAddress(!isDefaultBillingAddress)}
-                    />
-                  </label>
+                  <CheckboxInput
+                    checked={isDefaultBillingAddress}
+                    onChange={() => setIsDefaultBillingAddress(!isDefaultBillingAddress)}
+                    labelText="Set as default billing address"
+                    id="defaultBillingAddress"
+                  />
                 </>
               )}
             </div>
           </div>
 
-          <Button
-            innerText="Join us"
-            styling="primary"
-            type="submit"
-            variant="default"
-            addedClass={`${styles.registerForm}__submitButton`}
-          />
+          <Button innerText="Join us" styling="primary" type="submit" variant="default" addedClass="" />
         </Form>
       </Formik>
     </div>
