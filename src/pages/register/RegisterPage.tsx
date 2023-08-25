@@ -5,6 +5,7 @@ import useRedirectIfLoggedIn from '../../hooks/useRedirectIfLoggedIn';
 import styles from './RegisterPage.module.scss';
 import Wrapper from '../../components/wrapper/Wrapper';
 import FlexContainer from '../../components/containers/FlexContainer';
+import ColoredContainer from '../../components/containers/ColoredContainer';
 
 function RegisterPage() {
   useRedirectIfLoggedIn();
@@ -12,8 +13,12 @@ function RegisterPage() {
   return (
     <div className={`${styles.registerPage}`}>
       <Wrapper>
+        <h2>Customer Registration</h2>
         <FlexContainer style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <RegisterForm />
+          <ColoredContainer style={{ width: '90%', margin: '3% auto' }}>
+            <RegisterForm />
+          </ColoredContainer>
+
           <p>Already have an account?</p>
           <NavLink to="/login">Login</NavLink>
         </FlexContainer>

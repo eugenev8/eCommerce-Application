@@ -44,8 +44,8 @@ function AddressField({ labelText, placeholder, id, name }: AddressFieldProps) {
         aria-describedby={`${id}-error`}
         className={`${styles.input} ${toggleErrorClass()}`}
       />
-      <div className={`input__errorMessage ${styles.input__errorMessage}`}>
-        <div id={`${id}-error`}>{showFeedback && meta.error}</div>
+      <div className={`${styles.input__errorMessage}`}>
+        {showFeedback ? <div id={`${id}-error`}>{meta.error}</div> : ''}
       </div>
     </>
   );

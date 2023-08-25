@@ -1,0 +1,17 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  height: auto;
+
+  margin: 3% auto;
+}
+
+.checkbox {
+  height: 20px;
+  width: 20px;
+}

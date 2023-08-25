@@ -31,6 +31,7 @@ function LoginForm() {
   return (
     <div className={styles.loginForm}>
       <h2 className={`${styles.loginForm}__header`}>Greetings! Welcome to shop.</h2>
+      <p>If you have an account, sign in with your email address.</p>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -41,16 +42,10 @@ function LoginForm() {
         <Form className={`${styles.loginForm}__formContainer`}>
           <CommonInput type="text" labelText="Email" placeholder="Type your email" id="email" name="email" />
 
-          <PasswordInput
-            labelText="Password"
-            placeholder="Type your password"
-            id="password"
-            name="password"
-            parentClassName={styles.loginForm}
-          />
+          <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
 
           <Button
-            innerText="Login"
+            innerText="Sign In"
             styling="primary"
             type="submit"
             variant="default"

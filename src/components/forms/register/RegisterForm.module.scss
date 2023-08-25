@@ -6,31 +6,28 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
+  margin: auto;
+
   max-width: 1000px;
-  width: 90%;
-  border: 1px solid $black;
-  padding: 2% 5% 3%;
+}
 
-  &__formContainer {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+.registerForm__formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    &__block {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
+  width: 100%;
+}
+.registerForm__block {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
 
-      &__subBlock {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 100px;
-        padding: 2% 10%;
-      }
-    }
-
-    &__submitButton {
-      width: 80%;
-    }
-  }
+.registerForm__subBlock {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100px;
+  padding: 2% 10%;
 }

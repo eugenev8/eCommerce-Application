@@ -82,7 +82,7 @@ export default function CountryInput({ labelText, placeholder, id, name }: Count
         {Object.keys(Countries).map((countryName) => selectionOption(Countries[countryName]))}
       </Field>
       <div className={`${styles.input__errorMessage}`}>
-        <div id={`${id}-error`}>{showFeedback && meta.error}</div>
+        {showFeedback ? <div id={`${id}-error`}>{meta.error}</div> : ''}
       </div>
     </div>
   );

@@ -160,7 +160,7 @@ export default function Navigation() {
   return (
     <nav className={`${styles.navbar}`}>
       <Wrapper>
-        <FlexContainer style={{ gap: '2rem', justifyContent: 'space-between' }}>
+        <FlexContainer style={{ gap: '2rem', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
           <BurgerIcon onClick={handleOnClick} />
           <BurgerMenu
             isMenuShown={isMenuShown}
@@ -169,7 +169,7 @@ export default function Navigation() {
             isLoggedIn={isLoggedIn}
           />
 
-          <div className={`${styles.navbar__block} ${styles.navbar__leftBlock}`}>
+          <div className={`${styles.navbar__block}`}>
             <div className={`${styles.navbar__link}`}>
               <NavLink to="/" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
                 Shop
@@ -177,7 +177,7 @@ export default function Navigation() {
             </div>
           </div>
 
-          <div className={`${styles.navbar__block} ${styles.navbar__rightBlock}`}>{renderLoginLinks()}</div>
+          <div className={`${styles.navbar__block}`}>{renderLoginLinks()}</div>
         </FlexContainer>
       </Wrapper>
     </nav>
