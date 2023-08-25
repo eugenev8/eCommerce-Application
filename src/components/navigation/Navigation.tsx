@@ -113,7 +113,7 @@ export default function Navigation() {
   const [isMenuShown, setIsMenuShown] = useState(false);
   const isLoggedIn = useLoginStatus();
   const dispatch = useAppDispatch();
-  const { firstName } = useAppSelector((state) => state.customerReducer);
+  const { customer } = useAppSelector((state) => state.customerReducer);
 
   const handleLogout = () => {
     dispatch(authSlice.actions.logout());
@@ -171,7 +171,7 @@ export default function Navigation() {
           </NavLink>
         </div>
       </div>
-      <p>First name:{firstName || '$$$$$$$$$$'}</p>
+      <p>First name:{customer?.firstName || '$$$$$$$$$$'}</p>
       <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
     </nav>
   );

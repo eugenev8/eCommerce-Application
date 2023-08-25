@@ -18,8 +18,7 @@ const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string
       return anonymousId;
     } catch (e) {
       if (e instanceof Error) {
-        const errorMessage = getAuthErrorMessage(e.message);
-        return rejectWithValue(errorMessage);
+        return rejectWithValue(getAuthErrorMessage(e.message));
       }
       return rejectWithValue('Unknown Error!');
     }
@@ -42,8 +41,7 @@ const loginWithPassword = createAsyncThunk<TokenStore, CustomerSignin, { rejectV
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
-        const errorMessage = getAuthErrorMessage(e.message);
-        return rejectWithValue(errorMessage);
+        return rejectWithValue(getAuthErrorMessage(e.message));
       }
       return rejectWithValue('Unknown Error!');
     }
@@ -71,8 +69,7 @@ const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue
       return tokenStore;
     } catch (e) {
       if (e instanceof Error) {
-        const errorMessage = getAuthErrorMessage(e.message);
-        return rejectWithValue(errorMessage);
+        return rejectWithValue(getAuthErrorMessage(e.message));
       }
       return rejectWithValue('Unknown Error!');
     }

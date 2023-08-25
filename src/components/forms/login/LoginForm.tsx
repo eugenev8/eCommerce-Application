@@ -25,7 +25,7 @@ function LoginForm() {
   const dispatch = useAppDispatch();
 
   const handleSubmit = (values: CustomerSignin) => {
-    dispatch(loginWithPassword({ email: values.email, password: values.password }));
+    dispatch(loginWithPassword(values));
   };
 
   return (
