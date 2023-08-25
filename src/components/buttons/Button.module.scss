@@ -1,0 +1,73 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 56px;
+  min-width: 175px;
+  width: max-content;
+
+  margin: auto;
+  padding: 16px 24px 14px;
+
+  box-sizing: border-box;
+
+  cursor: pointer;
+
+  transition: all 250ms ease;
+
+  @media screen and (max-width: 720px) {
+    height: 48px;
+  }
+
+  &.button_primary {
+    background-color: $black;
+    color: $white;
+    border: 0;
+
+    &:hover {
+      background-color: $dark-gray;
+    }
+
+    &:disabled {
+      background-color: $light-gray;
+      color: $gray;
+    }
+  }
+
+  &.button_secondary {
+    background-color: $white;
+    color: $black;
+    border: 1px solid $black;
+
+    &:hover {
+      background-color: $black;
+      color: $white;
+    }
+
+    &:disabled {
+      background-color: $white;
+      color: $gray;
+      border: 1px solid $light-gray;
+    }
+  }
+
+  &.button_tertiary {
+    background-color: transparent;
+    color: $white;
+    border: 1px solid $white;
+
+    &:hover {
+      background-color: $white;
+      color: $black;
+    }
+
+    &:disabled {
+      background-color: transparent;
+      color: $gray;
+      border: 1px solid $light-gray;
+    }
+  }
+}

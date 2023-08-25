@@ -1,10 +1,9 @@
-import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
-import './RegisterForm.scss';
-
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 
+import styles from './RegisterForm.module.scss'; // Import the module SCSS styles
 import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
 import AddressInputContainer from '../inputs/AddressInput';
@@ -16,7 +15,7 @@ import {
   LastNameValidation,
   PasswordValidation,
 } from '../CommonValidation';
-import Button from '../../../ui/buttons/Buttons';
+import Button from '../../buttons/Buttons';
 import { useAppDispatch } from '../../../hooks/redux';
 import { signupCustomer } from '../../../reducers/ActionCreators';
 
@@ -145,8 +144,8 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="registerForm">
-      <h2 className="registerForm__header">Sign up</h2>
+    <div className={styles.registerForm}>
+      <h2 className={`${styles.registerForm}__header`}>Sign up</h2>
       <Formik
         initialValues={initialValues}
         validationSchema={isBillingEqualShipping ? validationSchemaSingleAddress : validationSchema}
@@ -154,34 +153,20 @@ export default function RegisterForm() {
         validateOnMount
         onSubmit={handleSubmit}
       >
-        <Form className="registerForm__formContainer">
-          <div className="registerForm__block registerForm__userData">
-            <div className="registerForm__subBlock">
-              <CommonInput
-                type="text"
-                labelText="Email"
-                placeholder="Type your email"
-                id="email"
-                name="email"
-                parentClassName="registerForm"
-              />
+        <Form className={`${styles.registerForm}__formContainer`}>
+          <div className={`${styles.registerForm}__block ${styles.registerForm}__userData`}>
+            <div className={`${styles.registerForm}__subBlock`}>
+              <CommonInput type="text" labelText="Email" placeholder="Type your email" id="email" name="email" />
 
-              <PasswordInput
-                labelText="Password"
-                placeholder="Type your password"
-                id="password"
-                name="password"
-                parentClassName="registerForm"
-              />
+              <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
             </div>
-            <div className="registerForm__subBlock">
+            <div className={`${styles.registerForm}__subBlock`}>
               <CommonInput
                 id="firstName"
                 labelText="First name"
                 name="firstName"
                 placeholder="Type your first name"
                 type="text"
-                parentClassName="registerForm"
               />
 
               <CommonInput
@@ -190,7 +175,6 @@ export default function RegisterForm() {
                 name="lastName"
                 placeholder="Type your last name"
                 type="text"
-                parentClassName="registerForm"
               />
 
               <CommonInput
@@ -199,14 +183,13 @@ export default function RegisterForm() {
                 labelText="Date of birth"
                 name="dateOfBirth"
                 placeholder="Type your date of birth"
-                parentClassName="registerForm"
               />
             </div>
           </div>
 
-          <div className="registerForm__block">
-            <div className="registerForm__subBlock">
-              <AddressInputContainer name="shippingAddress" heading="Shipping address" parentClassName="registerForm" />
+          <div className={`${styles.registerForm}__block`}>
+            <div className={`${styles.registerForm}__subBlock`}>
+              <AddressInputContainer name="shippingAddress" heading="Shipping address" />
 
               <label className="registerForm__checkboxLabel" htmlFor="defaultShippingAddress">
                 Set as default shipping address
@@ -228,7 +211,7 @@ export default function RegisterForm() {
                 />
               </label>
             </div>
-            <div className="registerForm__subBlock">
+            <div className={`${styles.registerForm}__subBlock`}>
               {isBillingEqualShipping ? (
                 <>
                   <div className="registerForm__addressHeading">
@@ -238,11 +221,7 @@ export default function RegisterForm() {
                 </>
               ) : (
                 <>
-                  <AddressInputContainer
-                    name="billingAddress"
-                    heading="Billing address"
-                    parentClassName="registerForm"
-                  />
+                  <AddressInputContainer name="billingAddress" heading="Billing address" />
                   <label className="registerForm__checkboxLabel" htmlFor="defaultBillingAddress">
                     Set as default billing address
                     <input
@@ -262,7 +241,7 @@ export default function RegisterForm() {
             styling="primary"
             type="submit"
             variant="default"
-            addedClass="registerForm__submitButton"
+            addedClass={`${styles.registerForm}__submitButton`}
           />
         </Form>
       </Formik>

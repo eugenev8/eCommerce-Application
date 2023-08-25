@@ -1,16 +1,16 @@
 import { Field, useField } from 'formik';
 import { useState } from 'react';
+import styles from './inputs.module.scss';
 
 interface CommonInputProps {
   labelText: string;
-  parentClassName: string;
   placeholder: string;
   type: string;
   id: string;
   name: string;
 }
 
-export default function CommonInput({ labelText, parentClassName, type, placeholder, id, name }: CommonInputProps) {
+export default function CommonInput({ labelText, type, placeholder, id, name }: CommonInputProps) {
   const [field, meta] = useField(name);
   const [didFocus, setDidFocus] = useState(false);
 
@@ -20,16 +20,16 @@ export default function CommonInput({ labelText, parentClassName, type, placehol
   const toggleErrorClass = () => {
     if (showFeedback) {
       if (meta.error) {
-        return 'input_error';
+        return styles.input_error;
       }
-      return 'input_valid';
+      return styles.input_valid;
     }
     return '';
   };
 
   return (
-    <div className={`${parentClassName}__inputContainer ${parentClassName}__${id}`}>
-      <label className={`${parentClassName}__label`} htmlFor={id}>
+    <div className={styles.inputContainer}>
+      <label className={styles.label} htmlFor={id}>
         {labelText}
       </label>
       <Field
@@ -42,9 +42,9 @@ export default function CommonInput({ labelText, parentClassName, type, placehol
         id={id}
         name={name}
         aria-describedby={`${id}-error`}
-        className={`${parentClassName}__input ${parentClassName}__${id}Input ${toggleErrorClass()}`}
+        className={`${styles.input} ${toggleErrorClass()}`}
       />
-      <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
+      <div className={styles.input__errorMessage}>
         <div id={`${id}-error`}>{showFeedback && meta.error}</div>
       </div>
     </div>

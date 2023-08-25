@@ -1,0 +1,106 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.label {
+  padding: 12px 0;
+  font-weight: 500;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  box-sizing: border-box;
+  border: 1px solid $light-gray;
+  color: $gray;
+  padding: 20px 16px;
+  transition: all 250ms ease;
+  outline: none;
+
+  &:hover {
+    border: 1px solid $gray;
+  }
+
+  &:focus-visible {
+    border: 1px solid $black;
+    color: $black;
+  }
+
+  &.input_valid {
+    border: 1px solid $success;
+    color: $success;
+  }
+
+  &.input_error {
+    border: 1px solid $error;
+    color: $error;
+
+    &::placeholder {
+      color: $error;
+    }
+  }
+}
+
+.input__passwordToggle {
+  box-sizing: border-box;
+  cursor: pointer;
+  background-color: $white;
+  border: 1px solid $gray;
+  transition: all 250ms ease;
+
+  &:hover {
+    background-color: $extra-light;
+  }
+}
+
+.input__errorMessage {
+  display: block;
+  font-weight: 500;
+  color: $error;
+  padding: 3% 2%;
+  opacity: 1;
+  min-height: 1.2rem;
+  max-height: auto;
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+
+  &:empty {
+    opacity: 0;
+  }
+}
+.input__addressContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  &__addressHeading {
+    display: flex;
+    height: 6rem;
+
+    & h3 {
+      margin: 0;
+    }
+  }
+}
+
+.input__checkboxLabel {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  gap: 20px;
+}
+
+.input__passwordWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+
+  &__passwordInput {
+    flex: 1 1 80%;
+  }
+
+  &__passwordToggle {
+    flex: 1 1 10px;
+  }
+}

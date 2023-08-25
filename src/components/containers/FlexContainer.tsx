@@ -1,6 +1,5 @@
 import React from 'react';
-
-import './FlexContainer.scss';
+import styles from './FlexContainer.module.scss';
 
 interface ContainerProps extends React.ComponentProps<'div'> {
   style?: React.CSSProperties;
@@ -8,7 +7,7 @@ interface ContainerProps extends React.ComponentProps<'div'> {
 
 export default function FlexContainer({ children, style }: ContainerProps) {
   return (
-    <div className="d-flex" style={style}>
+    <div className={styles['d-flex']} style={style}>
       {children}
     </div>
   );

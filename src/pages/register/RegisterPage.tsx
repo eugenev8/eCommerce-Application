@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import RegisterForm from '../../components/forms/register/RegisterForm';
 import useRedirectIfLoggedIn from '../../hooks/useRedirectIfLoggedIn';
 
-import './RegisterPage.scss';
+import styles from './RegisterPage.module.scss';
 import Wrapper from '../../components/wrapper/Wrapper';
 import FlexContainer from '../../components/containers/FlexContainer';
 
@@ -10,7 +10,7 @@ function RegisterPage() {
   useRedirectIfLoggedIn();
 
   return (
-    <div className="registerPage">
+    <div className={`${styles.registerPage}`}>
       <Wrapper>
         <FlexContainer style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <RegisterForm />
