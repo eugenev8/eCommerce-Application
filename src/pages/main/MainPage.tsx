@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import styles from './MainPage.module.scss';
+import TempComponent from './TempComponent';
 
 function MainPage() {
   return (
@@ -10,6 +11,7 @@ function MainPage() {
       <NavLink to="/login">Login</NavLink>
       <br />
       <NavLink to="/register">Sign up</NavLink>
+      <TempComponent />
     </div>
   );
 }

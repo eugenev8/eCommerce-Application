@@ -10,7 +10,11 @@ const errorMessages: ErrorMessage[] = [
   },
   {
     serverMessage: 'There is already an existing customer with the provided email.',
-    userMessage: 'Account with this email already exists. Please log in or try an another email!',
+    userMessage: 'Account with this email already exists. Please try an another email!',
+  },
+  {
+    serverMessage: 'The given current password does not match.',
+    userMessage: 'The given current password does not match!',
   },
 ];
 
