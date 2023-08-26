@@ -2,3 +2,12 @@
 
 @import 'normalize.css';
 @import './common/styles/typography.scss';
+
+html {
+  box-sizing: border-box;
+}
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
