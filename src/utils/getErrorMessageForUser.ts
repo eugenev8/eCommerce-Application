@@ -16,11 +16,14 @@ const errorMessages: ErrorMessage[] = [
     serverMessage: 'The given current password does not match.',
     userMessage: 'The given current password does not match!',
   },
+  {
+    serverMessage: 'Failed to fetch',
+    userMessage: 'Problems with network! Check the connection.',
+  },
 ];
 
 function getErrorMessageForUser(serverMessage: string) {
   const errorMessage = errorMessages.find((error) => error.serverMessage === serverMessage);
-
   return errorMessage?.userMessage || 'Sorry! Unknown error!';
 }
 

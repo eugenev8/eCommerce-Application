@@ -6,10 +6,12 @@ import CommonInput from '../inputs/CommonInput';
 import { EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
+import { useAppDispatch } from '../../../hooks/redux';
+import { updateCustomerPersonalData } from '../../../reducers/ActionCreators';
 
 interface EditCustomerFormProps {
   customer: Customer;
-  onSave: (updatedCustomer: MyCustomerUpdate) => void;
+  onSave: (isUpdated: boolean) => void;
 }
 
 const validationSchema = Yup.object({
@@ -19,6 +21,8 @@ const validationSchema = Yup.object({
 });
 
 export default function EditCustomerSmallForm({ customer, onSave }: EditCustomerFormProps) {
+  const dispatch = useAppDispatch();
+
   const initialValues = {
     firstName: customer.firstName,
     lastName: customer.lastName,
@@ -58,8 +62,15 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
 
   const handleSubmit = (values: Pick<Customer, 'firstName' | 'lastName' | 'email' | 'dateOfBirth'>) => {
     const updates = createMyCustomerUpdate(values);
-
-    onSave(updates);
+    if (!updates.actions.length) return; // show "no changes"
+    dispatch(updateCustomerPersonalData(updates)).then((payloadAction) => {
+      if (payloadAction.type.includes('rejected')) {
+        // show error on the form
+        onSave(false);
+      } else {
+        onSave(true);
+      }
+    });
   };
 
   return (

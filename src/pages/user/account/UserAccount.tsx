@@ -4,24 +4,19 @@ import { useState } from 'react';
 import { Customer } from '@commercetools/platform-sdk';
 
 import FlexContainer from '../../../components/containers/FlexContainer';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useAppSelector } from '../../../hooks/redux';
 
 import styles from './UserAccount.module.scss';
 import Button from '../../../components/buttons/Buttons';
 import UserContactInfo from '../../../components/userInfo/contacts/UserContacts';
 import EditCustomerSmallForm from '../../../components/forms/edit/EditCustomerForm';
 import EditPasswordForm from '../../../components/forms/edit/EditPasswordForm';
-import EditDateForm from '../../../components/forms/edit/EditDateForm';
-import { updateCustomerPersonalData } from '../../../reducers/ActionCreators';
 
 export default function UserAccount() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedPassword, setSelectedPassword] = useState<true | null>(null);
-  const [selectedDate, setSelectedDate] = useState<true | null>(null);
-
-  const dispatch = useAppDispatch();
 
   if (!customer) {
     return <h2>No customer</h2>;
@@ -36,15 +31,10 @@ export default function UserAccount() {
     setSelectedPassword(true);
     setIsModalOpen(true);
   };
-  // const handleEditDate = () => {
-  //   setSelectedDate(true);
-  //   setIsModalOpen(true);
-  // };
 
   const handleModalClose = () => {
     setSelectedPassword(null);
     setSelectedCustomer(null);
-    setSelectedDate(null);
 
     setIsModalOpen(false);
   };
@@ -69,12 +59,6 @@ export default function UserAccount() {
 
         <h3 className={`${styles['block-heading']}`}>Other info</h3>
 
-        {/* <h4>Date of birth</h4>
-        {customer.dateOfBirth && <p>{new Date(customer.dateOfBirth).toLocaleDateString()}</p>}
-        <button type="button" className={`${styles.fakeLink}`} onClick={handleEditDate}>
-          Change date of birth
-        </button> */}
-
         <h4>Created account date</h4>
         {customer.createdAt && <p>{new Date(customer.createdAt).toLocaleDateString()}</p>}
 
@@ -91,11 +75,8 @@ export default function UserAccount() {
           {selectedCustomer && (
             <EditCustomerSmallForm
               customer={customer}
-              onSave={(updatedCustomerData) => {
-                // alert(JSON.stringify({ updatedCustomerData }, null, 2));
-
-                dispatch(updateCustomerPersonalData(updatedCustomerData)).then(handleModalClose);
-                // Close the modal after successful update
+              onSave={(isUpdated) => {
+                if (isUpdated) handleModalClose();
               }}
             />
           )}
@@ -105,22 +86,7 @@ export default function UserAccount() {
               email={customer.email}
               version={customer.version}
               onSave={(isUpdated) => {
-                // alert(`isUpdated: ${isUpdated}`);
-
                 if (isUpdated) handleModalClose();
-                // Close the modal after successful update
-              }}
-            />
-          )}
-
-          {selectedDate && (
-            <EditDateForm
-              date={customer.dateOfBirth!}
-              onSave={(isUpdated) => {
-                alert(`isUpdated: ${isUpdated}`);
-                // Handle address update here
-                // Close the modal after successful update
-                handleModalClose();
               }}
             />
           )}
