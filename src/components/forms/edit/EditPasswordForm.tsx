@@ -4,9 +4,13 @@ import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
 import PasswordInput from '../inputs/PasswordInput';
+import { useAppDispatch } from '../../../hooks/redux';
+import { changeCustomerPassword } from '../../../reducers/ActionCreators';
 
 interface EditEmailFormProps {
   onSave: (updatedPassword: boolean) => void;
+  email: string;
+  version: number;
 }
 
 const validationSchema = Yup.object({
@@ -17,19 +21,26 @@ const validationSchema = Yup.object({
     .required('Required'),
 });
 
-export default function EditPasswordForm({ onSave }: EditEmailFormProps) {
+export default function EditPasswordForm({ onSave, email, version }: EditEmailFormProps) {
   const initialValues = {
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
   };
 
+  const dispatch = useAppDispatch();
+
   const handleSubmit = (values: typeof initialValues) => {
-    alert(JSON.stringify(values, null, 2));
-
-    const isUpdated = true;
-
-    onSave(isUpdated);
+    dispatch(
+      changeCustomerPassword({ currentPassword: values.oldPassword, newPassword: values.newPassword, version, email })
+    ).then((payloadAction) => {
+      if (payloadAction.type.includes('rejected')) {
+        // show error on the form
+        onSave(false);
+      } else {
+        onSave(true);
+      }
+    });
   };
 
   return (
