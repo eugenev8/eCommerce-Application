@@ -30,7 +30,7 @@ function LoginForm() {
 
   return (
     <div className={styles.loginForm}>
-      <h2 className={`${styles.loginForm}__header`}>Greetings! Welcome to shop.</h2>
+      <h2>Greetings! Welcome to shop.</h2>
       <p>If you have an account, sign in with your email address.</p>
       <Formik
         initialValues={initialValues}
@@ -39,18 +39,12 @@ function LoginForm() {
         validateOnMount
         onSubmit={handleSubmit}
       >
-        <Form className={`${styles.loginForm}__formContainer`}>
+        <Form className={`${styles.loginForm__formContainer}`}>
           <CommonInput type="text" labelText="Email" placeholder="Type your email" id="email" name="email" />
 
           <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
 
-          <Button
-            innerText="Sign In"
-            styling="primary"
-            type="submit"
-            variant="default"
-            addedClass={`${styles.loginForm}__submitButton`}
-          />
+          <Button innerText="Sign In" styling="primary" type="submit" variant="default" addedClass="" />
         </Form>
       </Formik>
     </div>
