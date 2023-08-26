@@ -7,9 +7,13 @@
 }
 
 .fakeLink {
+  all: unset;
+
   text-decoration: underline;
 
   color: $color-3;
 
   cursor: pointer;
+
+  margin: 10px 0;
 }

@@ -1,5 +1,4 @@
 import { NavLink, isRouteErrorResponse, useRouteError } from 'react-router-dom';
-import Navigation from '../../components/navigation/Navigation';
 import styles from './ErrorPage.module.scss';
 
 function generateErrorContent(error: unknown) {
@@ -31,10 +30,5 @@ function generateErrorContent(error: unknown) {
 export default function ErrorPage() {
   const error = useRouteError();
 
-  return (
-    <>
-      <Navigation />
-      {generateErrorContent(error)}
-    </>
-  );
+  return <>{generateErrorContent(error)}</>;
 }

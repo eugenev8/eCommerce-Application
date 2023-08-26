@@ -4,6 +4,8 @@ import FlexContainer from '../../components/containers/FlexContainer';
 import Wrapper from '../../components/wrapper/Wrapper';
 import { useAppSelector } from '../../hooks/redux';
 
+import styles from './UserPage.module.scss';
+
 function UserProfile() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const userAccountInfo = useAppSelector((state) => state.authReducer);
@@ -19,7 +21,7 @@ function UserProfile() {
       <Wrapper>
         <h2>Hello, {customer.firstName}</h2>
         <FlexContainer style={{ gap: '10%', flexWrap: 'wrap' }}>
-          <ColoredContainer>
+          <ColoredContainer className={`${styles.userPage__menu}`}>
             <FlexContainer style={{ flexDirection: 'column', gap: '2rem' }}>
               <NavLink to="">Account Dashboard</NavLink>
               <NavLink to="address">Address Book</NavLink>

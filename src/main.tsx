@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, NavLink, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import './index.scss';
@@ -29,6 +29,9 @@ const router = createBrowserRouter([
     path: routesPaths.main,
     element: <App />,
     errorElement: <ErrorPage />,
+    handle: {
+      crumb: () => <NavLink to="/">Home</NavLink>,
+    },
     children: [
       {
         index: true,
@@ -38,15 +41,24 @@ const router = createBrowserRouter([
         path: routesPaths.login,
         element: <LoginPage />,
         loader: AuthGuardLoader,
+        handle: {
+          crumb: () => <NavLink to={routesPaths.login}>Login</NavLink>,
+        },
       },
       {
         path: routesPaths.register,
         element: <RegisterPage />,
         loader: AuthGuardLoader,
+        handle: {
+          crumb: () => <NavLink to={routesPaths.register}>Register</NavLink>,
+        },
       },
       {
         path: routesPaths.userProfile,
         element: <UserProfile />,
+        handle: {
+          crumb: () => <NavLink to={routesPaths.userProfile}>Profile</NavLink>,
+        },
         children: [
           {
             index: true,

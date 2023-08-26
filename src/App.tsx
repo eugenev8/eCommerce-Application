@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navigation from './components/navigation/Navigation';
 import useToasterErrorMessage from './hooks/useToasterErrorMessage';
 import useLoadStateValues from './hooks/useLoadStateValues';
+import Breadcrumbs from './components/breadcrumbs/Breadcrumbs';
 
 export default function App() {
   useToasterErrorMessage();
@@ -12,6 +13,7 @@ export default function App() {
   return (
     <>
       <Navigation />
+      <Breadcrumbs />
       <Outlet />
       <ToastContainer />
     </>

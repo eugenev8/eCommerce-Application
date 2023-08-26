@@ -7,7 +7,7 @@ interface AddressContactInfoProps {
 
 export default function UserAddressInfo({ address }: AddressContactInfoProps) {
   if (!address) {
-    return <p>You have not set a default billing address.</p>;
+    return <p>You have not set this address.</p>;
   }
 
   return (
