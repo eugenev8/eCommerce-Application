@@ -1,13 +1,5 @@
 @use './common/styles/colors.module.scss';
 
 @import 'normalize.css';
+@import './common/styles/base.scss';
 @import './common/styles/typography.scss';
-
-html {
-  box-sizing: border-box;
-}
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
