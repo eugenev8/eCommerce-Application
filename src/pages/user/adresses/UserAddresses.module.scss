@@ -1,0 +1,19 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.block-heading {
+  padding: 0 0 14px;
+
+  border-bottom: 1px solid $color-6;
+}
+
+.fakeLink {
+  all: unset;
+
+  text-decoration: underline;
+
+  color: $color-3;
+
+  cursor: pointer;
+
+  margin: 10px 0;
+}

@@ -1,0 +1,23 @@
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
+.ReactModal__Content {
+  width: fit-content;
+  height: 90% !important;
+
+  inset: 50% 50% -30% !important;
+
+  transform: translate(-50%, -50%);
+
+  padding: 2% 5% !important;
+}
