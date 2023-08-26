@@ -9,6 +9,7 @@ import { useAppSelector } from '../../../hooks/redux';
 
 import styles from './UserAddresses.module.scss';
 import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
+import Button from '../../../components/buttons/Buttons';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,
@@ -125,17 +126,29 @@ export default function UserAddresses() {
         appElement={document.getElementById('root') || undefined}
         closeTimeoutMS={200}
       >
-        {selectedAddress && (
-          <EditAddressForm
-            address={selectedAddress}
-            onSave={(updatedValues) => {
-              alert(JSON.stringify({ ...selectedAddress, ...updatedValues }, null, 2));
-              // Handle address update here
-              // Close the modal after successful update
-              handleModalClose();
-            }}
+        <FlexContainer style={{ flexDirection: 'column', gap: '20px' }}>
+          {selectedAddress && (
+            <EditAddressForm
+              address={selectedAddress}
+              onSave={(updatedValues) => {
+                alert(JSON.stringify({ ...selectedAddress, ...updatedValues }, null, 2));
+                // Handle address update here
+                // Close the modal after successful update
+                handleModalClose();
+              }}
+            />
+          )}
+
+          <Button
+            onClick={handleModalClose}
+            innerText="Cancel"
+            styling="secondary"
+            type="button"
+            variant="default"
+            addedClass=""
+            style={{ margin: 'auto' }}
           />
-        )}
+        </FlexContainer>
       </Modal>
     </>
   );

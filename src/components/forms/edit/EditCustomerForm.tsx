@@ -60,7 +60,14 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
           />
           <CommonInput id="email" labelText="Email" name="email" placeholder="Type your email" type="text" />
 
-          <Button type="submit" innerText="Update" styling="primary" variant="default" addedClass="" />
+          <Button
+            type="submit"
+            innerText="Update"
+            styling="primary"
+            variant="default"
+            addedClass=""
+            style={{ margin: 'auto' }}
+          />
         </Form>
       </Formik>
     </FlexContainer>

@@ -5,6 +5,7 @@ import CommonInput from '../inputs/CommonInput';
 import { AddressValidaiton } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
+import CountryInput from '../inputs/CountryInput';
 
 interface EditAddressFormProps {
   address: Address;
@@ -55,9 +56,16 @@ export default function EditAddressForm({ address, onSave }: EditAddressFormProp
             placeholder="Type your postal code"
             type="text"
           />
-          <CommonInput id="country" labelText="Country" name="country" placeholder="Type your country" type="text" />
+          <CountryInput id="country" labelText="Country" name="country" placeholder="Type your country" />
 
-          <Button type="submit" innerText="Update address" styling="primary" variant="default" addedClass="" />
+          <Button
+            type="submit"
+            innerText="Update address"
+            styling="primary"
+            variant="default"
+            addedClass=""
+            style={{ margin: 'auto' }}
+          />
         </Form>
       </Formik>
     </FlexContainer>

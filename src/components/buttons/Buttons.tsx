@@ -12,11 +12,13 @@ interface ButtonProps extends React.ComponentProps<'button'> {
   innerText: string;
   addedClass: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  style?: React.CSSProperties;
 }
 
-function Button({ type, styling, variant, innerText, addedClass, onClick }: ButtonProps) {
+function Button({ type, styling, variant, innerText, addedClass, onClick, style }: ButtonProps) {
   return (
     <button
+      style={style}
       className={`${styles.button} ${styles[`button_${styling}`]} ${addedClass}`}
       type={type === 'button' ? 'button' : 'submit'}
       onClick={onClick}
@@ -30,6 +32,7 @@ function Button({ type, styling, variant, innerText, addedClass, onClick }: Butt
 
 Button.defaultProps = {
   onClick: undefined,
+  style: undefined,
 };
 
 export default Button;

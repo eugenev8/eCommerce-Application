@@ -1,35 +1,31 @@
-import { Address, Customer } from '@commercetools/platform-sdk';
+import Modal from 'react-modal';
 import { useState } from 'react';
-import FlexContainer from '../../../components/containers/FlexContainer';
-import UserContactInfo from '../../../components/userInfo/contacts/UserContacts';
-import { useAppSelector } from '../../../hooks/redux';
-import { DefaultAddresses } from '../adresses/UserAddresses';
 
-import styles from './UserDashboard.module.scss';
-import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
+import { Customer } from '@commercetools/platform-sdk';
+
+import FlexContainer from '../../../components/containers/FlexContainer';
+import { useAppSelector } from '../../../hooks/redux';
+
+import styles from './UserAccount.module.scss';
+import Button from '../../../components/buttons/Buttons';
+import UserContactInfo from '../../../components/userInfo/contacts/UserContacts';
 import EditCustomerSmallForm from '../../../components/forms/edit/EditCustomerForm';
 import EditPasswordForm from '../../../components/forms/edit/EditPasswordForm';
-import Button from '../../../components/buttons/Buttons';
-import ModalContainer from '../../../components/modal/ModalContainer';
+import EditDateForm from '../../../components/forms/edit/EditDateForm';
 
-export default function UserDashboard() {
+export default function UserAccount() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedPassword, setSelectedPassword] = useState<true | null>(null);
+  const [selectedDate, setSelectedDate] = useState<true | null>(null);
 
   if (!customer) {
     return <h2>No customer</h2>;
   }
 
-  const handleEditAddress = (address: Address) => {
-    setSelectedAddress(address);
-    setIsModalOpen(true);
-  };
-
-  const handleEditCustomer = (customerData: Customer) => {
-    setSelectedCustomer(customerData);
+  const handleEditCustomer = (address: Customer) => {
+    setSelectedCustomer(address);
     setIsModalOpen(true);
   };
 
@@ -37,21 +33,18 @@ export default function UserDashboard() {
     setSelectedPassword(true);
     setIsModalOpen(true);
   };
+  const handleEditDate = () => {
+    setSelectedDate(true);
+    setIsModalOpen(true);
+  };
 
   const handleModalClose = () => {
-    setSelectedAddress(null);
-    setSelectedCustomer(null);
     setSelectedPassword(null);
+    setSelectedCustomer(null);
+    setSelectedDate(null);
 
     setIsModalOpen(false);
   };
-
-  const hasBillingAddress = !!customer.billingAddressIds?.length;
-
-  const defaultShippingAddress = customer.addresses.find((adress) => adress.id === customer.defaultShippingAddressId);
-  const defaultBillingAddress = hasBillingAddress
-    ? customer.addresses.find((adress) => adress.id === customer.defaultBillingAddressId)
-    : undefined;
 
   return (
     <>
@@ -67,23 +60,27 @@ export default function UserDashboard() {
           </button>
         </FlexContainer>
 
-        {DefaultAddresses(defaultShippingAddress, handleEditAddress, defaultBillingAddress)}
+        <h3 className={`${styles['block-heading']}`}>Other info</h3>
+
+        <h4>Date of birth</h4>
+        {customer.dateOfBirth && <p>{new Date(customer.dateOfBirth).toLocaleDateString()}</p>}
+        <button type="button" className={`${styles.fakeLink}`} onClick={handleEditDate}>
+          Change date of birth
+        </button>
+
+        <h4>Created account date</h4>
+        {customer.createdAt && <p>{new Date(customer.createdAt).toLocaleDateString()}</p>}
+
+        <h4>Last modified account date</h4>
+        {customer.lastModifiedAt && <p>{new Date(customer.lastModifiedAt).toLocaleDateString()}</p>}
       </FlexContainer>
-
-      <ModalContainer isOpen={isModalOpen} onRequestClose={handleModalClose}>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={handleModalClose}
+        appElement={document.getElementById('root') || undefined}
+        closeTimeoutMS={200}
+      >
         <FlexContainer style={{ flexDirection: 'column', gap: '20px' }}>
-          {selectedAddress && (
-            <EditAddressForm
-              address={selectedAddress}
-              onSave={(updatedValues) => {
-                alert(JSON.stringify({ ...selectedAddress, ...updatedValues }, null, 2));
-                // Handle address update here
-                // Close the modal after successful update
-                handleModalClose();
-              }}
-            />
-          )}
-
           {selectedCustomer && (
             <EditCustomerSmallForm
               customer={customer}
@@ -107,6 +104,18 @@ export default function UserDashboard() {
             />
           )}
 
+          {selectedDate && (
+            <EditDateForm
+              date={customer.dateOfBirth!}
+              onSave={(isUpdated) => {
+                alert(`isUpdated: ${isUpdated}`);
+                // Handle address update here
+                // Close the modal after successful update
+                handleModalClose();
+              }}
+            />
+          )}
+
           <Button
             onClick={handleModalClose}
             innerText="Cancel"
@@ -117,7 +126,7 @@ export default function UserDashboard() {
             style={{ margin: 'auto' }}
           />
         </FlexContainer>
-      </ModalContainer>
+      </Modal>
     </>
   );
 }

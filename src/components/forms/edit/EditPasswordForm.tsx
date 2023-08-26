@@ -12,12 +12,16 @@ interface EditEmailFormProps {
 const validationSchema = Yup.object({
   oldPassword: PasswordValidation,
   newPassword: PasswordValidation,
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('newPassword'), undefined], 'Passwords must match')
+    .required('Required'),
 });
 
 export default function EditPasswordForm({ onSave }: EditEmailFormProps) {
   const initialValues = {
     oldPassword: '',
     newPassword: '',
+    confirmPassword: '',
   };
 
   const handleSubmit = (values: typeof initialValues) => {
@@ -43,21 +47,25 @@ export default function EditPasswordForm({ onSave }: EditEmailFormProps) {
         onSubmit={handleSubmit}
       >
         <Form>
-          <PasswordInput
-            id="oldPassword"
-            labelText="Old password"
-            name="oldPassword"
-            placeholder="Type your old password"
-          />
+          <PasswordInput id="oldPassword" labelText="Old password" name="oldPassword" placeholder="Type old password" />
+
+          <PasswordInput id="newPassword" labelText="New password" name="newPassword" placeholder="Type new password" />
 
           <PasswordInput
-            id="newPassword"
-            labelText="New password"
-            name="newPassword"
-            placeholder="Type your new password"
+            id="confirmPassword"
+            labelText="Confirm password"
+            name="confirmPassword"
+            placeholder="Confirm new password"
           />
 
-          <Button type="submit" innerText="Update password" styling="primary" variant="default" addedClass="" />
+          <Button
+            type="submit"
+            innerText="Update password"
+            styling="primary"
+            variant="default"
+            addedClass=""
+            style={{ margin: 'auto' }}
+          />
         </Form>
       </Formik>
     </FlexContainer>
