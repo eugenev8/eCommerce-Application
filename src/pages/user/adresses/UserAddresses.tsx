@@ -13,6 +13,7 @@ import Button from '../../../components/buttons/Buttons';
 import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
 import { updateCustomerData } from '../../../reducers/ActionCreators';
 import toaster from '../../../services/toaster';
+import { AddressType } from './types';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,
@@ -44,7 +45,7 @@ function renderShippingAddresses(
   shippingAddressesArray: Address[],
   defaultShippingAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
-  handleSetDefautAddress: (address: Address) => void,
+  handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
   handleDeleteAddress: (address: Address) => void
 ) {
   return (
@@ -65,7 +66,7 @@ function renderShippingAddresses(
                   <button
                     type="button"
                     className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefautAddress(address)}
+                    onClick={() => handleSetDefautAddress(address, AddressType.Shipping)}
                   >
                     Set as default
                   </button>
@@ -91,7 +92,7 @@ function renderBillingAddresses(
   billingAddressesArray: Address[],
   defaultBillingAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
-  handleSetDefautAddress: (address: Address) => void,
+  handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
   handleDeleteAddress: (address: Address) => void
 ) {
   return (
@@ -112,7 +113,7 @@ function renderBillingAddresses(
                   <button
                     type="button"
                     className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefautAddress(address)}
+                    onClick={() => handleSetDefautAddress(address, AddressType.Billing)}
                   >
                     Set as default
                   </button>
@@ -137,7 +138,7 @@ export default function UserAddresses() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [selectedAddAddress, setSelectedAddAddress] = useState<'Shipping' | 'Billing' | null>(null);
+  const [selectedAddAddress, setSelectedAddAddress] = useState<AddressType | null>(null);
   const dispatch = useAppDispatch();
 
   if (!customer) {
@@ -160,14 +161,22 @@ export default function UserAddresses() {
     setIsModalOpen(true);
   };
 
-  const handleAddAddress = (addressType: 'Shipping' | 'Billing') => {
+  const handleAddAddress = (addressType: AddressType) => {
     setSelectedAddAddress(addressType);
     setIsModalOpen(true);
   };
 
-  const handleSetDefaultAddress = (address: Address) => {
-    // Need to set as default
-    console.log(address);
+  const handleSetDefaultAddress = (address: Address, addressType: AddressType) => {
+    const setDefaultAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [],
+    };
+    if (addressType === AddressType.Shipping) {
+      setDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId: address.id });
+    } else {
+      setDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: address.id });
+    }
+    dispatch(updateCustomerData(setDefaultAddressUpdate));
   };
 
   const handleDeleteAddress = (address: Address) => {
@@ -206,7 +215,7 @@ export default function UserAddresses() {
 
         <FlexContainer style={{ flexDirection: 'column' }}>
           <h3 className={`${styles['block-heading']}`}>Shipping addresses</h3>
-          <button type="button" className={`${styles.fakeLink}`} onClick={() => handleAddAddress('Shipping')}>
+          <button type="button" className={`${styles.fakeLink}`} onClick={() => handleAddAddress(AddressType.Shipping)}>
             Add new shipping address
           </button>
 
@@ -220,7 +229,7 @@ export default function UserAddresses() {
             )) || <p>You dont have shipping addresses</p>}
 
           <h3 className={`${styles['block-heading']}`}>Billing addresses</h3>
-          <button type="button" className={`${styles.fakeLink}`} onClick={() => handleAddAddress('Billing')}>
+          <button type="button" className={`${styles.fakeLink}`} onClick={() => handleAddAddress(AddressType.Billing)}>
             Add new billing address
           </button>
 

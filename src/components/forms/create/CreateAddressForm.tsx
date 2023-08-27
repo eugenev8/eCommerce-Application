@@ -8,9 +8,10 @@ import FlexContainer from '../../containers/FlexContainer';
 import CountryInput from '../inputs/CountryInput';
 import { useAppDispatch } from '../../../hooks/redux';
 import { updateCustomerData } from '../../../reducers/ActionCreators';
+import { AddressType } from '../../../pages/user/adresses/types';
 
 interface AddAddressFormProps {
-  addressType: 'Billing' | 'Shipping';
+  addressType: AddressType;
   version: number;
   onSave: (isSuccess: boolean) => void;
 }
@@ -52,7 +53,7 @@ export default function CreateAddressForm({ addressType, onSave, version }: AddA
         actions: [],
       };
 
-      if (addressType === 'Billing') {
+      if (addressType === AddressType.Billing) {
         setAddressTypeUpdate.actions.push({ action: 'addBillingAddressId', addressId: addedAddress?.id });
       } else {
         setAddressTypeUpdate.actions.push({ action: 'addShippingAddressId', addressId: addedAddress?.id });
