@@ -24,7 +24,9 @@ function isCustomer(value: string | Customer | undefined): value is Customer {
 
 export default function CreateAddressForm({ addressType, onSave, version }: AddAddressFormProps) {
   const dispatch = useAppDispatch();
+
   const initialValues = {
+    additionalAddressInfo: '',
     city: '',
     streetName: '',
     postalCode: '',
@@ -86,6 +88,13 @@ export default function CreateAddressForm({ addressType, onSave, version }: AddA
         onSubmit={handleSubmit}
       >
         <Form>
+          <CommonInput
+            id="additionalAddressInfo"
+            labelText="Address name"
+            name="additionalAddressInfo"
+            placeholder="Type address name"
+            type="text"
+          />
           <CommonInput id="city" labelText="City" name="city" placeholder="Type your city" type="text" />
           <CommonInput
             id="streetName"

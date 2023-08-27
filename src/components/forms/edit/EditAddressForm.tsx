@@ -19,7 +19,9 @@ const validationSchema = AddressValidaiton;
 
 export default function EditAddressForm({ address, version, onSave }: EditAddressFormProps) {
   const dispatch = useAppDispatch();
+
   const initialValues = {
+    additionalAddressInfo: address.additionalAddressInfo,
     city: address.city,
     streetName: address.streetName,
     postalCode: address.postalCode,
@@ -58,6 +60,13 @@ export default function EditAddressForm({ address, version, onSave }: EditAddres
         onSubmit={handleSubmit}
       >
         <Form>
+          <CommonInput
+            id="additionalAddressInfo"
+            labelText="Address name"
+            name="additionalAddressInfo"
+            placeholder="Type address name"
+            type="text"
+          />
           <CommonInput id="city" labelText="City" name="city" placeholder="Type your city" type="text" />
           <CommonInput
             id="streetName"

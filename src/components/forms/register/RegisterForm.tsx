@@ -39,18 +39,20 @@ interface NewCustomerAddresses {
 }
 
 const initialValues: RegisterFormValues = {
-  email: ``, // 'aaabbb@gmail.com',
+  email: '',
   password: '',
   firstName: '',
   lastName: '',
   dateOfBirth: '',
   billingAddress: {
+    additionalAddressInfo: 'Initial address',
     streetName: '',
     city: '',
     postalCode: '',
     country: 'US',
   },
   shippingAddress: {
+    additionalAddressInfo: 'Initial address',
     streetName: '',
     city: '',
     postalCode: '',
