@@ -41,9 +41,10 @@ export function DefaultAddresses(
   );
 }
 
-function renderShippingAddresses(
-  shippingAddressesArray: Address[],
-  defaultShippingAddress: Address | undefined,
+function renderAddresses(
+  addressType: AddressType,
+  addressesArray: Address[],
+  defaultAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
   handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
   handleDeleteAddress: (address: Address, addressType: AddressType) => void,
@@ -51,7 +52,7 @@ function renderShippingAddresses(
 ) {
   return (
     <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
-      {shippingAddressesArray.map((address) => {
+      {addressesArray.map((address) => {
         return (
           <div className={`${styles.address}`} key={address.id}>
             <h4>{address.streetName}</h4>
@@ -59,13 +60,13 @@ function renderShippingAddresses(
               <UserAddressInfo address={address} />
 
               <FlexContainer style={{ flexDirection: 'column' }}>
-                {(defaultShippingAddress === address && (
+                {(defaultAddress === address && (
                   <p>
-                    <span className={`${styles.defaultAddress}`}>Default shipping address</span>
+                    <span className={`${styles.defaultAddress}`}>Default {addressType} address</span>
                     <button
                       type="button"
                       className={`${styles.fakeLink}`}
-                      onClick={() => handleClearDefautAddress(AddressType.Shipping)}
+                      onClick={() => handleClearDefautAddress(addressType)}
                     >
                       clear
                     </button>
@@ -74,66 +75,7 @@ function renderShippingAddresses(
                   <button
                     type="button"
                     className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefautAddress(address, AddressType.Shipping)}
-                  >
-                    Set as default
-                  </button>
-                )}
-
-                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleEditAddress(address)}>
-                  Edit address
-                </button>
-
-                <button
-                  type="button"
-                  className={`${styles.fakeLink}`}
-                  onClick={() => handleDeleteAddress(address, AddressType.Shipping)}
-                >
-                  Delete address
-                </button>
-              </FlexContainer>
-            </FlexContainer>
-          </div>
-        );
-      })}
-    </FlexContainer>
-  );
-}
-
-function renderBillingAddresses(
-  billingAddressesArray: Address[],
-  defaultBillingAddress: Address | undefined,
-  handleEditAddress: (address: Address) => void,
-  handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address, addressType: AddressType) => void,
-  handleClearDefautAddress: (addressType: AddressType) => void
-) {
-  return (
-    <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
-      {billingAddressesArray.map((address) => {
-        return (
-          <div className={`${styles.address}`} key={address.id}>
-            <h4>{address.streetName}</h4>
-            <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
-              <UserAddressInfo address={address} />
-
-              <FlexContainer style={{ flexDirection: 'column' }}>
-                {(defaultBillingAddress === address && (
-                  <p>
-                    <span className={`${styles.defaultAddress}`}>Default billing address</span>
-                    <button
-                      type="button"
-                      className={`${styles.fakeLink}`}
-                      onClick={() => handleClearDefautAddress(AddressType.Billing)}
-                    >
-                      clear
-                    </button>
-                  </p>
-                )) || (
-                  <button
-                    type="button"
-                    className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefautAddress(address, AddressType.Billing)}
+                    onClick={() => handleSetDefautAddress(address, addressType)}
                   >
                     Set as default
                   </button>
@@ -145,7 +87,7 @@ function renderBillingAddresses(
                 <button
                   type="button"
                   className={`${styles.fakeLink}`}
-                  onClick={() => handleDeleteAddress(address, AddressType.Billing)}
+                  onClick={() => handleDeleteAddress(address, addressType)}
                 >
                   Delete address
                 </button>
@@ -200,17 +142,23 @@ export default function UserAddresses() {
     } else {
       setDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: address.id });
     }
-    dispatch(updateCustomerData(setDefaultAddressUpdate));
+    dispatch(updateCustomerData(setDefaultAddressUpdate)).then((payloadAction) => {
+      if (payloadAction.type.includes('rejected')) {
+        // show error on the form
+        return;
+      }
+      toaster.showSuccess('Address is set as default successfully!');
+    });
   };
 
   const handleDeleteAddress = (address: Address, addressType: AddressType) => {
     if (addressType === AddressType.Shipping) {
       if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
-        console.log('This is the last shipping address. Do not delete');
+        console.log('This is the last shipping address. Do not delete'); // show error on the form
         return;
       }
     } else if (customer.billingAddressIds && customer.billingAddressIds.length < 2) {
-      console.log('This is the last billing address. Do not delete');
+      console.log('This is the last billing address. Do not delete'); // show error on the form
       return;
     }
 
@@ -244,7 +192,7 @@ export default function UserAddresses() {
         // show error on the form
         return;
       }
-      toaster.showSuccess('Defaul address deleted!');
+      toaster.showSuccess('Defaul address cleared!');
     });
   };
 
@@ -274,7 +222,8 @@ export default function UserAddresses() {
           </button>
 
           {(shippingAddresses.length &&
-            renderShippingAddresses(
+            renderAddresses(
+              AddressType.Shipping,
               shippingAddresses,
               defaultShippingAddress,
               handleEditAddress,
@@ -289,7 +238,8 @@ export default function UserAddresses() {
           </button>
 
           {(billingAddresses.length &&
-            renderBillingAddresses(
+            renderAddresses(
+              AddressType.Billing,
               billingAddresses,
               defaultBillingAddress,
               handleEditAddress,
@@ -312,6 +262,7 @@ export default function UserAddresses() {
               version={customer.version}
               onSave={(isUpdated) => {
                 if (isUpdated) {
+                  toaster.showSuccess('Address updated successfully!');
                   handleModalClose();
                 }
               }}
@@ -324,6 +275,7 @@ export default function UserAddresses() {
               version={customer.version}
               onSave={(isSuccess) => {
                 if (isSuccess) {
+                  toaster.showSuccess('Address added successfully!');
                   handleModalClose();
                 }
               }}

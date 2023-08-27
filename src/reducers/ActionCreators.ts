@@ -101,7 +101,6 @@ const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { reject
 
       const customerRes = await apiRoots.TokenFlow.me().post({ body: updates }).execute();
 
-      toaster.showSuccess('Data changed successfully!');
       return customerRes.body;
     } catch (e) {
       const errorMessage =

@@ -1,6 +1,6 @@
 enum AddressType {
-  Shipping,
-  Billing,
+  Shipping = 'shipping',
+  Billing = 'billing',
 }
 
 // eslint-disable-next-line import/prefer-default-export
