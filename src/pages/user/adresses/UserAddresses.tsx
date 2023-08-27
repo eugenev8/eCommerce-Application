@@ -46,7 +46,7 @@ function renderShippingAddresses(
   defaultShippingAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
   handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address) => void
+  handleDeleteAddress: (address: Address, addressType: AddressType) => void
 ) {
   return (
     <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -76,7 +76,11 @@ function renderShippingAddresses(
                   Edit address
                 </button>
 
-                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleDeleteAddress(address)}>
+                <button
+                  type="button"
+                  className={`${styles.fakeLink}`}
+                  onClick={() => handleDeleteAddress(address, AddressType.Shipping)}
+                >
                   Delete address
                 </button>
               </FlexContainer>
@@ -93,7 +97,7 @@ function renderBillingAddresses(
   defaultBillingAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
   handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address) => void
+  handleDeleteAddress: (address: Address, addressType: AddressType) => void
 ) {
   return (
     <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -122,7 +126,11 @@ function renderBillingAddresses(
                   Edit address
                 </button>
 
-                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleDeleteAddress(address)}>
+                <button
+                  type="button"
+                  className={`${styles.fakeLink}`}
+                  onClick={() => handleDeleteAddress(address, AddressType.Billing)}
+                >
                   Delete address
                 </button>
               </FlexContainer>
@@ -179,7 +187,17 @@ export default function UserAddresses() {
     dispatch(updateCustomerData(setDefaultAddressUpdate));
   };
 
-  const handleDeleteAddress = (address: Address) => {
+  const handleDeleteAddress = (address: Address, addressType: AddressType) => {
+    if (addressType === AddressType.Shipping) {
+      if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
+        console.log('This is the last shipping address. Do not delete');
+        return;
+      }
+    } else if (customer.billingAddressIds && customer.billingAddressIds.length < 2) {
+      console.log('This is the last billing address. Do not delete');
+      return;
+    }
+
     const deleteAddressUpdate: MyCustomerUpdate = {
       version: customer.version,
       actions: [{ action: 'removeAddress', addressId: address.id }],
