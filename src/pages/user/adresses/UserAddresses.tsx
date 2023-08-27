@@ -1,16 +1,18 @@
 import Modal from 'react-modal';
 import { useState } from 'react';
 
-import { Address } from '@commercetools/platform-sdk';
+import { Address, MyCustomerUpdate } from '@commercetools/platform-sdk';
 
 import FlexContainer from '../../../components/containers/FlexContainer';
 import UserAddressInfo from '../../../components/userInfo/adress/UserAddress';
-import { useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
 
 import styles from './UserAddresses.module.scss';
 import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
 import Button from '../../../components/buttons/Buttons';
 import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
+import { updateCustomerData } from '../../../reducers/ActionCreators';
+import toaster from '../../../services/toaster';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,
@@ -136,6 +138,7 @@ export default function UserAddresses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedAddAddress, setSelectedAddAddress] = useState<'Shipping' | 'Billing' | null>(null);
+  const dispatch = useAppDispatch();
 
   if (!customer) {
     return <h2>No customer</h2>;
@@ -168,8 +171,18 @@ export default function UserAddresses() {
   };
 
   const handleDeleteAddress = (address: Address) => {
-    // Need to delete address
-    console.log(address);
+    const deleteAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [{ action: 'removeAddress', addressId: address.id }],
+    };
+
+    dispatch(updateCustomerData(deleteAddressUpdate)).then((payloadAction) => {
+      if (payloadAction.type.includes('rejected')) {
+        // show error on the form
+        return;
+      }
+      toaster.showSuccess('Address deleted!');
+    });
   };
 
   const handleModalClose = () => {
@@ -231,11 +244,11 @@ export default function UserAddresses() {
           {selectedAddress && (
             <EditAddressForm
               address={selectedAddress}
-              onSave={(updatedValues) => {
-                alert(JSON.stringify({ ...selectedAddress, ...updatedValues }, null, 2));
-                // Handle address update here
-                // Close the modal after successful update
-                handleModalClose();
+              version={customer.version}
+              onSave={(isUpdated) => {
+                if (isUpdated) {
+                  handleModalClose();
+                }
               }}
             />
           )}
@@ -243,9 +256,8 @@ export default function UserAddresses() {
           {selectedAddAddress && (
             <CreateAddressForm
               addressType={selectedAddAddress}
+              version={customer.version}
               onSave={(isSuccess) => {
-                // Handle address update here
-                // Close the modal after successful update
                 if (isSuccess) {
                   handleModalClose();
                 }

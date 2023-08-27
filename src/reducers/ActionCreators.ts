@@ -91,8 +91,8 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
   }
 );
 
-const updateCustomerPersonalData = createAsyncThunk<Customer, MyCustomerUpdate, { rejectValue: string }>(
-  'customer/updatePersonalData',
+const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { rejectValue: string }>(
+  'customer/updateData',
   async (updates, { rejectWithValue, dispatch }) => {
     try {
       if (!apiRoots.TokenFlow) {
@@ -101,7 +101,7 @@ const updateCustomerPersonalData = createAsyncThunk<Customer, MyCustomerUpdate, 
 
       const customerRes = await apiRoots.TokenFlow.me().post({ body: updates }).execute();
 
-      toaster.showSuccess('Personal data changed successfully!');
+      toaster.showSuccess('Data changed successfully!');
       return customerRes.body;
     } catch (e) {
       const errorMessage =
@@ -112,4 +112,4 @@ const updateCustomerPersonalData = createAsyncThunk<Customer, MyCustomerUpdate, 
   }
 );
 
-export { loginWithPassword, signupCustomer, changeCustomerPassword, updateCustomerPersonalData };
+export { loginWithPassword, signupCustomer, changeCustomerPassword, updateCustomerData };

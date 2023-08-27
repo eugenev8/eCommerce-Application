@@ -7,7 +7,7 @@ import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { useAppDispatch } from '../../../hooks/redux';
-import { updateCustomerPersonalData } from '../../../reducers/ActionCreators';
+import { updateCustomerData } from '../../../reducers/ActionCreators';
 
 interface EditCustomerFormProps {
   customer: Customer;
@@ -64,7 +64,7 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
   const handleSubmit = (values: Pick<Customer, 'firstName' | 'lastName' | 'email' | 'dateOfBirth'>) => {
     const updates = createMyCustomerUpdate(values);
     if (!updates.actions.length) return; // show "no changes"
-    dispatch(updateCustomerPersonalData(updates)).then((payloadAction) => {
+    dispatch(updateCustomerData(updates)).then((payloadAction) => {
       if (payloadAction.type.includes('rejected')) {
         // show error on the form
         onSave(false);
