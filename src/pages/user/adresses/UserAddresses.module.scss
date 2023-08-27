@@ -17,3 +17,20 @@
 
   margin: 10px 0;
 }
+
+.address {
+  display: flex;
+  flex-direction: column;
+
+  padding-bottom: 10px;
+
+  border-bottom: 1px solid $color-6;
+
+  h4 {
+    margin: auto;
+  }
+}
+
+.defaultAddress {
+  color: $color-9;
+}

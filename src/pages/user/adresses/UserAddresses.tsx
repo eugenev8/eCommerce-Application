@@ -1,7 +1,7 @@
 import Modal from 'react-modal';
 import { useState } from 'react';
 
-import { Address, Customer } from '@commercetools/platform-sdk';
+import { Address } from '@commercetools/platform-sdk';
 
 import FlexContainer from '../../../components/containers/FlexContainer';
 import UserAddressInfo from '../../../components/userInfo/adress/UserAddress';
@@ -10,10 +10,10 @@ import { useAppSelector } from '../../../hooks/redux';
 import styles from './UserAddresses.module.scss';
 import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
 import Button from '../../../components/buttons/Buttons';
+import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,
-  handleEditAddress: (address: Address) => void,
   defaultBillingAddress: Address | undefined
 ) {
   return (
@@ -24,15 +24,6 @@ export function DefaultAddresses(
           <FlexContainer style={{ flexDirection: 'column' }}>
             <h4>Default Shipping Address</h4>
             <UserAddressInfo address={defaultShippingAddress} />
-            {defaultShippingAddress && (
-              <button
-                type="button"
-                className={`${styles.fakeLink}`}
-                onClick={() => handleEditAddress(defaultShippingAddress)}
-              >
-                Edit address
-              </button>
-            )}
           </FlexContainer>
         </FlexContainer>
 
@@ -40,15 +31,6 @@ export function DefaultAddresses(
           <FlexContainer style={{ flexDirection: 'column' }}>
             <h4>Default Billing Address</h4>
             <UserAddressInfo address={defaultBillingAddress} />
-            {defaultBillingAddress && (
-              <button
-                type="button"
-                className={`${styles.fakeLink}`}
-                onClick={() => handleEditAddress(defaultBillingAddress)}
-              >
-                Edit address
-              </button>
-            )}
           </FlexContainer>
         </FlexContainer>
       </FlexContainer>
@@ -56,32 +38,96 @@ export function DefaultAddresses(
   );
 }
 
-function allAddresses(
-  customer: Customer,
+function renderShippingAddresses(
+  shippingAddressesArray: Address[],
   defaultShippingAddress: Address | undefined,
-  defaultBillingAddress: Address | undefined,
-  handleEditAddress: (address: Address) => void
+  handleEditAddress: (address: Address) => void,
+  handleSetDefautAddress: (address: Address) => void,
+  handleDeleteAddress: (address: Address) => void
 ) {
   return (
-    <>
-      <h3 className={`${styles['block-heading']}`}>All addresses</h3>
-      <FlexContainer style={{ gap: '25%', flexWrap: 'wrap' }}>
-        {customer.addresses.map((address, index) => {
-          return (
-            <FlexContainer key={address.id} style={{ flexDirection: 'column' }}>
-              <h4>Address {index + 1}</h4>
+    <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
+      {shippingAddressesArray.map((address) => {
+        return (
+          <div className={`${styles.address}`} key={address.id}>
+            <h4>{address.streetName}</h4>
+            <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
               <UserAddressInfo address={address} />
-              {defaultShippingAddress === address && <p>Default billing address</p>}
-              {defaultBillingAddress === address && <p>Default shipping address</p>}
-              <button type="button" className={`${styles.fakeLink}`} onClick={() => handleEditAddress(address)}>
-                Edit address
-              </button>
-              <p className={`${styles.fakeLink}`}>Delete address</p>
+
+              <FlexContainer style={{ flexDirection: 'column' }}>
+                {(defaultShippingAddress === address && (
+                  <p>
+                    <span className={`${styles.defaultAddress}`}>Default shipping address</span>
+                  </p>
+                )) || (
+                  <button
+                    type="button"
+                    className={`${styles.fakeLink}`}
+                    onClick={() => handleSetDefautAddress(address)}
+                  >
+                    Set as default
+                  </button>
+                )}
+
+                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleEditAddress(address)}>
+                  Edit address
+                </button>
+
+                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleDeleteAddress(address)}>
+                  Delete address
+                </button>
+              </FlexContainer>
             </FlexContainer>
-          );
-        })}
-      </FlexContainer>
-    </>
+          </div>
+        );
+      })}
+    </FlexContainer>
+  );
+}
+
+function renderBillingAddresses(
+  billingAddressesArray: Address[],
+  defaultBillingAddress: Address | undefined,
+  handleEditAddress: (address: Address) => void,
+  handleSetDefautAddress: (address: Address) => void,
+  handleDeleteAddress: (address: Address) => void
+) {
+  return (
+    <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
+      {billingAddressesArray.map((address) => {
+        return (
+          <div className={`${styles.address}`} key={address.id}>
+            <h4>{address.streetName}</h4>
+            <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+              <UserAddressInfo address={address} />
+
+              <FlexContainer style={{ flexDirection: 'column' }}>
+                {(defaultBillingAddress === address && (
+                  <p>
+                    <span className={`${styles.defaultAddress}`}>Default billing address</span>
+                  </p>
+                )) || (
+                  <button
+                    type="button"
+                    className={`${styles.fakeLink}`}
+                    onClick={() => handleSetDefautAddress(address)}
+                  >
+                    Set as default
+                  </button>
+                )}
+                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleEditAddress(address)}>
+                  Edit address
+                </button>
+
+                <button type="button" className={`${styles.fakeLink}`} onClick={() => handleDeleteAddress(address)}>
+                  Delete address
+                </button>
+              </FlexContainer>
+            </FlexContainer>
+          </div>
+        );
+      })}
+    </FlexContainer>
   );
 }
 
@@ -89,18 +135,47 @@ export default function UserAddresses() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  const [selectedAddAddress, setSelectedAddAddress] = useState<'Shipping' | 'Billing' | null>(null);
 
   if (!customer) {
     return <h2>No customer</h2>;
   }
+
+  const shippingAddresses: Address[] = [];
+  const billingAddresses: Address[] = [];
+
+  customer.addresses.forEach((address) => {
+    if (customer.billingAddressIds!.includes(address.id!)) {
+      billingAddresses.push(address);
+    } else {
+      shippingAddresses.push(address);
+    }
+  });
 
   const handleEditAddress = (address: Address) => {
     setSelectedAddress(address);
     setIsModalOpen(true);
   };
 
+  const handleAddAddress = (addressType: 'Shipping' | 'Billing') => {
+    setSelectedAddAddress(addressType);
+    setIsModalOpen(true);
+  };
+
+  const handleSetDefaultAddress = (address: Address) => {
+    // Need to set as default
+    console.log(address);
+  };
+
+  const handleDeleteAddress = (address: Address) => {
+    // Need to delete address
+    console.log(address);
+  };
+
   const handleModalClose = () => {
     setSelectedAddress(null);
+    setSelectedAddAddress(null);
+
     setIsModalOpen(false);
   };
 
@@ -114,10 +189,36 @@ export default function UserAddresses() {
   return (
     <>
       <FlexContainer style={{ flexDirection: 'column', flex: '1 1 60%' }}>
-        {DefaultAddresses(defaultShippingAddress, handleEditAddress, defaultBillingAddress)}
+        {DefaultAddresses(defaultShippingAddress, defaultBillingAddress)}
 
         <FlexContainer style={{ flexDirection: 'column' }}>
-          {allAddresses(customer, defaultShippingAddress, defaultBillingAddress, handleEditAddress)}
+          <h3 className={`${styles['block-heading']}`}>Shipping addresses</h3>
+          <button type="button" className={`${styles.fakeLink}`} onClick={() => handleAddAddress('Shipping')}>
+            Add new shipping address
+          </button>
+
+          {(shippingAddresses.length &&
+            renderShippingAddresses(
+              shippingAddresses,
+              defaultShippingAddress,
+              handleEditAddress,
+              handleSetDefaultAddress,
+              handleDeleteAddress
+            )) || <p>You dont have shipping addresses</p>}
+
+          <h3 className={`${styles['block-heading']}`}>Billing addresses</h3>
+          <button type="button" className={`${styles.fakeLink}`} onClick={() => handleAddAddress('Billing')}>
+            Add new billing address
+          </button>
+
+          {(billingAddresses.length &&
+            renderBillingAddresses(
+              billingAddresses,
+              defaultBillingAddress,
+              handleEditAddress,
+              handleSetDefaultAddress,
+              handleDeleteAddress
+            )) || <p>You dont have billing addresses</p>}
         </FlexContainer>
       </FlexContainer>
       <Modal
@@ -135,6 +236,19 @@ export default function UserAddresses() {
                 // Handle address update here
                 // Close the modal after successful update
                 handleModalClose();
+              }}
+            />
+          )}
+
+          {selectedAddAddress && (
+            <CreateAddressForm
+              addressType={selectedAddAddress}
+              onSave={(isSuccess) => {
+                // Handle address update here
+                // Close the modal after successful update
+                if (isSuccess) {
+                  handleModalClose();
+                }
               }}
             />
           )}

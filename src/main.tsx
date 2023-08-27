@@ -12,7 +12,6 @@ import RegisterPage from './pages/register/RegisterPage';
 import ErrorPage from './pages/error/ErrorPage';
 import AuthGuardLoader from './pages/AuthGuardLoader';
 import UserProfile from './pages/user/UserProfile';
-import UserDashboard from './pages/user/dashboard/UserDashboard';
 import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
 
@@ -63,15 +62,11 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <UserDashboard />,
+            element: <UserAccount />,
           },
           {
             path: 'address',
             element: <UserAddresses />,
-          },
-          {
-            path: 'user',
-            element: <UserAccount />,
           },
         ],
       },
