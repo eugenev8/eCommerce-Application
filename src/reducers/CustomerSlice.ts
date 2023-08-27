@@ -1,7 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { Customer } from '@commercetools/platform-sdk';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { loginWithPassword, signupCustomer } from './ActionCreators';
+import {
+  changeCustomerPassword,
+  loginWithPassword,
+  signupCustomer,
+  updateCustomerPersonalData,
+} from './ActionCreators';
 
 interface CustomerState {
   isLoading: boolean;
@@ -34,6 +39,16 @@ const customerSlice = createSlice({
       state.customer = action.payload;
     });
     builder.addCase(signupCustomer.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.error = '';
+      state.customer = action.payload;
+    });
+    builder.addCase(changeCustomerPassword.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.error = '';
+      state.customer = action.payload;
+    });
+    builder.addCase(updateCustomerPersonalData.fulfilled, (state, action) => {
       state.isLoading = false;
       state.error = '';
       state.customer = action.payload;

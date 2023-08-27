@@ -11,14 +11,12 @@ import Button from '../../../components/buttons/Buttons';
 import UserContactInfo from '../../../components/userInfo/contacts/UserContacts';
 import EditCustomerSmallForm from '../../../components/forms/edit/EditCustomerForm';
 import EditPasswordForm from '../../../components/forms/edit/EditPasswordForm';
-import EditDateForm from '../../../components/forms/edit/EditDateForm';
 
 export default function UserAccount() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [selectedPassword, setSelectedPassword] = useState<true | null>(null);
-  const [selectedDate, setSelectedDate] = useState<true | null>(null);
 
   if (!customer) {
     return <h2>No customer</h2>;
@@ -33,15 +31,10 @@ export default function UserAccount() {
     setSelectedPassword(true);
     setIsModalOpen(true);
   };
-  const handleEditDate = () => {
-    setSelectedDate(true);
-    setIsModalOpen(true);
-  };
 
   const handleModalClose = () => {
     setSelectedPassword(null);
     setSelectedCustomer(null);
-    setSelectedDate(null);
 
     setIsModalOpen(false);
   };
@@ -51,6 +44,10 @@ export default function UserAccount() {
       <FlexContainer style={{ flexDirection: 'column', flex: '1 1 60%' }}>
         <h3 className={`${styles['block-heading']}`}>Account information</h3>
         <UserContactInfo firstName={customer.firstName} lastName={customer.lastName} email={customer.email} />
+        <p>
+          Date of birth {customer.dateOfBirth && <span>{new Date(customer.dateOfBirth).toLocaleDateString()}</span>}
+        </p>
+
         <FlexContainer style={{ gap: '1rem' }}>
           <button type="button" className={`${styles.fakeLink}`} onClick={() => handleEditCustomer(customer)}>
             Edit
@@ -61,12 +58,6 @@ export default function UserAccount() {
         </FlexContainer>
 
         <h3 className={`${styles['block-heading']}`}>Other info</h3>
-
-        <h4>Date of birth</h4>
-        {customer.dateOfBirth && <p>{new Date(customer.dateOfBirth).toLocaleDateString()}</p>}
-        <button type="button" className={`${styles.fakeLink}`} onClick={handleEditDate}>
-          Change date of birth
-        </button>
 
         <h4>Created account date</h4>
         {customer.createdAt && <p>{new Date(customer.createdAt).toLocaleDateString()}</p>}
@@ -84,34 +75,18 @@ export default function UserAccount() {
           {selectedCustomer && (
             <EditCustomerSmallForm
               customer={customer}
-              onSave={(updatedCustomerData) => {
-                alert(JSON.stringify({ updatedCustomerData }, null, 2));
-                // Handle address update here
-                // Close the modal after successful update
-                handleModalClose();
+              onSave={(isUpdated) => {
+                if (isUpdated) handleModalClose();
               }}
             />
           )}
 
           {selectedPassword && (
             <EditPasswordForm
+              email={customer.email}
+              version={customer.version}
               onSave={(isUpdated) => {
-                alert(`isUpdated: ${isUpdated}`);
-                // Handle address update here
-                // Close the modal after successful update
-                handleModalClose();
-              }}
-            />
-          )}
-
-          {selectedDate && (
-            <EditDateForm
-              date={customer.dateOfBirth!}
-              onSave={(isUpdated) => {
-                alert(`isUpdated: ${isUpdated}`);
-                // Handle address update here
-                // Close the modal after successful update
-                handleModalClose();
+                if (isUpdated) handleModalClose();
               }}
             />
           )}
