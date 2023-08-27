@@ -82,6 +82,7 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
         alignItems: 'center',
       }}
     >
+      <h4>Edit your information</h4>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
