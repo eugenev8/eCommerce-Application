@@ -46,7 +46,8 @@ function renderShippingAddresses(
   defaultShippingAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
   handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address, addressType: AddressType) => void
+  handleDeleteAddress: (address: Address, addressType: AddressType) => void,
+  handleClearDefautAddress: (addressType: AddressType) => void
 ) {
   return (
     <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -61,6 +62,13 @@ function renderShippingAddresses(
                 {(defaultShippingAddress === address && (
                   <p>
                     <span className={`${styles.defaultAddress}`}>Default shipping address</span>
+                    <button
+                      type="button"
+                      className={`${styles.fakeLink}`}
+                      onClick={() => handleClearDefautAddress(AddressType.Shipping)}
+                    >
+                      clear
+                    </button>
                   </p>
                 )) || (
                   <button
@@ -97,7 +105,8 @@ function renderBillingAddresses(
   defaultBillingAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
   handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address, addressType: AddressType) => void
+  handleDeleteAddress: (address: Address, addressType: AddressType) => void,
+  handleClearDefautAddress: (addressType: AddressType) => void
 ) {
   return (
     <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -112,6 +121,13 @@ function renderBillingAddresses(
                 {(defaultBillingAddress === address && (
                   <p>
                     <span className={`${styles.defaultAddress}`}>Default billing address</span>
+                    <button
+                      type="button"
+                      className={`${styles.fakeLink}`}
+                      onClick={() => handleClearDefautAddress(AddressType.Billing)}
+                    >
+                      clear
+                    </button>
                   </p>
                 )) || (
                   <button
@@ -212,6 +228,26 @@ export default function UserAddresses() {
     });
   };
 
+  const handleClearDefautAddress = (addressType: AddressType) => {
+    const clearDefaultAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [],
+    };
+    if (addressType === AddressType.Shipping) {
+      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId: undefined });
+    } else {
+      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: undefined });
+    }
+
+    dispatch(updateCustomerData(clearDefaultAddressUpdate)).then((payloadAction) => {
+      if (payloadAction.type.includes('rejected')) {
+        // show error on the form
+        return;
+      }
+      toaster.showSuccess('Defaul address deleted!');
+    });
+  };
+
   const handleModalClose = () => {
     setSelectedAddress(null);
     setSelectedAddAddress(null);
@@ -243,7 +279,8 @@ export default function UserAddresses() {
               defaultShippingAddress,
               handleEditAddress,
               handleSetDefaultAddress,
-              handleDeleteAddress
+              handleDeleteAddress,
+              handleClearDefautAddress
             )) || <p>You dont have shipping addresses</p>}
 
           <h3 className={`${styles['block-heading']}`}>Billing addresses</h3>
@@ -257,7 +294,8 @@ export default function UserAddresses() {
               defaultBillingAddress,
               handleEditAddress,
               handleSetDefaultAddress,
-              handleDeleteAddress
+              handleDeleteAddress,
+              handleClearDefautAddress
             )) || <p>You dont have billing addresses</p>}
         </FlexContainer>
       </FlexContainer>
