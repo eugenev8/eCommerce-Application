@@ -97,24 +97,12 @@ export default function RegisterForm() {
   };
 
   function createNewCustomerAddresses(shippingAddress: BaseAddress, billingAddress: BaseAddress) {
-    if (isBillingEqualShipping) {
-      const newCustomerAddresses: NewCustomerAddresses = {
-        addresses: [shippingAddress],
-        shippingAddresses: [0],
-        billingAddresses: [0],
-      };
-      if (isDefaultShippingAddress) {
-        newCustomerAddresses.defaultBillingAddress = 0;
-        newCustomerAddresses.defaultShippingAddress = 0;
-      }
-      return newCustomerAddresses;
-    }
-
     const newCustomerAddresses: NewCustomerAddresses = {
-      addresses: [shippingAddress, billingAddress],
+      addresses: isBillingEqualShipping ? [shippingAddress, shippingAddress] : [shippingAddress, billingAddress],
       shippingAddresses: [0],
       billingAddresses: [1],
     };
+
     if (isDefaultShippingAddress) {
       newCustomerAddresses.defaultShippingAddress = 0;
     }
