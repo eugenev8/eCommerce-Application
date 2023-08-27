@@ -3,7 +3,7 @@ import * as Yup from 'yup';
 
 import { Customer, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import CommonInput from '../inputs/CommonInput';
-import { EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
+import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { useAppDispatch } from '../../../hooks/redux';
@@ -18,6 +18,7 @@ const validationSchema = Yup.object({
   firstName: FirstNameValidation,
   lastName: LastNameValidation,
   email: EmailValidation,
+  dateOfBirth: AgeValidation,
 });
 
 export default function EditCustomerSmallForm({ customer, onSave }: EditCustomerFormProps) {
@@ -32,13 +33,13 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
 
   function createMyCustomerUpdate(values: Pick<Customer, 'firstName' | 'lastName' | 'email' | 'dateOfBirth'>) {
     const updates: MyCustomerUpdate = { version: customer.version, actions: [] };
-    if (values.firstName && customer.firstName !== values.firstName) {
+    if (customer.firstName !== values.firstName) {
       updates.actions.push({
         firstName: values.firstName,
         action: 'setFirstName',
       });
     }
-    if (values.lastName && customer.lastName !== values.lastName) {
+    if (customer.lastName !== values.lastName) {
       updates.actions.push({
         lastName: values.lastName,
         action: 'setLastName',
@@ -50,7 +51,7 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
         action: 'changeEmail',
       });
     }
-    if (values.dateOfBirth && customer.dateOfBirth !== values.dateOfBirth) {
+    if (customer.dateOfBirth !== values.dateOfBirth) {
       updates.actions.push({
         dateOfBirth: values.dateOfBirth,
         action: 'setDateOfBirth',
