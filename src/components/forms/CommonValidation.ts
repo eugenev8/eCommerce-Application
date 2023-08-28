@@ -23,6 +23,9 @@ export const EmailValidation = Yup.string()
   );
 
 export const AddressValidaiton = Yup.object().shape({
+  additionalAddressInfo: Yup.string()
+    .min(1, 'Address name must contain at least one character')
+    .required('Address name is required'),
   streetName: Yup.string()
     .min(1, 'Street must contain at least one character')
     .required('Street is required')

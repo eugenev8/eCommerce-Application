@@ -1,6 +1,6 @@
 import { Formik, Form } from 'formik';
 
-import { Address, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address, MyCustomerUpdate, Customer } from '@commercetools/platform-sdk';
 import CommonInput from '../inputs/CommonInput';
 import { AddressValidaiton } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
@@ -8,39 +8,67 @@ import FlexContainer from '../../containers/FlexContainer';
 import CountryInput from '../inputs/CountryInput';
 import { useAppDispatch } from '../../../hooks/redux';
 import { updateCustomerData } from '../../../reducers/ActionCreators';
+import { AddressType } from '../../../pages/user/adresses/types';
 
-interface EditAddressFormProps {
-  address: Address;
+interface AddAddressFormProps {
+  addressType: AddressType;
   version: number;
-  onSave: (isUpdated: boolean) => void;
+  onSave: (isSuccess: boolean) => void;
 }
 
 const validationSchema = AddressValidaiton;
 
-export default function EditAddressForm({ address, version, onSave }: EditAddressFormProps) {
+function isCustomer(value: string | Customer | undefined): value is Customer {
+  return !!(value && typeof value !== 'string');
+}
+
+export default function CreateAddressForm({ addressType, onSave, version }: AddAddressFormProps) {
   const dispatch = useAppDispatch();
 
   const initialValues = {
-    additionalAddressInfo: address.additionalAddressInfo,
-    city: address.city,
-    streetName: address.streetName,
-    postalCode: address.postalCode,
-    country: address.country,
+    additionalAddressInfo: '',
+    city: '',
+    streetName: '',
+    postalCode: '',
+    country: 'US',
   };
 
-  const handleSubmit = (values: Address) => {
-    const changeAddressUpdate: MyCustomerUpdate = {
-      version,
-      actions: [{ action: 'changeAddress', address: values, addressId: address.id }],
-    };
+  const handleSubmit = (address: Address) => {
+    const newAddressUpdate: MyCustomerUpdate = { version, actions: [{ action: 'addAddress', address }] };
 
-    dispatch(updateCustomerData(changeAddressUpdate)).then((payloadAction) => {
+    dispatch(updateCustomerData(newAddressUpdate)).then((payloadAction) => {
       if (payloadAction.type.includes('rejected')) {
-        // show error on the form
         onSave(false);
-      } else {
-        onSave(true);
+        // show error on the form
+        return;
       }
+      if (!isCustomer(payloadAction.payload)) {
+        onSave(false);
+        // show error on the form - is Error?
+        return;
+      }
+
+      const addedAddress = payloadAction.payload.addresses.at(-1);
+
+      const setAddressTypeUpdate: MyCustomerUpdate = {
+        version: payloadAction.payload.version,
+        actions: [],
+      };
+
+      if (addressType === AddressType.Billing) {
+        setAddressTypeUpdate.actions.push({ action: 'addBillingAddressId', addressId: addedAddress?.id });
+      } else {
+        setAddressTypeUpdate.actions.push({ action: 'addShippingAddressId', addressId: addedAddress?.id });
+      }
+
+      dispatch(updateCustomerData(setAddressTypeUpdate)).then((newPayloadAction) => {
+        if (newPayloadAction.type.includes('rejected')) {
+          onSave(false);
+          // show error on the form
+        } else {
+          onSave(true);
+        }
+      });
     });
   };
 
@@ -52,7 +80,7 @@ export default function EditAddressForm({ address, version, onSave }: EditAddres
         alignItems: 'center',
       }}
     >
-      <h4>Edit address</h4>
+      <h4>Add new {addressType} address</h4>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -86,7 +114,7 @@ export default function EditAddressForm({ address, version, onSave }: EditAddres
 
           <Button
             type="submit"
-            innerText="Update address"
+            innerText="Add address"
             styling="primary"
             variant="default"
             addedClass=""

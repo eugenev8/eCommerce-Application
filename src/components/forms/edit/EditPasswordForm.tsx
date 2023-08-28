@@ -51,6 +51,7 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
         alignItems: 'center',
       }}
     >
+      <h4>Change your password</h4>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
