@@ -46,9 +46,9 @@ function renderAddresses(
   addressesArray: Address[],
   defaultAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
-  handleSetDefautAddress: (address: Address, addressType: AddressType) => void,
+  handleSetDefaultAddress: (address: Address, addressType: AddressType) => void,
   handleDeleteAddress: (address: Address, addressType: AddressType) => void,
-  handleClearDefautAddress: (addressType: AddressType) => void
+  handleClearDefaultAddress: (addressType: AddressType) => void
 ) {
   return (
     <FlexContainer style={{ gap: '25%', flexWrap: 'wrap', flexDirection: 'column' }}>
@@ -66,7 +66,7 @@ function renderAddresses(
                     <button
                       type="button"
                       className={`${styles.fakeLink}`}
-                      onClick={() => handleClearDefautAddress(addressType)}
+                      onClick={() => handleClearDefaultAddress(addressType)}
                     >
                       clear
                     </button>
@@ -75,7 +75,7 @@ function renderAddresses(
                   <button
                     type="button"
                     className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefautAddress(address, addressType)}
+                    onClick={() => handleSetDefaultAddress(address, addressType)}
                   >
                     Set as default
                   </button>
@@ -176,7 +176,7 @@ export default function UserAddresses() {
     });
   };
 
-  const handleClearDefautAddress = (addressType: AddressType) => {
+  const handleClearDefaultAddress = (addressType: AddressType) => {
     const clearDefaultAddressUpdate: MyCustomerUpdate = {
       version: customer.version,
       actions: [],
@@ -192,7 +192,7 @@ export default function UserAddresses() {
         // show error on the form
         return;
       }
-      toaster.showSuccess('Defaul address cleared!');
+      toaster.showSuccess('Default address cleared!');
     });
   };
 
@@ -205,9 +205,9 @@ export default function UserAddresses() {
 
   const hasBillingAddress = !!customer.billingAddressIds?.length;
 
-  const defaultShippingAddress = customer.addresses.find((adress) => adress.id === customer.defaultShippingAddressId);
+  const defaultShippingAddress = customer.addresses.find((address) => address.id === customer.defaultShippingAddressId);
   const defaultBillingAddress = hasBillingAddress
-    ? customer.addresses.find((adress) => adress.id === customer.defaultBillingAddressId)
+    ? customer.addresses.find((address) => address.id === customer.defaultBillingAddressId)
     : undefined;
 
   return (
@@ -229,7 +229,7 @@ export default function UserAddresses() {
               handleEditAddress,
               handleSetDefaultAddress,
               handleDeleteAddress,
-              handleClearDefautAddress
+              handleClearDefaultAddress
             )) || <p>You dont have shipping addresses</p>}
 
           <h3 className={`${styles['block-heading']}`}>Billing addresses</h3>
@@ -245,7 +245,7 @@ export default function UserAddresses() {
               handleEditAddress,
               handleSetDefaultAddress,
               handleDeleteAddress,
-              handleClearDefautAddress
+              handleClearDefaultAddress
             )) || <p>You dont have billing addresses</p>}
         </FlexContainer>
       </FlexContainer>
