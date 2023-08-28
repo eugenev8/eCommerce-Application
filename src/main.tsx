@@ -14,6 +14,8 @@ import AuthGuardLoader from './pages/AuthGuardLoader';
 import UserProfile from './pages/user/UserProfile';
 import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
+import CatalogPage from './pages/catalog/CatalogPage';
+import ProductPage from './pages/product/ProductPage';
 
 const store = setupStore();
 
@@ -22,6 +24,7 @@ const routesPaths = {
   login: '/login',
   register: '/register',
   userProfile: '/profile',
+  catalog: '/catalog',
 };
 
 const router = createBrowserRouter([
@@ -36,6 +39,20 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <MainPage />,
+      },
+      {
+        path: routesPaths.catalog,
+        element: <CatalogPage />,
+        handle: {
+          crumb: () => <NavLink to="/">Catalog</NavLink>,
+        },
+      },
+      {
+        path: `${routesPaths.catalog}/:productID`,
+        element: <ProductPage />,
+        handle: {
+          crumb: () => <NavLink to="/">Catalog</NavLink>,
+        },
       },
       {
         path: routesPaths.login,
