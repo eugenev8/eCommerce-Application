@@ -55,7 +55,7 @@ function renderAddresses(
       {addressesArray.map((address) => {
         return (
           <div className={`${styles.address}`} key={address.id}>
-            <h4>{address.additionalAddressInfo}</h4>
+            <h4>{address.additionalAddressInfo || address.streetName}</h4>
             <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
               <UserAddressInfo address={address} />
 
