@@ -1,0 +1,9 @@
+.product__block {
+  display: flex;
+  justify-content: space-between;
+}
+
+.product__description {
+  display: flex;
+  flex-direction: column;
+}
