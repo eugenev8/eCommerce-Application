@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { ReactNode } from 'react';
 import ColoredContainer from '../../components/containers/ColoredContainer';
 import FlexContainer from '../../components/containers/FlexContainer';
@@ -10,7 +10,7 @@ function UserPageLayout({ children }: { children: ReactNode }) {
   const { customer } = useAppSelector((state) => state.customerReducer);
 
   if (!customer) {
-    return <div>No customer</div>;
+    return <Navigate to="/login" />;
   }
 
   return (
