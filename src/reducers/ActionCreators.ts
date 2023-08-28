@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
+  Category,
   Customer,
   CustomerDraft,
   CustomerSignin,
@@ -23,11 +24,11 @@ const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectVal
 
       dispatch(authSlice.actions.authSuccess());
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
-      toaster.showSuccess('Login successeful!');
+      toaster.showSuccess('Login successful!');
       return customerRes.body.customer;
-    } catch (e) {
+    } catch (error) {
       const errorMessage =
-        e instanceof Error ? getErrorMessageForUser(e.message) : getErrorMessageForUser('Unknown error');
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
       dispatch(authSlice.actions.authError(errorMessage));
       return rejectWithValue(errorMessage);
     }
@@ -46,11 +47,11 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
 
       dispatch(authSlice.actions.authSuccess());
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
-      toaster.showSuccess("Registration successful! You're now loggin in!");
+      toaster.showSuccess("Registration successful! You're now login in!");
       return customerRes.body.customer;
-    } catch (e) {
+    } catch (error) {
       const errorMessage =
-        e instanceof Error ? getErrorMessageForUser(e.message) : getErrorMessageForUser('Unknown error');
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
       dispatch(authSlice.actions.authError(errorMessage));
       return rejectWithValue(errorMessage);
     }
@@ -66,7 +67,7 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
   async (values, { rejectWithValue, dispatch }) => {
     try {
       if (!apiRoots.TokenFlow) {
-        throw new Error('!apiRoots.TokenFlow');
+        return rejectWithValue('Error with token flow');
       }
 
       await apiRoots.TokenFlow.me().password().post({ body: values }).execute();
@@ -82,9 +83,9 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess('Password changed successfully!');
       return customerRes.body.customer;
-    } catch (e) {
+    } catch (error) {
       const errorMessage =
-        e instanceof Error ? getErrorMessageForUser(e.message) : getErrorMessageForUser('Unknown error');
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
       dispatch(authSlice.actions.authError(errorMessage));
       return rejectWithValue(errorMessage);
     }
@@ -96,19 +97,34 @@ const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { reject
   async (updates, { rejectWithValue, dispatch }) => {
     try {
       if (!apiRoots.TokenFlow) {
-        throw new Error('!apiRoots.TokenFlow');
+        return rejectWithValue('Error with token flow');
       }
 
       const customerRes = await apiRoots.TokenFlow.me().post({ body: updates }).execute();
 
       return customerRes.body;
-    } catch (e) {
+    } catch (error) {
       const errorMessage =
-        e instanceof Error ? getErrorMessageForUser(e.message) : getErrorMessageForUser('Unknown error');
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
       dispatch(authSlice.actions.authError(errorMessage));
       return rejectWithValue(errorMessage);
     }
   }
 );
 
-export { loginWithPassword, signupCustomer, changeCustomerPassword, updateCustomerData };
+const getCategories = createAsyncThunk<Category[], void, { rejectValue: string }>(
+  'customer/updateData',
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const categoriesRes = await apiRoots.CredentialsFlow.categories().get().execute();
+      return categoriesRes.body.results;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export { loginWithPassword, signupCustomer, changeCustomerPassword, updateCustomerData, getCategories };
