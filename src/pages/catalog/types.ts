@@ -26,5 +26,13 @@ const facetsNames: FacetName[] = [
   },
 ];
 
+const FacetQueries = [
+  'variants.attributes.OS',
+  'variants.attributes.CPU',
+  'variants.attributes.RAM',
+  'variants.attributes.HDD',
+  'variants.attributes.Diagonal',
+];
+
 // eslint-disable-next-line import/prefer-default-export
-export { facetsNames };
+export { facetsNames, FacetQueries };
