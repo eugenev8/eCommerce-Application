@@ -26,22 +26,5 @@ const facetsNames: FacetName[] = [
   },
 ];
 
-enum QueryActionKind {
-  AddFilterQuery = 'AddFilterQuery',
-  RemoveFilterQuery = 'RemoveFilterQuery',
-  ChangeSorting = 'ChangeSorting',
-}
-
-type QueryAction = {
-  type: QueryActionKind;
-  payload: string;
-};
-
-type QueryState = {
-  filters: string[];
-  facet: string[];
-  sort: string;
-};
-
-export { facetsNames, QueryActionKind };
-export type { QueryState, QueryAction };
+// eslint-disable-next-line import/prefer-default-export
+export { facetsNames };
