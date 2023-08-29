@@ -2,25 +2,26 @@ import { FacetResult } from '@commercetools/platform-sdk/dist/declarations/src/g
 import React from 'react';
 import { facetsNames } from '../../pages/catalog/types';
 import styles from './Filter.module.scss';
-import { QueryAction, QueryActionKind } from '../../reducers/queryReducer';
+import { useAppDispatch } from '../../hooks/redux';
+import { querySlice } from '../../reducers/QuerySlice';
 
 type FilterProps = {
   facet: [string, FacetResult];
-  dispatchQuery: React.Dispatch<QueryAction>;
 };
 
-export default function Filter({ facet, dispatchQuery }: FilterProps) {
+export default function Filter({ facet }: FilterProps) {
+  const dispatch = useAppDispatch();
   const [facetName, facetData] = facet;
 
   const attribute = facetName.slice(facetName.lastIndexOf('.') + 1);
   const filterTitle = facetsNames.find((item) => item.attribute === attribute)?.nameEn || 'No name';
 
   function handleAdd(value: string) {
-    dispatchQuery({ type: QueryActionKind.AddFilterQuery, payload: { attribute, value } });
+    dispatch(querySlice.actions.addFilterQuery({ attribute, value }));
   }
 
   function handleRemove(value: string) {
-    dispatchQuery({ type: QueryActionKind.RemoveFilterQuery, payload: { attribute, value } });
+    dispatch(querySlice.actions.removeFilterQuery({ attribute, value }));
   }
 
   function handleClickCheckbox(value: boolean, attributeStr: string) {

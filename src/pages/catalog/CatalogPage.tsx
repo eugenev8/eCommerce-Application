@@ -3,37 +3,31 @@ import {
   FacetResults,
   ProductProjection,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
-import { useEffect, useReducer, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import ProductCard from '../../components/productCard/productCard';
 import styles from './CatalogPage.module.scss';
 
 import Filter from '../../components/filter/Filter';
-import { queryReducer, QueryState } from '../../reducers/queryReducer';
 
 import Wrapper from '../../components/wrapper/Wrapper';
 import apiRoots from '../../sdk/apiRoots';
 import { FacetQueries } from './types';
+import { useAppSelector } from '../../hooks/redux';
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<ProductProjection[]>([]);
   const [facets, setFacets] = useState<FacetResults | null>(null);
+  const queryState = useAppSelector((state) => state.queryReducer);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
-  const initialQueryState: QueryState = {
-    filters: [], // from url address
-    sort: 'price desc', // from url address
-    facet: FacetQueries,
-  };
-  const [queryState, dispatchQuery] = useReducer(queryReducer, initialQueryState);
 
   useEffect(() => {
     async function getProducts() {
       const queryArgs = {
         queryArgs: {
           facet: FacetQueries,
-          sort: [searchParams.get('sort') || initialQueryState.sort], //  ['price desc'], ['name.en-us asc']
+          sort: [searchParams.get('sort') || queryState.sort], //  ['price desc'], ['name.en-us asc']
           filter: [...searchParams.entries()]
             .filter((param) => param[0] !== 'sort')
             .map((param) => `variants.attributes.${param[0]}:${param[1]}`),
@@ -45,7 +39,7 @@ export default function CatalogPage() {
     }
 
     getProducts();
-  }, [initialQueryState.sort, searchParams]);
+  }, [queryState.sort, searchParams]);
 
   function handleFilter() {
     const queryUrl = new URLSearchParams();
@@ -65,7 +59,7 @@ export default function CatalogPage() {
       <div className={styles.catalog}>
         {facets &&
           Object.entries(facets).map((facetData) => {
-            return <Filter facet={facetData} dispatchQuery={dispatchQuery} key={facetData[0]} />;
+            return <Filter facet={facetData} key={facetData[0]} />;
           })}
       </div>
 
