@@ -1,13 +1,13 @@
-import { Product } from '@commercetools/platform-sdk';
-import styles from './TempProduct.module.scss';
+import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
+import styles from './productCard.module.scss';
 import TempVariant from './TempVariant';
 
 type TempProductProps = {
-  product: Product;
+  productProjection: ProductProjection;
 };
 
-function TempProduct({ product }: TempProductProps) {
-  const { name, categories, variants, masterVariant } = product.masterData.current;
+function ProductCard({ productProjection }: TempProductProps) {
+  const { name, categories, variants, masterVariant } = productProjection;
   // variants.unshift(masterVariant);
   const allVariants = [masterVariant, ...variants];
   const locale = 'en-US';
@@ -31,4 +31,4 @@ function TempProduct({ product }: TempProductProps) {
   );
 }
 
-export default TempProduct;
+export default ProductCard;
