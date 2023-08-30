@@ -113,7 +113,7 @@ const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { reject
 );
 
 const getCategories = createAsyncThunk<Category[], void, { rejectValue: string }>(
-  'customer/updateData',
+  'categories/getCategories',
   async (_, { rejectWithValue, dispatch }) => {
     try {
       const categoriesRes = await apiRoots.CredentialsFlow.categories().get().execute();
