@@ -26,7 +26,7 @@ export default function CatalogPage() {
 
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     const urlQueryState: QueryState = {
-      sort: params.get('sort') || '',
+      sort: params.get('sort') || 'price desc',
       filters: [...params.entries()]
         .filter((param) => param[0] !== 'sort')
         .map((param) => ({ attribute: param[0], values: param[1].split(',') })),
@@ -64,12 +64,28 @@ export default function CatalogPage() {
     navigate(`./?${queryUrl.toString()}`);
   }
 
+  function handleChangeSortType(newType: string) {
+    const queryUrl = new URLSearchParams();
+    queryUrl.set('sort', newType);
+    queryState.filters.forEach((filter) => {
+      queryUrl.set(filter.attribute, filter.values.join(','));
+    });
+    navigate(`./?${queryUrl.toString()}`);
+  }
+
   return (
     <Wrapper>
       <h2>Catalog</h2>
       <button type="button" onClick={handleFilter}>
         Filter
       </button>
+      <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
+        <option value="price desc">price ↓</option>
+        <option value="price asc">price ↑</option>
+        <option value="name.en-us desc">name ↓</option>
+        <option value="name.en-us asc">name ↑</option>
+      </select>
+
       <div className={styles.catalog}>
         {facets &&
           Object.entries(facets).map((facetData) => {
