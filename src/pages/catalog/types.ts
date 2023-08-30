@@ -3,7 +3,7 @@ interface FacetName {
   nameEn: string;
 }
 
-const facetsNames: FacetName[] = [
+const FACETS_NAMES: FacetName[] = [
   {
     attribute: 'OS',
     nameEn: 'Operating system',
@@ -26,13 +26,28 @@ const facetsNames: FacetName[] = [
   },
 ];
 
-const FacetQueries = [
-  'variants.attributes.OS',
-  'variants.attributes.CPU',
-  'variants.attributes.RAM',
-  'variants.attributes.HDD',
-  'variants.attributes.Diagonal',
+interface SortingType {
+  name: string;
+  queryString: string;
+}
+
+const SORTING_TYPES: SortingType[] = [
+  {
+    name: 'price ↓',
+    queryString: 'price desc',
+  },
+  {
+    name: 'price ↑',
+    queryString: 'price asc',
+  },
+  {
+    name: 'name ↓',
+    queryString: 'name.en-us desc',
+  },
+  {
+    name: 'name ↑',
+    queryString: 'name.en-us asc',
+  },
 ];
 
-// eslint-disable-next-line import/prefer-default-export
-export { facetsNames, FacetQueries };
+export { FACETS_NAMES, SORTING_TYPES };

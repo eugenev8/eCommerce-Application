@@ -13,7 +13,7 @@ import Filter from '../../components/filter/Filter';
 
 import Wrapper from '../../components/wrapper/Wrapper';
 import apiRoots from '../../sdk/apiRoots';
-import { FacetQueries } from './types';
+import { FACETS_NAMES, SORTING_TYPES } from './types';
 import { querySlice, QueryState } from '../../reducers/QuerySlice';
 
 export default function CatalogPage() {
@@ -36,12 +36,13 @@ export default function CatalogPage() {
 
   useEffect(() => {
     async function getProducts() {
+      const facetQueries = FACETS_NAMES.map((facet) => `variants.attributes.${facet.attribute}`);
       const urlQueryState = getQueryStateFromSearchParams(searchParams);
       dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
 
       const queryArgs = {
         queryArgs: {
-          facet: FacetQueries,
+          facet: facetQueries,
           sort: [urlQueryState.sort], //  ['price desc'], ['name.en-us asc']
           filter: urlQueryState.filters.map(
             (filter) => `variants.attributes.${filter.attribute}:${filter.values.join(',')}`
@@ -80,10 +81,11 @@ export default function CatalogPage() {
         Filter
       </button>
       <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
-        <option value="price desc">price ↓</option>
-        <option value="price asc">price ↑</option>
-        <option value="name.en-us desc">name ↓</option>
-        <option value="name.en-us asc">name ↑</option>
+        {SORTING_TYPES.map((type) => (
+          <option key={type.name} value={type.queryString}>
+            {type.name}
+          </option>
+        ))}
       </select>
 
       <div className={styles.catalog}>
