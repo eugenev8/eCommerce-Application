@@ -5,6 +5,7 @@ import {
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import ProductCard from '../../components/productCard/productCard';
 import styles from './CatalogPage.module.scss';
 
@@ -13,33 +14,46 @@ import Filter from '../../components/filter/Filter';
 import Wrapper from '../../components/wrapper/Wrapper';
 import apiRoots from '../../sdk/apiRoots';
 import { FacetQueries } from './types';
-import { useAppSelector } from '../../hooks/redux';
+import { querySlice, QueryState } from '../../reducers/QuerySlice';
 
 export default function CatalogPage() {
   const [products, setProducts] = useState<ProductProjection[]>([]);
   const [facets, setFacets] = useState<FacetResults | null>(null);
-  const queryState = useAppSelector((state) => state.queryReducer);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const queryState = useAppSelector((state) => state.queryReducer);
+
+  function getQueryStateFromSearchParams(params: URLSearchParams) {
+    const urlQueryState: QueryState = {
+      sort: params.get('sort') || '',
+      filters: [...params.entries()]
+        .filter((param) => param[0] !== 'sort')
+        .map((param) => ({ attribute: param[0], values: param[1].split(',') })),
+    };
+    return urlQueryState;
+  }
 
   useEffect(() => {
     async function getProducts() {
+      const urlQueryState = getQueryStateFromSearchParams(searchParams);
+      dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
+
       const queryArgs = {
         queryArgs: {
           facet: FacetQueries,
-          sort: [searchParams.get('sort') || queryState.sort], //  ['price desc'], ['name.en-us asc']
-          filter: [...searchParams.entries()]
-            .filter((param) => param[0] !== 'sort')
-            .map((param) => `variants.attributes.${param[0]}:${param[1]}`),
+          sort: [urlQueryState.sort], //  ['price desc'], ['name.en-us asc']
+          filter: urlQueryState.filters.map(
+            (filter) => `variants.attributes.${filter.attribute}:${filter.values.join(',')}`
+          ),
         },
       };
       const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute().then();
       setFacets(searchRes.body.facets);
       setProducts(searchRes.body.results);
     }
-
     getProducts();
-  }, [queryState.sort, searchParams]);
+  }, [dispatch, searchParams]);
 
   function handleFilter() {
     const queryUrl = new URLSearchParams();

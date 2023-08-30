@@ -2,7 +2,7 @@ import { FacetResult } from '@commercetools/platform-sdk/dist/declarations/src/g
 import React from 'react';
 import { facetsNames } from '../../pages/catalog/types';
 import styles from './Filter.module.scss';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { querySlice } from '../../reducers/QuerySlice';
 
 type FilterProps = {
@@ -10,11 +10,14 @@ type FilterProps = {
 };
 
 export default function Filter({ facet }: FilterProps) {
+  const { filters } = useAppSelector((state) => state.queryReducer);
   const dispatch = useAppDispatch();
+
   const [facetName, facetData] = facet;
 
   const attribute = facetName.slice(facetName.lastIndexOf('.') + 1);
   const filterTitle = facetsNames.find((item) => item.attribute === attribute)?.nameEn || 'No name';
+  const filter = filters.find((item) => item.attribute === attribute);
 
   function handleAdd(value: string) {
     dispatch(querySlice.actions.addFilterQuery({ attribute, value }));
@@ -41,6 +44,7 @@ export default function Filter({ facet }: FilterProps) {
             <p key={term.term}>
               <input
                 type="checkbox"
+                checked={!!(filter && filter.values.includes(`"${term.term}"`))}
                 onChange={(e) => handleClickCheckbox(e.target.checked, `"${term.term}"`)}
                 id={term.term}
               />

@@ -6,7 +6,7 @@ type FilterQuery = {
   values: string[];
 };
 
-type QueryState = {
+export type QueryState = {
   filters: FilterQuery[];
   sort: string;
 };
@@ -25,6 +25,9 @@ const querySlice = createSlice({
   name: 'query',
   initialState,
   reducers: {
+    loadQueriesFromParams(state, action: PayloadAction<QueryState>) {
+      return action.payload;
+    },
     addFilterQuery(state, action: PayloadAction<QueryData>) {
       const { payload } = action;
       const indexInState = state.filters.findIndex((filter) => filter.attribute === payload.attribute);
