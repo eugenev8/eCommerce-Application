@@ -18,7 +18,6 @@ export default function SwiperContainer({ imageUrlArray }: SwiperProps) {
       slidesPerView={1}
       navigation
       pagination={{ clickable: true }}
-      scrollbar={{ draggable: true }}
     >
       {imageUrlArray.map((url) => {
         return (
