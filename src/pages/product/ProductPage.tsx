@@ -7,6 +7,9 @@ import Wrapper from '../../components/wrapper/Wrapper';
 import SwiperContainer from '../../components/swiper/Swiper';
 import FlexContainer from '../../components/containers/FlexContainer';
 import apiRoots from '../../sdk/apiRoots';
+import LoaderSpinner from '../../components/loader/Loader';
+import ModalContainer from '../../components/modal/ModalContainer';
+import Button from '../../components/buttons/Buttons';
 
 type CurrencyCode = 'USD' | 'EUR';
 
@@ -16,6 +19,8 @@ export default function ProductPage() {
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     if (!productID) {
@@ -77,7 +82,7 @@ export default function ProductPage() {
             minHeight: '60vh',
           }}
         >
-          <h2>Loading...</h2>
+          <LoaderSpinner />
         </FlexContainer>
       </Wrapper>
     );
@@ -104,6 +109,11 @@ export default function ProductPage() {
   const { masterVariant, variants } = product.masterData.current;
   const allVariants = [masterVariant, ...variants];
 
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsModalOpen(true);
+  };
+
   function getImagesForVariant() {
     if (selectedVariant && selectedVariant.images) {
       return selectedVariant.images.map((image) => image.url);
@@ -116,7 +126,7 @@ export default function ProductPage() {
     const price = data?.prices?.find((p) => p.value.currencyCode === currencyCode);
 
     if (price) {
-      return `${price.value.centAmount / 100}`;
+      return price.value.centAmount / 100;
     }
 
     return null;
@@ -126,7 +136,7 @@ export default function ProductPage() {
     const price = data?.prices?.find((p) => p.value.currencyCode === currencyCode);
 
     if (price && price.discounted) {
-      return `${price.discounted.value.centAmount / 100}`;
+      return price.discounted.value.centAmount / 100;
     }
 
     return null;
@@ -141,14 +151,16 @@ export default function ProductPage() {
     const price = getPriceForCountry(selectedVariant, 'USD');
     const discPrice = getDiscountedPriceForCountry(selectedVariant, 'USD');
 
+    if (!price) return <p>Price not set yet!</p>;
+
     if (!discPrice) {
-      return <div className={`${styles.price}`}>${price}</div>;
+      return <div className={`${styles.price}`}>${price.toFixed(2)}</div>;
     }
 
     return (
       <div className={`${styles.price}`}>
-        <span className={`${styles.product__oldPrice}`}>${price}</span>{' '}
-        <span className={`${styles.product__discPrice}`}>${discPrice}</span>
+        <span className={`${styles.product__oldPrice}`}>${price.toFixed(2)}</span>{' '}
+        <span className={`${styles.product__discPrice}`}>${discPrice.toFixed(2)}</span>
       </div>
     );
   };
@@ -165,9 +177,9 @@ export default function ProductPage() {
           <p>SKU: {selectedVariant?.sku}</p>
         </div>
 
-        <FlexContainer style={{ width: '500px', height: '500px' }}>
-          <SwiperContainer imageUrlArray={images} />
-        </FlexContainer>
+        <div className={`${styles.product__slider}`}>
+          <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
+        </div>
       </div>
 
       <table>
@@ -198,6 +210,35 @@ export default function ProductPage() {
       </table>
 
       {renderPrice()}
+
+      <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
+        {images.length > 0 && (
+          <>
+            <img
+              src={images[selectedImageIndex]}
+              alt={`${selectedImageIndex + 1}`}
+              style={{
+                display: 'block',
+                width: '70vw',
+                maxWidth: 'max-content',
+                height: '70vh',
+                objectFit: 'contain',
+                borderRadius: '5px',
+                overflow: 'hidden',
+              }}
+            />
+            <Button
+              styling="secondary"
+              innerText="Close"
+              variant="default"
+              type="button"
+              addedClass=""
+              style={{ margin: 'auto' }}
+              onClick={() => setIsModalOpen(false)}
+            />
+          </>
+        )}
+      </ModalContainer>
     </Wrapper>
   );
 }

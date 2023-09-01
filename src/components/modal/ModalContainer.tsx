@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 import Modal from 'react-modal';
 import FlexContainer from '../containers/FlexContainer';
 
+import './Modal.scss';
+
 interface ModalContainerProps {
   isOpen: boolean;
   onRequestClose: () => void;
