@@ -8,11 +8,13 @@ interface FilterQuery extends FacetName {
 
 export type QueryState = {
   filters: FilterQuery[];
+  priceFilter: FilterQuery | null;
   sort: string;
 };
 
 const initialState: QueryState = {
   filters: [],
+  priceFilter: null,
   sort: SORTING_TYPES[0].queryString,
 };
 
@@ -50,6 +52,22 @@ const querySlice = createSlice({
         (value) => value !== payload.value
       );
 
+      return state;
+    },
+    setSortType(state, action: PayloadAction<string>) {
+      state.sort = action.payload;
+      return state;
+    },
+    addPriceFilter(state, action: PayloadAction<FilterQuery>) {
+      state.priceFilter = action.payload;
+      return state;
+    },
+    changePriceFilter(state, action: PayloadAction<string[]>) {
+      if (state.priceFilter) state.priceFilter.values = action.payload;
+      return state;
+    },
+    deletePriceFilter(state) {
+      state.priceFilter = null;
       return state;
     },
     clearCustomerData() {

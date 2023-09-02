@@ -1,35 +1,48 @@
 import { useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import ProductCard from '../../components/productCard/productCard';
 import styles from './CatalogPage.module.scss';
 import Filter from '../../components/filter/Filter';
 import Wrapper from '../../components/wrapper/Wrapper';
-import { SORTING_TYPES } from './types';
-import PriceFilter from '../../components/rangeFilter/PriceFilter';
+import { PRICE_FACET, SORTING_TYPES } from './types';
+import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
+import { querySlice } from '../../reducers/QuerySlice';
+
+function createPriceFilterQuery(values: string[]) {
+  const [min, max] = values;
+
+  if (min !== '*' && max !== '*' && Number(min) >= Number(max)) {
+    return '';
+  }
+  return `(${min} to ${max})`;
+}
 
 export default function CatalogPage() {
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
-
   const { facets, products } = useUrlParams();
+  const dispatch = useAppDispatch();
 
   function handleFilter() {
     const queryUrl = new URLSearchParams();
-    queryUrl.set('sort', queryState.sort);
+    if (queryState.sort) queryUrl.set('sort', queryState.sort);
     queryState.filters.forEach((filter) => {
       queryUrl.set(filter.attribute, filter.values.join(','));
     });
+    if (queryState.priceFilter) {
+      const priceFilterQuery = createPriceFilterQuery(queryState.priceFilter.values);
+      if (!priceFilterQuery) {
+        console.log('Min>=Max!');
+        return;
+      }
+      queryUrl.set(queryState.priceFilter.attribute, priceFilterQuery);
+    }
     navigate(`./?${queryUrl.toString()}`);
   }
 
-  function handleChangeSortType(newType: string) {
-    const queryUrl = new URLSearchParams();
-    queryUrl.set('sort', newType);
-    queryState.filters.forEach((filter) => {
-      queryUrl.set(filter.attribute, filter.values.join(','));
-    });
-    navigate(`./?${queryUrl.toString()}`);
+  function handleChangeSortType(newSortType: string) {
+    dispatch(querySlice.actions.setSortType(newSortType));
   }
 
   return (
@@ -49,9 +62,11 @@ export default function CatalogPage() {
       <div className={styles.catalog}>
         {facets &&
           Object.entries(facets).map((facetData) => {
-            const [attribute] = facetData;
-            if (attribute === 'ss') return <PriceFilter facet={facetData} key={attribute} />;
-            return <Filter facet={facetData} key={facetData[0]} />;
+            const [queryAttribute] = facetData;
+            if (queryAttribute === PRICE_FACET.query) {
+              return <PriceFilter facet={facetData} key={queryAttribute} />;
+            }
+            return <Filter facet={facetData} key={queryAttribute} />;
           })}
       </div>
 

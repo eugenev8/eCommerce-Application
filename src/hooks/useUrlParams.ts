@@ -5,9 +5,14 @@ import {
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useSearchParams } from 'react-router-dom';
 import { querySlice, QueryState } from '../reducers/QuerySlice';
-import { FACETS_NAMES } from '../pages/catalog/types';
+import { FACETS_NAMES, PRICE_FACET } from '../pages/catalog/types';
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch } from './redux';
+
+function getPriceParamsFromString(stringValues: string) {
+  const values = stringValues.slice(1, -1).split(' ');
+  return [values[0], values[2]];
+}
 
 export default function useUrlParams() {
   const [products, setProducts] = useState<ProductProjection[]>([]);
@@ -19,6 +24,7 @@ export default function useUrlParams() {
     const urlQueryState: QueryState = {
       sort: '',
       filters: [],
+      priceFilter: null,
     };
 
     [...params.entries()].forEach((param) => {
@@ -28,7 +34,7 @@ export default function useUrlParams() {
           urlQueryState.sort = values;
           break;
         case 'price':
-          urlQueryState.sort = values;
+          urlQueryState.priceFilter = { ...PRICE_FACET, values: getPriceParamsFromString(values) };
           break;
         default:
           // eslint-disable-next-line no-case-declarations
@@ -44,7 +50,8 @@ export default function useUrlParams() {
 
   useEffect(() => {
     async function getProducts() {
-      const facetQueries = FACETS_NAMES.map((facet) => `variants.attributes.${facet.attribute}`);
+      const facetQueries = FACETS_NAMES.map((facet) => facet.query);
+      facetQueries.push(PRICE_FACET.query);
       const urlQueryState = getQueryStateFromSearchParams(searchParams);
       dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
 
@@ -55,6 +62,10 @@ export default function useUrlParams() {
           filter: urlQueryState.filters.map((filter) => `${filter.query}:${filter.values.join(',')}`),
         },
       };
+      if (urlQueryState.priceFilter)
+        queryArgs.queryArgs.filter.push(
+          `${PRICE_FACET.query}:range (${urlQueryState.priceFilter.values[0]} to ${urlQueryState.priceFilter.values[1]})`
+        );
       const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute();
       setFacets(searchRes.body.facets);
       setProducts(searchRes.body.results);

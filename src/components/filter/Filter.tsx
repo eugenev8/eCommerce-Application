@@ -1,4 +1,9 @@
-import { FacetResult } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
+import {
+  FacetResult,
+  FilteredFacetResult,
+  RangeFacetResult,
+  TermFacetResult,
+} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import React from 'react';
 import { FACETS_NAMES } from '../../pages/catalog/types';
 import styles from './Filter.module.scss';
@@ -8,6 +13,10 @@ import { querySlice } from '../../reducers/QuerySlice';
 type FilterProps = {
   facet: [string, FacetResult];
 };
+
+function isTermType(value: FilteredFacetResult | RangeFacetResult | TermFacetResult): value is TermFacetResult {
+  return value.type === 'terms';
+}
 
 export default function Filter({ facet }: FilterProps) {
   const { filters } = useAppSelector((state) => state.queryReducer);
@@ -33,7 +42,7 @@ export default function Filter({ facet }: FilterProps) {
   return (
     <div className={styles.filter}>
       <h4>{facetInfo.nameEn}</h4>
-      {facetData.type === 'terms' &&
+      {isTermType(facetData) &&
         facetData.terms.map((term) => {
           return (
             <p key={term.term}>

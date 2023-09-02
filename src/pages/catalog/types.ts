@@ -34,7 +34,7 @@ const FACETS_NAMES: FacetName[] = [
 
 const PRICE_FACET: FacetName = {
   attribute: 'price',
-  query: 'variants.price.centAmount:range',
+  query: 'variants.price.centAmount',
   nameEn: 'Price',
 };
 
@@ -45,19 +45,19 @@ interface SortingType {
 
 const SORTING_TYPES: SortingType[] = [
   {
-    name: 'price ↓',
+    name: 'price \u2193',
     queryString: 'price desc',
   },
   {
-    name: 'price ↑',
+    name: 'price \u2191',
     queryString: 'price asc',
   },
   {
-    name: 'name ↓',
+    name: 'name \u2193',
     queryString: 'name.en-us desc',
   },
   {
-    name: 'name ↑',
+    name: 'name \u2191',
     queryString: 'name.en-us asc',
   },
 ];
