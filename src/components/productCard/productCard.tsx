@@ -1,4 +1,5 @@
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
+import { NavLink } from 'react-router-dom';
 import styles from './productCard.module.scss';
 import TempVariant from './TempVariant';
 
@@ -8,7 +9,6 @@ type TempProductProps = {
 
 function ProductCard({ productProjection }: TempProductProps) {
   const { name, categories, variants, masterVariant } = productProjection;
-  // variants.unshift(masterVariant);
   const allVariants = [masterVariant, ...variants];
   const locale = 'en-US';
 
@@ -23,10 +23,7 @@ function ProductCard({ productProjection }: TempProductProps) {
         <TempVariant className={styles.product__variant} variant={variant} key={variant.id} />
       ))}
 
-      {/* <p>{vars.images ? vars.images.length : 'no images'}</p>
-      {vars.images && vars.images.length && (
-        <img className={styles.product__image} src={vars.images[0].url} alt={vars.images[0].label || name[locale]} />
-      )} */}
+      <NavLink to={`./${productProjection.id}`}>Go to page</NavLink>
     </div>
   );
 }
