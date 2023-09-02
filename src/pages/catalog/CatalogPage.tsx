@@ -1,60 +1,18 @@
-/* eslint-disable no-case-declarations */
-import {
-  FacetResults,
-  ProductProjection,
-} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
-import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../../hooks/redux';
 import ProductCard from '../../components/productCard/productCard';
 import styles from './CatalogPage.module.scss';
-
 import Filter from '../../components/filter/Filter';
-
 import Wrapper from '../../components/wrapper/Wrapper';
-import apiRoots from '../../sdk/apiRoots';
-import { FACETS_NAMES, SORTING_TYPES } from './types';
-import { querySlice, QueryState } from '../../reducers/QuerySlice';
+import { SORTING_TYPES } from './types';
+import PriceFilter from '../../components/rangeFilter/PriceFilter';
+import useUrlParams from '../../hooks/useUrlParams';
 
 export default function CatalogPage() {
-  const [products, setProducts] = useState<ProductProjection[]>([]);
-  const [facets, setFacets] = useState<FacetResults | null>(null);
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const queryState = useAppSelector((state) => state.queryReducer);
 
-  function getQueryStateFromSearchParams(params: URLSearchParams) {
-    const urlQueryState: QueryState = {
-      sort: params.get('sort') || 'price desc',
-      filters: [...params.entries()]
-        .filter((param) => param[0] !== 'sort')
-        .map((param) => ({ attribute: param[0], values: param[1].split(',') })),
-    };
-    return urlQueryState;
-  }
-
-  useEffect(() => {
-    async function getProducts() {
-      const facetQueries = FACETS_NAMES.map((facet) => `variants.attributes.${facet.attribute}`);
-      const urlQueryState = getQueryStateFromSearchParams(searchParams);
-      dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
-
-      const queryArgs = {
-        queryArgs: {
-          facet: facetQueries,
-          sort: [urlQueryState.sort], //  ['price desc'], ['name.en-us asc']
-          filter: urlQueryState.filters.map(
-            (filter) => `variants.attributes.${filter.attribute}:${filter.values.join(',')}`
-          ),
-        },
-      };
-      const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute().then();
-      setFacets(searchRes.body.facets);
-      setProducts(searchRes.body.results);
-    }
-    getProducts();
-  }, [dispatch, searchParams]);
+  const { facets, products } = useUrlParams();
 
   function handleFilter() {
     const queryUrl = new URLSearchParams();
@@ -91,6 +49,8 @@ export default function CatalogPage() {
       <div className={styles.catalog}>
         {facets &&
           Object.entries(facets).map((facetData) => {
+            const [attribute] = facetData;
+            if (attribute === 'ss') return <PriceFilter facet={facetData} key={attribute} />;
             return <Filter facet={facetData} key={facetData[0]} />;
           })}
       </div>

@@ -13,31 +13,26 @@ export default function Filter({ facet }: FilterProps) {
   const { filters } = useAppSelector((state) => state.queryReducer);
   const dispatch = useAppDispatch();
 
-  const [facetName, facetData] = facet;
+  const [facetQuery, facetData] = facet;
 
-  const attribute = facetName.slice(facetName.lastIndexOf('.') + 1);
-  const filterTitle = FACETS_NAMES.find((item) => item.attribute === attribute)?.nameEn || 'No name';
-  const filter = filters.find((item) => item.attribute === attribute);
-
-  function handleAdd(value: string) {
-    dispatch(querySlice.actions.addFilterQuery({ attribute, value }));
+  const facetInfo = FACETS_NAMES.find((item) => item.query === facetQuery);
+  if (!facetInfo) {
+    return null;
   }
 
-  function handleRemove(value: string) {
-    dispatch(querySlice.actions.removeFilterQuery({ attribute, value }));
-  }
+  const filter = filters.find((item) => item.attribute === facetInfo.attribute);
 
-  function handleClickCheckbox(value: boolean, attributeStr: string) {
-    if (value) {
-      handleAdd(attributeStr);
+  function handleClickCheckbox(isChecked: boolean, attributeValue: string) {
+    if (isChecked) {
+      dispatch(querySlice.actions.addFilterQuery({ ...facetInfo!, value: attributeValue }));
     } else {
-      handleRemove(attributeStr);
+      dispatch(querySlice.actions.removeFilterQuery({ ...facetInfo!, value: attributeValue }));
     }
   }
 
   return (
     <div className={styles.filter}>
-      <h4>{filterTitle}</h4>
+      <h4>{facetInfo.nameEn}</h4>
       {facetData.type === 'terms' &&
         facetData.terms.map((term) => {
           return (

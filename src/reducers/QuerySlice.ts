@@ -1,10 +1,10 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { FacetName, SORTING_TYPES } from '../pages/catalog/types';
 
-type FilterQuery = {
-  attribute: string;
+interface FilterQuery extends FacetName {
   values: string[];
-};
+}
 
 export type QueryState = {
   filters: FilterQuery[];
@@ -13,26 +13,25 @@ export type QueryState = {
 
 const initialState: QueryState = {
   filters: [],
-  sort: 'price desc',
+  sort: SORTING_TYPES[0].queryString,
 };
 
-type QueryData = {
-  attribute: string;
+interface QueryData extends FacetName {
   value: string;
-};
+}
 
 const querySlice = createSlice({
   name: 'query',
   initialState,
   reducers: {
-    loadQueriesFromParams(state, action: PayloadAction<QueryState>) {
+    loadQueriesFromParams(_, action: PayloadAction<QueryState>) {
       return action.payload;
     },
     addFilterQuery(state, action: PayloadAction<QueryData>) {
       const { payload } = action;
       const indexInState = state.filters.findIndex((filter) => filter.attribute === payload.attribute);
       if (indexInState < 0) {
-        state.filters.push({ attribute: payload.attribute, values: [payload.value] });
+        state.filters.push({ ...payload, values: [payload.value] });
         return state;
       }
       state.filters[indexInState].values.push(payload.value);
