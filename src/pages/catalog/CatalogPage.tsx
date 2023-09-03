@@ -8,6 +8,7 @@ import { PRICE_FACET, SORTING_TYPES } from './types';
 import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
 import { querySlice } from '../../reducers/QuerySlice';
+import toaster from '../../services/toaster';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -33,7 +34,7 @@ export default function CatalogPage() {
     if (queryState.priceFilter) {
       const priceFilterQuery = createPriceFilterQuery(queryState.priceFilter.values);
       if (!priceFilterQuery) {
-        console.log('Min>=Max!');
+        toaster.showError('Error in price filter! Specify correct values');
         return;
       }
       queryUrl.set(queryState.priceFilter.attribute, priceFilterQuery);
