@@ -1,5 +1,5 @@
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './productCard.module.scss';
 import TempVariant from './TempVariant';
 
@@ -23,7 +23,7 @@ function ProductCard({ productProjection }: TempProductProps) {
         <TempVariant className={styles.product__variant} variant={variant} key={variant.id} />
       ))}
 
-      <NavLink to={`./${productProjection.id}`}>Go to page</NavLink>
+      <Link to={`./${productProjection.id}`}>Go to page</Link>
     </div>
   );
 }
