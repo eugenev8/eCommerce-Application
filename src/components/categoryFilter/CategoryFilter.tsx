@@ -41,9 +41,8 @@ export default function CategoryFilter() {
       <Tree
         selectedKeys={[checkedCat]}
         showIcon={false}
-        autoExpandParent
-        expandedKeys={[checkedCat]}
         treeData={categoriesTree}
+        defaultExpandAll
         onSelect={(selectedKeys) => handleSelect(selectedKeys)}
         height={300}
       />
