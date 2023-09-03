@@ -1,31 +1,92 @@
-import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
-import { Link } from 'react-router-dom';
-import styles from './productCard.module.scss';
-import TempVariant from './TempVariant';
+import { ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
 
-type TempProductProps = {
+import { useNavigate } from 'react-router-dom';
+import styles from './ProductCard.module.scss';
+
+type ProductCardProps = {
   productProjection: ProductProjection;
+  variantID: number;
+  type: 'wide' | 'small';
 };
 
-function ProductCard({ productProjection }: TempProductProps) {
-  const { name, categories, variants, masterVariant } = productProjection;
-  const allVariants = [masterVariant, ...variants];
-  const locale = 'en-US';
+export function getPriceForCountry(data: ProductVariant) {
+  const price = data?.prices?.find((p) => p.value.currencyCode === 'USD');
+
+  if (price) {
+    return price.value.centAmount / 100;
+  }
+
+  return null;
+}
+
+export function getDiscountedPriceForCountry(data: ProductVariant) {
+  const price = data?.prices?.find((p) => p.value.currencyCode === 'USD');
+
+  if (price && price.discounted) {
+    return price.discounted.value.centAmount / 100;
+  }
+
+  return null;
+}
+
+export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
+  const navigate = useNavigate();
+  const variant =
+    variantID === 1
+      ? productProjection.masterVariant
+      : productProjection.variants.find((productVariant) => productVariant?.id === variantID);
+
+  if (!variant) {
+    return <p>Variant not found</p>;
+  }
+  const images = variant.images?.map((image) => image.url);
+
+  const renderPrice = () => {
+    const price = getPriceForCountry(variant);
+    const discPrice = getDiscountedPriceForCountry(variant);
+
+    if (!price) return <p>Price not set yet!</p>;
+
+    if (!discPrice) {
+      return <div className={`${styles.price}`}>${price.toFixed(2)}</div>;
+    }
+
+    return (
+      <div className={`${styles.price}`}>
+        <span className={`${styles.product__oldPrice}`}>${price.toFixed(2)}</span>{' '}
+        <span className={`${styles.product__discPrice}`}>${discPrice.toFixed(2)}</span>
+      </div>
+    );
+  };
 
   return (
-    <div className={styles.product}>
-      <p>{name[locale]}</p>
-      <p>Cat. :{categories[0].id.slice(0, 12)}...</p>
-
-      <p>Variants {allVariants.length}</p>
-
-      {allVariants.map((variant) => (
-        <TempVariant className={styles.product__variant} variant={variant} key={variant.id} />
-      ))}
-
-      <Link to={`./${productProjection.id}`}>Go to page</Link>
+    <div
+      onClick={() => navigate(`/catalog/${productProjection.id}`)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          navigate(`/catalog/${productProjection.id}`);
+        }
+      }}
+      className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
+    >
+      <div className={`${styles.productCard__images}`}>{images?.length && <img src={images[0]} alt="Main" />}</div>
+      <div className={`${styles.productCard__info}`}>
+        {renderPrice()}
+        <p>{productProjection.name['en-US']}</p>
+      </div>
+      {variant.attributes?.length && (
+        <div className={`${styles.productCard__attributes}`}>
+          {variant.attributes.map((attribute) => {
+            return (
+              <p key={attribute.name + attribute.value}>
+                {attribute.name}: {typeof attribute.value === 'object' ? attribute.value.label : attribute.value}
+              </p>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
-
-export default ProductCard;
