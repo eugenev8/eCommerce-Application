@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Product, ProductVariant } from '@commercetools/platform-sdk';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import styles from './ProductPage.module.scss';
@@ -21,6 +21,7 @@ export default function ProductPage() {
   const [isError, setIsError] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const searchProductMemoized = useMemo(() => {
     return async (id: string) => {
@@ -72,14 +73,22 @@ export default function ProductPage() {
     const oldTitle = document.title;
 
     if (product) {
-      setSelectedVariant(product.masterData.current.masterVariant);
+      if (searchParams.has('variant') && searchParams.get('variant') !== '1') {
+        const id = searchParams.get('variant') || '2';
+        const variant = product.masterData.current.variants.find((productVariant) => {
+          return productVariant.id === +id;
+        });
+        setSelectedVariant(variant);
+      } else {
+        setSelectedVariant(product.masterData.current.masterVariant);
+      }
       document.title = product.masterData.current.name['en-US'];
     }
 
     return () => {
       document.title = oldTitle;
     };
-  }, [product]);
+  }, [product, searchParams]);
 
   if (isLoading)
     return (
@@ -187,6 +196,7 @@ export default function ProductPage() {
         <div className={`${styles.product__block}`}>
           <div className={`${styles.product__description}`}>
             <h2>{product.masterData.current.name['en-US']}</h2>
+            {!selectedVariant && <h3>Incorrect product variant. Please choose another variant!</h3>}
             <p>{formattedDescription}</p>
             <p>SKU: {selectedVariant?.sku}</p>
           </div>
@@ -208,6 +218,8 @@ export default function ProductPage() {
               <tr
                 key={productVariant.id}
                 onClick={() => {
+                  const variantParam = { variant: productVariant.id.toString() };
+                  setSearchParams(variantParam);
                   setSelectedVariant(productVariant);
                 }}
                 className={productVariant === selectedVariant ? styles.selectedVariant : ''}
