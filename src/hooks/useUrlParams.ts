@@ -24,6 +24,7 @@ export default function useUrlParams() {
     const urlQueryState: QueryState = {
       sort: '',
       filters: [],
+      category: '',
       priceFilter: null,
     };
 
@@ -32,6 +33,9 @@ export default function useUrlParams() {
       switch (attribute) {
         case 'sort':
           urlQueryState.sort = values;
+          break;
+        case 'categories.id':
+          urlQueryState.category = values;
           break;
         case 'price':
           urlQueryState.priceFilter = { ...PRICE_FACET, values: getPriceParamsFromString(values) };
@@ -66,6 +70,8 @@ export default function useUrlParams() {
         queryArgs.queryArgs.filter.push(
           `${PRICE_FACET.query}:range (${urlQueryState.priceFilter.values[0]} to ${urlQueryState.priceFilter.values[1]})`
         );
+      if (urlQueryState.category)
+        queryArgs.queryArgs.filter.push(`categories.id: subtree("${urlQueryState.category}")`);
       const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute();
       setFacets(searchRes.body.facets);
       setProducts(searchRes.body.results);

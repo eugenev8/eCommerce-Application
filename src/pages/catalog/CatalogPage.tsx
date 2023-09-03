@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+// import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import ProductCard from '../../components/productCard/productCard';
 import styles from './CatalogPage.module.scss';
@@ -9,6 +10,7 @@ import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
 import { querySlice } from '../../reducers/QuerySlice';
 import toaster from '../../services/toaster';
+import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -39,8 +41,15 @@ export default function CatalogPage() {
       }
       queryUrl.set(queryState.priceFilter.attribute, priceFilterQuery);
     }
+    if (queryState.category) {
+      queryUrl.set('categories.id', queryState.category);
+    }
     navigate(`./?${queryUrl.toString()}`);
   }
+
+  // useEffect(() => {
+  //   handleFilter();
+  // }, [queryState.sort, queryState.category]);
 
   function handleChangeSortType(newSortType: string) {
     dispatch(querySlice.actions.setSortType(newSortType));
@@ -59,6 +68,7 @@ export default function CatalogPage() {
           </option>
         ))}
       </select>
+      <CategoryFilter />
 
       <div className={styles.catalog}>
         {facets &&
