@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-// import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import ProductCard from '../../components/productCard/productCard';
 import styles from './CatalogPage.module.scss';
@@ -11,6 +10,7 @@ import useUrlParams from '../../hooks/useUrlParams';
 import { querySlice } from '../../reducers/QuerySlice';
 import toaster from '../../services/toaster';
 import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
+import TextFilter from '../../components/textFilter/TextFilter';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -29,10 +29,10 @@ export default function CatalogPage() {
 
   function handleFilter() {
     const queryUrl = new URLSearchParams();
-    if (queryState.sort) queryUrl.set('sort', queryState.sort);
     queryState.filters.forEach((filter) => {
       queryUrl.set(filter.attribute, filter.values.join(','));
     });
+
     if (queryState.priceFilter) {
       const priceFilterQuery = createPriceFilterQuery(queryState.priceFilter.values);
       if (!priceFilterQuery) {
@@ -44,12 +44,12 @@ export default function CatalogPage() {
     if (queryState.category) {
       queryUrl.set('categories.id', queryState.category);
     }
+
+    if (queryState.search) queryUrl.set('search', queryState.search);
+
+    if (queryState.sort) queryUrl.set('sort', queryState.sort);
     navigate(`./?${queryUrl.toString()}`);
   }
-
-  // useEffect(() => {
-  //   handleFilter();
-  // }, [queryState.sort, queryState.category]);
 
   function handleChangeSortType(newSortType: string) {
     dispatch(querySlice.actions.setSortType(newSortType));
@@ -70,6 +70,7 @@ export default function CatalogPage() {
       </select>
       <CategoryFilter />
 
+      <TextFilter />
       <div className={styles.catalog}>
         {facets &&
           Object.entries(facets).map((facetData) => {

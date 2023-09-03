@@ -11,11 +11,13 @@ export type QueryState = {
   priceFilter: FilterQuery | null;
   category: string;
   sort: string;
+  search: string;
 };
 
 const initialState: QueryState = {
   filters: [],
   priceFilter: null,
+  search: '',
   category: 'root',
   sort: SORTING_TYPES[0].queryString,
 };
@@ -70,6 +72,10 @@ const querySlice = createSlice({
     },
     deletePriceFilter(state) {
       state.priceFilter = null;
+      return state;
+    },
+    changeSearchText(state, action: PayloadAction<string>) {
+      state.search = action.payload;
       return state;
     },
     changeCategory(state, action: PayloadAction<string>) {
