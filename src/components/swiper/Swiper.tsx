@@ -23,7 +23,7 @@ export default function SwiperContainer({ imageUrlArray, onImageClick }: SwiperP
       {imageUrlArray.map((url, index) => {
         return (
           <SwiperSlide key={url} onClick={() => onImageClick(index)}>
-            <img src={url} alt="" />
+            <img src={url} alt="" loading="lazy" />
           </SwiperSlide>
         );
       })}
