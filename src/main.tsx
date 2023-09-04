@@ -48,7 +48,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: `${routesPaths.catalog}/:productID`,
+        path: `product/:productKey`,
         element: <ProductPage />,
         handle: {
           crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
