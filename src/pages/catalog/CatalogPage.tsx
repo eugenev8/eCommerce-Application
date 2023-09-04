@@ -10,24 +10,17 @@ import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
 import { querySlice, QueryState } from '../../reducers/QuerySlice';
 import toaster from '../../services/toaster';
-import ProductCard, {
-  getDiscountedPriceForCountry,
-  getPriceForCountry,
-} from '../../components/productCard/ProductCard';
+import ProductCard from '../../components/productCard/ProductCard';
 import ProductCardsContainer from '../../components/containers/ProductCardsContainer';
 import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
 import TextFilter from '../../components/textFilter/TextFilter';
 
-type VariantToRender = ProductProjection & {
-  variantToRender: number;
-};
-
-type ValidVariants = ProductProjection & {
+type ProductWithValidIds = ProductProjection & {
   validIds: number[];
 };
 
 const filterVariantsByQuery = (productProjections: ProductProjection[], query: QueryState) => {
-  const { filters, priceFilter } = query;
+  const { filters } = query;
 
   return productProjections.map((product) => {
     const allVariants = [product.masterVariant, ...product.variants];
@@ -37,26 +30,6 @@ const filterVariantsByQuery = (productProjections: ProductProjection[], query: Q
 
         if (!attribute) {
           return false;
-        }
-
-        if (priceFilter && variant.prices) {
-          const discPrice = variant.prices[0].discounted?.value.centAmount;
-          const price = variant.prices[0].value.centAmount;
-          const minPrice = Number(priceFilter.values[0]);
-          const maxPrice = Number(priceFilter.values[1]);
-
-          if (!maxPrice) {
-            if (discPrice) return discPrice >= minPrice;
-            return price >= minPrice;
-          }
-
-          if (!minPrice) {
-            if (discPrice) return discPrice <= maxPrice;
-            return price <= maxPrice;
-          }
-
-          if (discPrice) return discPrice >= minPrice && discPrice <= maxPrice;
-          return price >= minPrice && price <= maxPrice;
         }
 
         if (filter.values.length > 1) {
@@ -94,11 +67,11 @@ export default function CatalogPage() {
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
   const { facets, products } = useUrlParams();
-  const [filteredProducts, setFilteredProducts] = useState<ValidVariants[]>();
   const dispatch = useAppDispatch();
+  const [selectedVariants, setSelectedVariants] = useState<ProductWithValidIds[]>();
 
   useEffect(() => {
-    setFilteredProducts(filterVariantsByQuery(products, queryState));
+    setSelectedVariants(filterVariantsByQuery(products, queryState));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products]);
 
@@ -130,69 +103,11 @@ export default function CatalogPage() {
     dispatch(querySlice.actions.setSortType(newSortType));
   }
 
-  const generateAllItemsOnPage = () => {
-    const items: VariantToRender[] = [];
-
-    if (!filteredProducts) {
-      return null;
-    }
-
-    filteredProducts.forEach((product) => {
-      product.validIds.forEach((id) => {
-        items.push({ ...product, variantToRender: id });
-      });
-    });
-
-    return items;
+  const getVariantIdForRender = (product: ProductWithValidIds) => {
+    const { masterVariant, variants } = product;
+    const allVariants = [masterVariant, ...variants];
+    return allVariants.find((variant) => variant.id === product.validIds[0])?.id || 1;
   };
-  const sortAllItemsOnPage = (items: VariantToRender[]) => {
-    items.sort((a, b) => {
-      const variantA =
-        a.variantToRender === 1 ? a.masterVariant : a.variants.find((variant) => variant.id === a.variantToRender);
-      const variantB =
-        b.variantToRender === 1 ? b.masterVariant : b.variants.find((variant) => variant.id === b.variantToRender);
-
-      if (!variantA || !variantB) {
-        return 0;
-      }
-
-      const discPriceA = getDiscountedPriceForCountry(variantA);
-      const discPriceB = getDiscountedPriceForCountry(variantB);
-      const priceA = getPriceForCountry(variantA);
-      const priceB = getPriceForCountry(variantB);
-
-      if (!priceA || !priceB) {
-        return 0;
-      }
-
-      if (queryState.sort === 'price asc') {
-        return (discPriceA || priceA) - (discPriceB || priceB);
-      }
-
-      if (queryState.sort === 'price desc') {
-        return (discPriceB || priceB) - (discPriceA || priceA);
-      }
-
-      const nameA = a.name['en-US'] || '';
-      const nameB = b.name['en-US'] || '';
-
-      if (queryState.sort === 'name.en-us asc') {
-        return nameA.localeCompare(nameB);
-      }
-
-      if (queryState.sort === 'name.en-us desc') {
-        return nameB.localeCompare(nameA);
-      }
-
-      return 0;
-    });
-  };
-
-  const allItemsOnPage = generateAllItemsOnPage();
-
-  if (allItemsOnPage) {
-    sortAllItemsOnPage(allItemsOnPage);
-  }
 
   return (
     <Wrapper>
@@ -221,15 +136,15 @@ export default function CatalogPage() {
           })}
       </div>
 
-      {allItemsOnPage && allItemsOnPage.length ? (
+      {selectedVariants && selectedVariants.length ? (
         <ProductCardsContainer>
-          {allItemsOnPage &&
-            allItemsOnPage.map((productToRender) => {
+          {selectedVariants &&
+            selectedVariants.map((productToRender) => {
               return (
                 <ProductCard
-                  key={productToRender.id + productToRender.variantToRender}
+                  key={productToRender.id + productToRender.validIds[0]}
                   productProjection={productToRender}
-                  variantID={productToRender.variantToRender}
+                  variantID={getVariantIdForRender(productToRender)}
                   type="small"
                 />
               );

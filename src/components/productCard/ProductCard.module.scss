@@ -13,8 +13,21 @@
 
   padding: 1rem;
 
+  img {
+    transition: all 250ms ease;
+  }
+
   &:hover {
     border: 1px solid $color-6;
+
+    img {
+      transform: scale(1.05);
+    }
+  }
+
+  &:active {
+    box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+    border-color: $color-1;
   }
 
   &__images {
