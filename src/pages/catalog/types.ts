@@ -2,6 +2,7 @@ interface FacetName {
   attribute: string;
   nameEn: string;
   query: string;
+  prefix?: string;
 }
 
 const FACETS_NAMES: FacetName[] = [
@@ -19,16 +20,19 @@ const FACETS_NAMES: FacetName[] = [
     attribute: 'RAM',
     query: 'variants.attributes.RAM',
     nameEn: 'Memory',
+    prefix: 'GB',
   },
   {
     attribute: 'HDD',
     query: 'variants.attributes.HDD',
     nameEn: 'Hard disk',
+    prefix: 'GB',
   },
   {
     attribute: 'Diagonal',
     query: 'variants.attributes.Diagonal',
     nameEn: 'Diagonal',
+    prefix: '"',
   },
 ];
 
