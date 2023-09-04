@@ -3,11 +3,11 @@ import {
   FacetResults,
   ProductProjection,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { querySlice, QueryState } from '../reducers/QuerySlice';
 import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
 import apiRoots from '../sdk/apiRoots';
-import { useAppDispatch } from './redux';
+import { useAppDispatch, useAppSelector } from './redux';
 
 function getPriceParamsFromString(stringValues: string) {
   const values = stringValues.slice(1, -1).split(' ');
@@ -19,13 +19,20 @@ export default function useUrlParams() {
   const [facets, setFacets] = useState<FacetResults | null>(null);
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
+  const { categoryName } = useParams();
+  const categories = useAppSelector((state) => state.categoriesReducer.categories);
 
   function getQueryStateFromSearchParams(params: URLSearchParams) {
+    function getCategoryIdFromParams() {
+      const category = categories?.find((cat) => cat.name['en-US'] === categoryName);
+      return category?.id || '';
+    }
+
     const urlQueryState: QueryState = {
       sort: SORTING_TYPES[0].queryString,
       filters: [],
       search: '',
-      category: '',
+      category: getCategoryIdFromParams(),
       priceFilter: null,
     };
 
@@ -35,9 +42,9 @@ export default function useUrlParams() {
         case 'sort':
           urlQueryState.sort = values;
           break;
-        case 'categories.id':
-          urlQueryState.category = values;
-          break;
+        // case 'categories.id':
+        //   urlQueryState.category = values;
+        //   break;
         case PRICE_FACET.attribute:
           urlQueryState.priceFilter = { ...PRICE_FACET, values: getPriceParamsFromString(values) };
           break;
@@ -62,7 +69,6 @@ export default function useUrlParams() {
       facetQueries.push(PRICE_FACET.query);
 
       const urlQueryState = getQueryStateFromSearchParams(searchParams);
-
       dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
 
       const queryArgs = {
@@ -87,7 +93,8 @@ export default function useUrlParams() {
       setProducts(searchRes.body.results);
     }
     getProducts();
-  }, [dispatch, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, searchParams, categoryName]);
 
   return { products, facets };
 }

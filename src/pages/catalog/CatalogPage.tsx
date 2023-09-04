@@ -44,9 +44,6 @@ export default function CatalogPage() {
       }
       queryUrl.set(queryState.priceFilter.attribute, priceFilterQuery);
     }
-    if (queryState.category) {
-      queryUrl.set('categories.id', queryState.category);
-    }
 
     if (queryState.search) queryUrl.set('search', queryState.search.toLowerCase());
 
