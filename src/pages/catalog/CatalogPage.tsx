@@ -66,47 +66,53 @@ export default function CatalogPage() {
   return (
     <Wrapper>
       <h2>Catalog</h2>
-      <button type="button" onClick={handleFilter}>
-        Filter
-      </button>
-      <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
-        {SORTING_TYPES.map((type) => (
-          <option key={type.name} value={type.queryString}>
-            {type.name}
-          </option>
-        ))}
-      </select>
-      <CategoryFilter />
+      <div className={`${styles.catalog__wrapper}`}>
+        <div className={`${styles.catalog__leftBlock}`}>
+          <button type="button" onClick={handleFilter}>
+            Filter
+          </button>
+          <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
+            {SORTING_TYPES.map((type) => (
+              <option key={type.name} value={type.queryString}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+          <CategoryFilter />
 
-      <TextFilter onEnterKeyPress={handleFilter} />
-      <div className={styles.catalog}>
-        {facets &&
-          Object.entries(facets).map((facetData) => {
-            const [queryAttribute] = facetData;
-            if (queryAttribute === PRICE_FACET.query) {
-              return <PriceFilter facet={facetData} key={queryAttribute} />;
-            }
-            return <Filter facet={facetData} key={queryAttribute} />;
-          })}
+          <TextFilter onEnterKeyPress={handleFilter} />
+          <div className={styles.catalog}>
+            {facets &&
+              Object.entries(facets).map((facetData) => {
+                const [queryAttribute] = facetData;
+                if (queryAttribute === PRICE_FACET.query) {
+                  return <PriceFilter facet={facetData} key={queryAttribute} />;
+                }
+                return <Filter facet={facetData} key={queryAttribute} />;
+              })}
+          </div>
+        </div>
+
+        <div className={`${styles.catalog__rightBlock}`}>
+          {products && products.length ? (
+            <ProductCardsContainer>
+              {products &&
+                products.map((productToRender) => {
+                  return (
+                    <ProductCard
+                      key={productToRender.id}
+                      productProjection={productToRender}
+                      variantID={getVariantIdForRender(productToRender)}
+                      type="small"
+                    />
+                  );
+                })}
+            </ProductCardsContainer>
+          ) : (
+            <p>Items not found, disable some filters!</p>
+          )}
+        </div>
       </div>
-
-      {products && products.length ? (
-        <ProductCardsContainer>
-          {products &&
-            products.map((productToRender) => {
-              return (
-                <ProductCard
-                  key={productToRender.id}
-                  productProjection={productToRender}
-                  variantID={getVariantIdForRender(productToRender)}
-                  type="small"
-                />
-              );
-            })}
-        </ProductCardsContainer>
-      ) : (
-        <p>Items not found, disable some filters!</p>
-      )}
     </Wrapper>
   );
 }

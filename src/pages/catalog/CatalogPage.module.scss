@@ -4,3 +4,23 @@
   gap: 5px;
   padding: 20px;
 }
+
+.catalog__wrapper {
+  display: flex;
+}
+
+.catalog__leftBlock {
+  flex: 0 0 300px;
+
+  display: flex;
+  flex-direction: column;
+
+  position: sticky;
+  top: 10vh;
+  height: 85vh;
+
+  overflow-y: auto;
+}
+
+.catalog__rightBlock {
+}
