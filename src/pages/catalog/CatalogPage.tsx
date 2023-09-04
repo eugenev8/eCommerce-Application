@@ -13,6 +13,7 @@ import ProductCard from '../../components/productCard/ProductCard';
 import ProductCardsContainer from '../../components/containers/ProductCardsContainer';
 import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
 import TextFilter from '../../components/textFilter/TextFilter';
+import Button from '../../components/buttons/Buttons';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -66,47 +67,63 @@ export default function CatalogPage() {
   return (
     <Wrapper>
       <h2>Catalog</h2>
-      <button type="button" onClick={handleFilter}>
-        Filter
-      </button>
-      <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
-        {SORTING_TYPES.map((type) => (
-          <option key={type.name} value={type.queryString}>
-            {type.name}
-          </option>
-        ))}
-      </select>
-      <CategoryFilter />
+      <div className={`${styles.catalog__wrapper}`}>
+        <div className={`${styles.catalog__leftBlock}`}>
+          <Button
+            styling="primary"
+            innerText="Apply"
+            variant="default"
+            type="button"
+            addedClass=""
+            onClick={handleFilter}
+            style={{ margin: '1rem auto' }}
+          />
 
-      <TextFilter onEnterKeyPress={handleFilter} />
-      <div className={styles.catalog}>
-        {facets &&
-          Object.entries(facets).map((facetData) => {
-            const [queryAttribute] = facetData;
-            if (queryAttribute === PRICE_FACET.query) {
-              return <PriceFilter facet={facetData} key={queryAttribute} />;
-            }
-            return <Filter facet={facetData} key={queryAttribute} />;
-          })}
+          <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
+            {SORTING_TYPES.map((type) => (
+              <option key={type.name} value={type.queryString}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+          <CategoryFilter />
+
+          <TextFilter onEnterKeyPress={handleFilter} />
+          <div className={styles.catalog}>
+            {facets &&
+              Object.entries(facets).map((facetData) => {
+                const [queryAttribute] = facetData;
+                if (queryAttribute === PRICE_FACET.query) {
+                  return <PriceFilter facet={facetData} key={queryAttribute} />;
+                }
+                return <Filter facet={facetData} key={queryAttribute} />;
+              })}
+          </div>
+        </div>
+
+        <div className={`${styles.catalog__rightBlock}`}>
+          {products && products.length ? (
+            <>
+              <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+              <ProductCardsContainer>
+                {products &&
+                  products.map((productToRender) => {
+                    return (
+                      <ProductCard
+                        key={productToRender.id}
+                        productProjection={productToRender}
+                        variantID={getVariantIdForRender(productToRender)}
+                        type="small"
+                      />
+                    );
+                  })}
+              </ProductCardsContainer>
+            </>
+          ) : (
+            <p>Items not found, disable some filters!</p>
+          )}
+        </div>
       </div>
-
-      {products && products.length ? (
-        <ProductCardsContainer>
-          {products &&
-            products.map((productToRender) => {
-              return (
-                <ProductCard
-                  key={productToRender.id}
-                  productProjection={productToRender}
-                  variantID={getVariantIdForRender(productToRender)}
-                  type="small"
-                />
-              );
-            })}
-        </ProductCardsContainer>
-      ) : (
-        <p>Items not found, disable some filters!</p>
-      )}
     </Wrapper>
   );
 }

@@ -1,5 +1,23 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
 .filter {
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+.label {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  border-bottom: 1px dotted $color-6;
+
+  padding: 1% 0;
+
+  input[type='checkbox'] {
+    width: 17px;
+    height: 17px;
+  }
 }

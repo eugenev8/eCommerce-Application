@@ -126,6 +126,7 @@ export default function Navigation() {
           </div>
           <div className={`${styles.navbar__block}`}>
             <input
+              className={`${styles.navbar__search}`}
               type="text"
               placeholder="Product search"
               onKeyDown={handleSearch}
