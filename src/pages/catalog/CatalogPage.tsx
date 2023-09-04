@@ -45,7 +45,7 @@ export default function CatalogPage() {
       queryUrl.set('categories.id', queryState.category);
     }
 
-    if (queryState.search) queryUrl.set('search', queryState.search);
+    if (queryState.search) queryUrl.set('search', queryState.search.toLowerCase());
 
     if (queryState.sort) queryUrl.set('sort', queryState.sort);
     navigate(`./?${queryUrl.toString()}`);

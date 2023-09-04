@@ -103,7 +103,7 @@ export default function Navigation() {
   function handleSearch(event: React.KeyboardEvent) {
     if (!searchValue || event.key !== 'Enter') return;
 
-    navigate(`/catalog?search=${searchValue}`);
+    navigate(`/catalog?search=${searchValue.toLowerCase()}`);
     setSearchValue('');
   }
 
