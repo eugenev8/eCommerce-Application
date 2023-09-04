@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
-import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import styles from './CatalogPage.module.scss';
 import Filter from '../../components/filter/Filter';
@@ -8,51 +7,12 @@ import Wrapper from '../../components/wrapper/Wrapper';
 import { PRICE_FACET, SORTING_TYPES } from './types';
 import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
-import { querySlice, QueryState } from '../../reducers/QuerySlice';
+import { querySlice } from '../../reducers/QuerySlice';
 import toaster from '../../services/toaster';
 import ProductCard from '../../components/productCard/ProductCard';
 import ProductCardsContainer from '../../components/containers/ProductCardsContainer';
 import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
 import TextFilter from '../../components/textFilter/TextFilter';
-
-type ProductWithValidIds = ProductProjection & {
-  validIds: number[];
-};
-
-const filterVariantsByQuery = (productProjections: ProductProjection[], query: QueryState) => {
-  const { filters } = query;
-
-  return productProjections.map((product) => {
-    const allVariants = [product.masterVariant, ...product.variants];
-    const filtered = allVariants.filter((variant) => {
-      return filters.every((filter) => {
-        const attribute = variant.attributes?.find((attr) => attr.name === filter.attribute);
-
-        if (!attribute) {
-          return false;
-        }
-
-        if (filter.values.length > 1) {
-          return filter.values.some((value) => {
-            if (typeof attribute.value === 'number') {
-              return Number(value.toString().replace(/"/g, '')) === attribute.value;
-            }
-
-            return value.toString().replace(/"/g, '') === attribute.value;
-          });
-        }
-
-        if (typeof attribute.value === 'number') {
-          return Number(filter.values[0].toString().replace(/"/g, '')) === attribute.value;
-        }
-
-        return filter.values[0].toString().replace(/"/g, '') === attribute.value;
-      });
-    });
-
-    return { ...product, validIds: filtered.map((variant) => variant.id) };
-  });
-};
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -68,12 +28,6 @@ export default function CatalogPage() {
   const queryState = useAppSelector((state) => state.queryReducer);
   const { facets, products } = useUrlParams();
   const dispatch = useAppDispatch();
-  const [selectedVariants, setSelectedVariants] = useState<ProductWithValidIds[]>();
-
-  useEffect(() => {
-    setSelectedVariants(filterVariantsByQuery(products, queryState));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [products]);
 
   const handleFilter = () => {
     const queryUrl = new URLSearchParams();
@@ -103,10 +57,10 @@ export default function CatalogPage() {
     dispatch(querySlice.actions.setSortType(newSortType));
   }
 
-  const getVariantIdForRender = (product: ProductWithValidIds) => {
+  const getVariantIdForRender = (product: ProductProjection) => {
     const { masterVariant, variants } = product;
     const allVariants = [masterVariant, ...variants];
-    return allVariants.find((variant) => variant.id === product.validIds[0])?.id || 1;
+    return allVariants.find((variant) => variant.isMatchingVariant)?.id || 1;
   };
 
   return (
@@ -136,13 +90,13 @@ export default function CatalogPage() {
           })}
       </div>
 
-      {selectedVariants && selectedVariants.length ? (
+      {products && products.length ? (
         <ProductCardsContainer>
-          {selectedVariants &&
-            selectedVariants.map((productToRender) => {
+          {products &&
+            products.map((productToRender) => {
               return (
                 <ProductCard
-                  key={productToRender.id + productToRender.validIds[0]}
+                  key={productToRender.id}
                   productProjection={productToRender}
                   variantID={getVariantIdForRender(productToRender)}
                   type="small"
