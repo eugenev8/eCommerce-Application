@@ -1,0 +1,17 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.input {
+  box-sizing: border-box;
+  width: 175px;
+  color: $color-10;
+  transition: all 250ms ease;
+  outline: none;
+
+  &::placeholder {
+    color: inherit;
+  }
+
+  &:hover {
+    border: 1px solid $gray;
+  }
+}

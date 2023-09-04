@@ -38,6 +38,12 @@ const PRICE_FACET: FacetName = {
   nameEn: 'Price',
 };
 
+const SEARCH_FACET: FacetName = {
+  attribute: 'search',
+  query: 'searchKeywords.en-US.text',
+  nameEn: 'Key search',
+};
+
 interface SortingType {
   name: string;
   queryString: string;
@@ -62,5 +68,5 @@ const SORTING_TYPES: SortingType[] = [
   },
 ];
 
-export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET };
+export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET };
 export type { FacetName };

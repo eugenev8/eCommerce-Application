@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 import useLoginStatus from '../../hooks/useLoginStatus';
 import Wrapper from '../wrapper/Wrapper';
@@ -89,6 +89,8 @@ function BurgerMenu({ isMenuShown, closeMenu, isLoggedIn }: BurgerMenuProps) {
 export default function Navigation() {
   const [isMenuShown, setIsMenuShown] = useState(false);
   const isLoggedIn = useLoginStatus();
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState<string>('');
 
   const handleOnClick = () => {
     setIsMenuShown(!isMenuShown);
@@ -97,6 +99,13 @@ export default function Navigation() {
   const closeMenu = () => {
     setIsMenuShown(false);
   };
+
+  function handleSearch(event: React.KeyboardEvent) {
+    if (!searchValue || event.key !== 'Enter') return;
+
+    navigate(`/catalog?search=${searchValue.toLowerCase()}`);
+    setSearchValue('');
+  }
 
   return (
     <nav className={`${styles.navbar}`}>
@@ -109,6 +118,16 @@ export default function Navigation() {
               Shop
             </NavLinkWithCheck>
           </div>
+          <div className={`${styles.navbar__block}`}>
+            <input
+              type="text"
+              placeholder="Product search"
+              onKeyDown={handleSearch}
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+            />
+          </div>
+
           <div className={`${styles.navbar__block}`}>
             <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
           </div>
