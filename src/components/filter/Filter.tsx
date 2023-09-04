@@ -45,15 +45,19 @@ export default function Filter({ facet }: FilterProps) {
       {isTermType(facetData) &&
         facetData.terms.map((term) => {
           return (
-            <p key={term.term}>
+            <label
+              key={term.term + term.count + term.productCount}
+              className={`${styles.label}`}
+              htmlFor={term.term + term.count + term.productCount}
+            >
+              {`${term.term} `}
               <input
                 type="checkbox"
                 checked={!!(filter && filter.values.includes(`"${term.term}"`))}
                 onChange={(e) => handleClickCheckbox(e.target.checked, `"${term.term}"`)}
-                id={term.term}
+                id={term.term + term.count + term.productCount}
               />
-              <label htmlFor={term.term}>{`${term.term}  (${term.count})`}</label>
-            </p>
+            </label>
           );
         })}
     </div>

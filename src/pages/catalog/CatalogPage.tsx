@@ -13,6 +13,7 @@ import ProductCard from '../../components/productCard/ProductCard';
 import ProductCardsContainer from '../../components/containers/ProductCardsContainer';
 import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
 import TextFilter from '../../components/textFilter/TextFilter';
+import Button from '../../components/buttons/Buttons';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -68,9 +69,16 @@ export default function CatalogPage() {
       <h2>Catalog</h2>
       <div className={`${styles.catalog__wrapper}`}>
         <div className={`${styles.catalog__leftBlock}`}>
-          <button type="button" onClick={handleFilter}>
-            Filter
-          </button>
+          <Button
+            styling="primary"
+            innerText="Apply"
+            variant="default"
+            type="button"
+            addedClass=""
+            onClick={handleFilter}
+            style={{ margin: '1rem auto' }}
+          />
+
           <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
             {SORTING_TYPES.map((type) => (
               <option key={type.name} value={type.queryString}>
@@ -95,19 +103,22 @@ export default function CatalogPage() {
 
         <div className={`${styles.catalog__rightBlock}`}>
           {products && products.length ? (
-            <ProductCardsContainer>
-              {products &&
-                products.map((productToRender) => {
-                  return (
-                    <ProductCard
-                      key={productToRender.id}
-                      productProjection={productToRender}
-                      variantID={getVariantIdForRender(productToRender)}
-                      type="small"
-                    />
-                  );
-                })}
-            </ProductCardsContainer>
+            <>
+              <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+              <ProductCardsContainer>
+                {products &&
+                  products.map((productToRender) => {
+                    return (
+                      <ProductCard
+                        key={productToRender.id}
+                        productProjection={productToRender}
+                        variantID={getVariantIdForRender(productToRender)}
+                        type="small"
+                      />
+                    );
+                  })}
+              </ProductCardsContainer>
+            </>
           ) : (
             <p>Items not found, disable some filters!</p>
           )}
