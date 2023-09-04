@@ -69,6 +69,7 @@ export default function useUrlParams() {
         queryArgs: {
           facet: facetQueries,
           sort: [urlQueryState.sort],
+          markMatchingVariants: true,
           filter: urlQueryState.filters.map((filter) => `${filter.query}:${filter.values.join(',')}`),
         },
       };
