@@ -99,9 +99,10 @@ export default function CatalogPage() {
 
   useEffect(() => {
     setFilteredProducts(filterVariantsByQuery(products, queryState));
-  }, [products, queryState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [products]);
 
-  function handleFilter() {
+  const handleFilter = () => {
     const queryUrl = new URLSearchParams();
     queryState.filters.forEach((filter) => {
       queryUrl.set(filter.attribute, filter.values.join(','));
@@ -123,7 +124,7 @@ export default function CatalogPage() {
 
     if (queryState.sort) queryUrl.set('sort', queryState.sort);
     navigate(`./?${queryUrl.toString()}`);
-  }
+  };
 
   function handleChangeSortType(newSortType: string) {
     dispatch(querySlice.actions.setSortType(newSortType));
@@ -208,7 +209,7 @@ export default function CatalogPage() {
       </select>
       <CategoryFilter />
 
-      <TextFilter />
+      <TextFilter onEnterKeyPress={handleFilter} />
       <div className={styles.catalog}>
         {facets &&
           Object.entries(facets).map((facetData) => {
