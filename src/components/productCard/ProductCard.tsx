@@ -61,7 +61,7 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
 
   return (
     <div
-      onClick={() => navigate(`/catalog/${productProjection.id}`)}
+      onClick={() => navigate(`/catalog/${productProjection.id}?variant=${variant?.id}`)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
@@ -71,7 +71,9 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
       }}
       className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
     >
-      <div className={`${styles.productCard__images}`}>{images?.length && <img src={images[0]} alt="Main" />}</div>
+      <div className={`${styles.productCard__images}`}>
+        {(images?.length && <img src={images[0]} alt="Main" />) || <p>No photo yet</p>}
+      </div>
       <div className={`${styles.productCard__info}`}>
         {renderPrice()}
         <p>{productProjection.name['en-US']}</p>

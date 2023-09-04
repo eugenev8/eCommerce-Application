@@ -8,7 +8,7 @@ import Wrapper from '../../components/wrapper/Wrapper';
 import { PRICE_FACET, SORTING_TYPES } from './types';
 import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
-import { querySlice } from '../../reducers/QuerySlice';
+import { querySlice, QueryState } from '../../reducers/QuerySlice';
 import toaster from '../../services/toaster';
 import ProductCard, {
   getDiscountedPriceForCountry,
