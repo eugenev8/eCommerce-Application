@@ -9,12 +9,14 @@ interface FilterQuery extends FacetName {
 export type QueryState = {
   filters: FilterQuery[];
   priceFilter: FilterQuery | null;
+  category: string;
   sort: string;
 };
 
 const initialState: QueryState = {
   filters: [],
   priceFilter: null,
+  category: 'root',
   sort: SORTING_TYPES[0].queryString,
 };
 
@@ -70,8 +72,9 @@ const querySlice = createSlice({
       state.priceFilter = null;
       return state;
     },
-    clearCustomerData() {
-      return initialState;
+    changeCategory(state, action: PayloadAction<string>) {
+      state.category = action.payload === 'root' ? '' : (state.category = action.payload);
+      return state;
     },
   },
 });

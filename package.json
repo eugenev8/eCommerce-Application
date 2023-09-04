@@ -21,6 +21,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "formik": "^2.4.3",
     "normalize.css": "^8.0.1",
+    "rc-tree": "^5.7.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-modal": "^3.16.1",

@@ -1,0 +1,34 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input_wrapper {
+  display: flex;
+  gap: 5px;
+}
+
+.input {
+  box-sizing: border-box;
+  color: $color-10;
+  width: 100px;
+  transition: all 250ms ease;
+
+  outline: none;
+
+  &::placeholder {
+    color: inherit;
+  }
+
+  &:hover {
+    border: 1px solid $gray;
+  }
+
+  &.input_error {
+    border: 1px solid $error;
+    color: $error;
+  }
+}
