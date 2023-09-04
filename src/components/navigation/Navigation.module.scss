@@ -112,3 +112,38 @@
     }
   }
 }
+
+.navbar__search {
+  display: flex;
+  align-items: center;
+
+  padding: 3% 4%;
+
+  border: 1px solid $color-6;
+  border-radius: 5px;
+
+  background-color: rgba(255, 255, 255, 0.6);
+
+  transition: all 250ms ease;
+
+  outline: none;
+
+  width: 80%;
+
+  &::placeholder {
+    transition: all 250ms ease;
+  }
+
+  &:focus-visible {
+    border: 1px solid $color-5;
+    background-color: rgba(255, 255, 255, 0.85);
+
+    color: $color-7;
+
+    width: 120%;
+
+    &::placeholder {
+      color: $color-7;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.rc-tree-list-holder {
+  overflow-y: unset !important;
+}
+
+.rc-tree-treenode {
+  padding: 2% 0 !important;
+}
+
+.rc-tree-node-content-wrapper {
+  border-radius: 2px;
+
+  transition: all 250ms ease;
+}
+
+.rc-tree-node-selected {
+  background-color: $color-2;
+  box-shadow: 0 0 0 1px $color-2;
+}

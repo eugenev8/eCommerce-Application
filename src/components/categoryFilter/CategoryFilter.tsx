@@ -5,6 +5,8 @@ import 'rc-tree/assets/index.css';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { querySlice } from '../../reducers/QuerySlice';
 
+import './CategoryFilter.scss';
+
 interface CategoryNode {
   key: string;
   title: string;
@@ -31,6 +33,7 @@ export default function CategoryFilter() {
       children: categories?.filter((cat) => !Object.hasOwn(cat, 'parent')).map((cat) => createCategoriesTree(cat)),
     },
   ];
+
   function handleSelect(selectedKeys: Key[]) {
     dispatch(querySlice.actions.changeCategory(selectedKeys[0].toString()));
   }
