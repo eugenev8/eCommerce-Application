@@ -81,6 +81,9 @@ function BurgerMenu({ isMenuShown, closeMenu, isLoggedIn }: BurgerMenuProps) {
       <NavLinkWithCheck to="/" onClick={closeMenu}>
         Shop
       </NavLinkWithCheck>
+      <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
+        Catalog
+      </NavLinkWithCheck>
       <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
     </div>
   );
@@ -116,6 +119,9 @@ export default function Navigation() {
           <div className={`${styles.navbar__block}`}>
             <NavLinkWithCheck to="/" onClick={closeMenu}>
               Shop
+            </NavLinkWithCheck>
+            <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
+              Catalog
             </NavLinkWithCheck>
           </div>
           <div className={`${styles.navbar__block}`}>

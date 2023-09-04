@@ -44,14 +44,14 @@ const router = createBrowserRouter([
         path: routesPaths.catalog,
         element: <CatalogPage />,
         handle: {
-          crumb: () => <NavLink to="/">Catalog</NavLink>,
+          crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
         },
       },
       {
         path: `${routesPaths.catalog}/:productID`,
         element: <ProductPage />,
         handle: {
-          crumb: () => <NavLink to="/">Catalog</NavLink>,
+          crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
         },
       },
       {

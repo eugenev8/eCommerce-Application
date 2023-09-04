@@ -1,6 +1,6 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Product, ProductVariant } from '@commercetools/platform-sdk';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import styles from './ProductPage.module.scss';
 import Wrapper from '../../components/wrapper/Wrapper';
 
@@ -21,56 +21,74 @@ export default function ProductPage() {
   const [isError, setIsError] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  useEffect(() => {
-    if (!productID) {
-      setProduct(null);
-    }
+  const searchProductMemoized = useMemo(() => {
+    return async (id: string) => {
+      setIsLoading(true);
+      setIsError(false);
 
-    let ignore = false;
-
-    const searchProduct = async (id: string) => {
-      if (!ignore) {
+      try {
         const result = await apiRoots.CredentialsFlow.products()
           .withId({
             ID: id,
           })
           .get()
           .execute();
-        return result.body;
-      }
 
-      return null;
+        return result.body;
+      } catch (error) {
+        setIsError(true);
+        return null;
+      } finally {
+        setIsLoading(false);
+      }
     };
+  }, []);
+
+  useEffect(() => {
+    if (!productID) {
+      setProduct(null);
+      setIsError(false);
+    }
+
+    let ignore = false;
 
     if (productID) {
-      setIsLoading(true);
-      setIsError(false);
-      searchProduct(productID)
+      searchProductMemoized(productID)
         .then((data) => {
-          setProduct(data);
+          if (!ignore) {
+            setProduct(data);
+          }
         })
-        .catch(() => setIsError(true))
-        .finally(() => setIsLoading(false));
+        .catch(() => setIsError(true));
     }
 
     return () => {
       ignore = true;
     };
-  }, [productID]);
+  }, [productID, searchProductMemoized]);
 
   useEffect(() => {
     const oldTitle = document.title;
 
     if (product) {
-      setSelectedVariant(product.masterData.current.masterVariant);
+      if (searchParams.has('variant') && searchParams.get('variant') !== '1') {
+        const id = searchParams.get('variant') || '2';
+        const variant = product.masterData.current.variants.find((productVariant) => {
+          return productVariant.id === +id;
+        });
+        setSelectedVariant(variant);
+      } else {
+        setSelectedVariant(product.masterData.current.masterVariant);
+      }
       document.title = product.masterData.current.name['en-US'];
     }
 
     return () => {
       document.title = oldTitle;
     };
-  }, [product]);
+  }, [product, searchParams]);
 
   if (isLoading)
     return (
@@ -87,7 +105,7 @@ export default function ProductPage() {
       </Wrapper>
     );
 
-  if (isError || !product)
+  if (!isLoading && isError)
     return (
       <Wrapper>
         <FlexContainer
@@ -105,6 +123,10 @@ export default function ProductPage() {
         </FlexContainer>
       </Wrapper>
     );
+
+  if (!product) {
+    return null;
+  }
 
   const { masterVariant, variants } = product.masterData.current;
   const allVariants = [masterVariant, ...variants];
@@ -169,76 +191,83 @@ export default function ProductPage() {
   const formattedDescription = (description && description['en-US']) || 'No description';
 
   return (
-    <Wrapper>
-      <div className={`${styles.product__block}`}>
-        <div className={`${styles.product__description}`}>
-          <h2>{product.masterData.current.name['en-US']}</h2>
-          <p>{formattedDescription}</p>
-          <p>SKU: {selectedVariant?.sku}</p>
+    <Suspense fallback={<LoaderSpinner />}>
+      <Wrapper>
+        <div className={`${styles.product__block}`}>
+          <div className={`${styles.product__description}`}>
+            <h2>{product.masterData.current.name['en-US']}</h2>
+            {!selectedVariant && <h3>Incorrect product variant. Please choose another variant!</h3>}
+            <p>{formattedDescription}</p>
+            <p>SKU: {selectedVariant?.sku}</p>
+          </div>
+
+          <div className={`${styles.product__slider}`}>
+            <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
+          </div>
         </div>
 
-        <div className={`${styles.product__slider}`}>
-          <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Variant</th>
-            <th>Attributes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {allVariants.map((productVariant) => (
-            <tr
-              key={productVariant.id}
-              onClick={() => setSelectedVariant(productVariant)}
-              className={productVariant === selectedVariant ? styles.selectedVariant : ''}
-            >
-              <td>{productVariant.sku}</td>
-              <td>
-                {productVariant.attributes?.map((attribute) => (
-                  <div key={attribute.name}>
-                    {attribute.name}: {attribute.value}
-                  </div>
-                ))}
-              </td>
+        <table>
+          <thead>
+            <tr>
+              <th>Variant</th>
+              <th>Attributes</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {allVariants.map((productVariant) => (
+              <tr
+                key={productVariant.id}
+                onClick={() => {
+                  const variantParam = { variant: productVariant.id.toString() };
+                  setSearchParams(variantParam);
+                  setSelectedVariant(productVariant);
+                }}
+                className={productVariant === selectedVariant ? styles.selectedVariant : ''}
+              >
+                <td>{productVariant.sku}</td>
+                <td>
+                  {productVariant.attributes?.map((attribute) => (
+                    <div key={attribute.name}>
+                      {attribute.name}: {attribute.value}
+                    </div>
+                  ))}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      {renderPrice()}
+        {renderPrice()}
 
-      <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-        {images.length > 0 && (
-          <>
-            <img
-              src={images[selectedImageIndex]}
-              alt={`${selectedImageIndex + 1}`}
-              style={{
-                display: 'block',
-                width: '70vw',
-                maxWidth: 'max-content',
-                height: '70vh',
-                objectFit: 'contain',
-                borderRadius: '5px',
-                overflow: 'hidden',
-              }}
-            />
-            <Button
-              styling="secondary"
-              innerText="Close"
-              variant="default"
-              type="button"
-              addedClass=""
-              style={{ margin: 'auto' }}
-              onClick={() => setIsModalOpen(false)}
-            />
-          </>
-        )}
-      </ModalContainer>
-    </Wrapper>
+        <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
+          {images.length > 0 && (
+            <>
+              <img
+                src={images[selectedImageIndex]}
+                alt={`${selectedImageIndex + 1}`}
+                style={{
+                  display: 'block',
+                  width: '70vw',
+                  maxWidth: 'max-content',
+                  height: '70vh',
+                  objectFit: 'contain',
+                  borderRadius: '5px',
+                  overflow: 'hidden',
+                }}
+              />
+              <Button
+                styling="secondary"
+                innerText="Close"
+                variant="default"
+                type="button"
+                addedClass=""
+                style={{ margin: 'auto' }}
+                onClick={() => setIsModalOpen(false)}
+              />
+            </>
+          )}
+        </ModalContainer>
+      </Wrapper>
+    </Suspense>
   );
 }
