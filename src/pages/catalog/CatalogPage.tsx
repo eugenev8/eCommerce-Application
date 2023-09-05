@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import styles from './CatalogPage.module.scss';
 import Filter from '../../components/filter/Filter';
@@ -29,6 +30,10 @@ export default function CatalogPage() {
   const queryState = useAppSelector((state) => state.queryReducer);
   const { facets, products } = useUrlParams();
   const dispatch = useAppDispatch();
+  const [currentSort, setCurrentSort] = useState(queryState.sort);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setCurrentSort(queryState.sort), [products]);
 
   const handleFilter = () => {
     const queryUrl = new URLSearchParams();
@@ -60,6 +65,16 @@ export default function CatalogPage() {
     const allVariants = [masterVariant, ...variants]
       .map((variant) => {
         const price = variant.prices ? variant.prices[0] : null;
+        const discPrice = variant.prices && variant.prices[0].discounted ? variant.prices[0].discounted : null;
+
+        if (discPrice) {
+          return {
+            id: variant.id,
+            discPrice,
+            isValid: variant.isMatchingVariant,
+          };
+        }
+
         return {
           id: variant.id,
           price,
@@ -68,14 +83,14 @@ export default function CatalogPage() {
       })
       .filter((variant) => variant.isValid);
 
-    if (queryState.sort === 'price desc') {
+    if (currentSort === 'price desc') {
       allVariants.sort((a, b) => {
         if (a.price && b.price) {
           return b.price.value.centAmount - a.price.value.centAmount;
         }
         return 0;
       });
-    } else if (queryState.sort === 'price asc') {
+    } else if (currentSort === 'price asc') {
       allVariants.sort((a, b) => {
         if (a.price && b.price) {
           return a.price.value.centAmount - b.price.value.centAmount;
