@@ -242,19 +242,9 @@ export default function ProductPage() {
         <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
           {images.length > 0 && (
             <>
-              <img
-                src={images[selectedImageIndex]}
-                alt={`${selectedImageIndex + 1}`}
-                style={{
-                  display: 'block',
-                  width: '70vw',
-                  maxWidth: 'max-content',
-                  height: '70vh',
-                  objectFit: 'contain',
-                  borderRadius: '5px',
-                  overflow: 'hidden',
-                }}
-              />
+              <FlexContainer style={{ width: '80vmin' }}>
+                <SwiperContainer imageUrlArray={images} initialSlide={selectedImageIndex} onImageClick={() => null} />
+              </FlexContainer>
               <Button
                 styling="secondary"
                 innerText="Close"
