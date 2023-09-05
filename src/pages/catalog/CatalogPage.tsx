@@ -57,8 +57,34 @@ export default function CatalogPage() {
 
   const getVariantIdForRender = (product: ProductProjection) => {
     const { masterVariant, variants } = product;
-    const allVariants = [masterVariant, ...variants];
-    return allVariants.find((variant) => variant.isMatchingVariant)?.id || 1;
+    const allVariants = [masterVariant, ...variants]
+      .map((variant) => {
+        const price = variant.prices ? variant.prices[0] : null;
+        return {
+          id: variant.id,
+          price,
+          isValid: variant.isMatchingVariant,
+        };
+      })
+      .filter((variant) => variant.isValid);
+
+    if (queryState.sort === 'price desc') {
+      allVariants.sort((a, b) => {
+        if (a.price && b.price) {
+          return b.price.value.centAmount - a.price.value.centAmount;
+        }
+        return 0;
+      });
+    } else if (queryState.sort === 'price asc') {
+      allVariants.sort((a, b) => {
+        if (a.price && b.price) {
+          return a.price.value.centAmount - b.price.value.centAmount;
+        }
+        return 0;
+      });
+    }
+
+    return allVariants[0].id || 1;
   };
 
   return (
