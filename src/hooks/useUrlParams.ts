@@ -15,13 +15,12 @@ function getPriceParamsFromString(stringValues: string) {
 }
 
 export default function useUrlParams() {
-  const [products, setProducts] = useState<ProductProjection[]>([]);
+  const [products, setProducts] = useState<ProductProjection[] | null>(null);
   const [facets, setFacets] = useState<FacetResults | null>(null);
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { categoryName } = useParams();
-  const categories = useAppSelector((state) => state.categoriesReducer.categories);
-
+  const { categories, isLoading } = useAppSelector((state) => state.categoriesReducer);
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     function getCategoryIdFromParams() {
       const category = categories?.find((cat) => cat.name['en-US'] === categoryName);
@@ -42,9 +41,6 @@ export default function useUrlParams() {
         case 'sort':
           urlQueryState.sort = values;
           break;
-        // case 'categories.id':
-        //   urlQueryState.category = values;
-        //   break;
         case PRICE_FACET.attribute:
           urlQueryState.priceFilter = { ...PRICE_FACET, values: getPriceParamsFromString(values) };
           break;
@@ -65,6 +61,7 @@ export default function useUrlParams() {
 
   useEffect(() => {
     async function getProducts() {
+      if (isLoading) return;
       const facetQueries = FACETS_NAMES.map((facet) => facet.query);
       facetQueries.push(PRICE_FACET.query);
 
@@ -94,7 +91,7 @@ export default function useUrlParams() {
     }
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, searchParams, categoryName]);
+  }, [dispatch, searchParams, categoryName, isLoading]);
 
   return { products, facets };
 }
