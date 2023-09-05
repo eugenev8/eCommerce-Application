@@ -8,9 +8,10 @@ import './Swiper.scss';
 interface SwiperProps {
   imageUrlArray: string[];
   onImageClick: (index: number) => void | null;
+  initialSlide?: number;
 }
 
-export default function SwiperContainer({ imageUrlArray, onImageClick }: SwiperProps) {
+export default function SwiperContainer({ imageUrlArray, onImageClick, initialSlide }: SwiperProps) {
   return (
     <Swiper
       // install Swiper modules
@@ -19,6 +20,7 @@ export default function SwiperContainer({ imageUrlArray, onImageClick }: SwiperP
       slidesPerView={1}
       navigation
       pagination={{ clickable: true }}
+      initialSlide={initialSlide}
     >
       {imageUrlArray.map((url, index) => {
         return (
@@ -30,3 +32,7 @@ export default function SwiperContainer({ imageUrlArray, onImageClick }: SwiperP
     </Swiper>
   );
 }
+
+SwiperContainer.defaultProps = {
+  initialSlide: 1,
+};
