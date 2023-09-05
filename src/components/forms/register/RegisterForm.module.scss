@@ -19,6 +19,7 @@
 
   width: 100%;
 }
+
 .registerForm__block {
   display: flex;
   flex-wrap: wrap;
@@ -30,4 +31,6 @@
   flex-direction: column;
   flex: 1 1 100px;
   padding: 2% 10%;
+
+  width: inherit;
 }
