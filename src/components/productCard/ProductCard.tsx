@@ -2,6 +2,8 @@ import { ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
 
 import { Link } from 'react-router-dom';
 import styles from './ProductCard.module.scss';
+import { useAppSelector } from '../../hooks/redux';
+import { NAME_LOCALE } from '../../pages/catalog/types';
 
 type ProductCardProps = {
   productProjection: ProductProjection;
@@ -30,6 +32,7 @@ export function getDiscountedPriceForCountry(data: ProductVariant) {
 }
 
 export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
+  const categories = useAppSelector((state) => state.categoriesReducer.categories);
   const variant =
     variantID === 1
       ? productProjection.masterVariant
@@ -58,9 +61,14 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
     );
   };
 
+  function getCategoryName(categoryId: string) {
+    return categories?.find((cat) => cat.id === categoryId)?.name[NAME_LOCALE];
+  }
+  const categoryName = getCategoryName(productProjection.categories[0].id);
+
   return (
     <Link
-      to={`/product/${productProjection.key}?variant=${variantID}`}
+      to={`${categoryName}/${productProjection.key}?variant=${variantID}`}
       className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
     >
       <div className={`${styles.productCard__images}`}>
