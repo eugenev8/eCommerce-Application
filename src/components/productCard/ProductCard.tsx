@@ -61,12 +61,12 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
 
   return (
     <div
-      onClick={() => navigate(`/catalog/${productProjection.id}?variant=${variant?.id}`)}
+      onClick={() => navigate(`/product/${productProjection.key}?variant=${variant?.id}`)}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
-          navigate(`/catalog/${productProjection.id}`);
+          navigate(`/product/${productProjection.key}`);
         }
       }}
       className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}

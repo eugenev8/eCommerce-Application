@@ -14,7 +14,7 @@ import Button from '../../components/buttons/Buttons';
 type CurrencyCode = 'USD' | 'EUR';
 
 export default function ProductPage() {
-  const { productID } = useParams();
+  const { productKey } = useParams();
   const [product, setProduct] = useState<Product | null>();
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -24,14 +24,14 @@ export default function ProductPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchProductMemoized = useMemo(() => {
-    return async (id: string) => {
+    return async (key: string) => {
       setIsLoading(true);
       setIsError(false);
 
       try {
         const result = await apiRoots.CredentialsFlow.products()
-          .withId({
-            ID: id,
+          .withKey({
+            key,
           })
           .get()
           .execute();
@@ -47,15 +47,15 @@ export default function ProductPage() {
   }, []);
 
   useEffect(() => {
-    if (!productID) {
+    if (!productKey) {
       setProduct(null);
       setIsError(false);
     }
 
     let ignore = false;
 
-    if (productID) {
-      searchProductMemoized(productID)
+    if (productKey) {
+      searchProductMemoized(productKey)
         .then((data) => {
           if (!ignore) {
             setProduct(data);
@@ -67,7 +67,7 @@ export default function ProductPage() {
     return () => {
       ignore = true;
     };
-  }, [productID, searchProductMemoized]);
+  }, [productKey, searchProductMemoized]);
 
   useEffect(() => {
     const oldTitle = document.title;

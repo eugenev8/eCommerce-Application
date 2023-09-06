@@ -44,9 +44,6 @@ export default function CatalogPage() {
       }
       queryUrl.set(queryState.priceFilter.attribute, priceFilterQuery);
     }
-    if (queryState.category) {
-      queryUrl.set('categories.id', queryState.category);
-    }
 
     if (queryState.search) queryUrl.set('search', queryState.search.toLowerCase());
 
@@ -102,25 +99,30 @@ export default function CatalogPage() {
         </div>
 
         <div className={`${styles.catalog__rightBlock}`}>
-          {products && products.length ? (
-            <>
-              <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
-              <ProductCardsContainer>
-                {products &&
-                  products.map((productToRender) => {
-                    return (
-                      <ProductCard
-                        key={productToRender.id}
-                        productProjection={productToRender}
-                        variantID={getVariantIdForRender(productToRender)}
-                        type="small"
-                      />
-                    );
-                  })}
-              </ProductCardsContainer>
-            </>
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {products ? (
+            products.length ? (
+              <>
+                <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+                <ProductCardsContainer>
+                  {products &&
+                    products.map((productToRender) => {
+                      return (
+                        <ProductCard
+                          key={productToRender.id}
+                          productProjection={productToRender}
+                          variantID={getVariantIdForRender(productToRender)}
+                          type="small"
+                        />
+                      );
+                    })}
+                </ProductCardsContainer>
+              </>
+            ) : (
+              <p>Items not found, disable some filters!</p>
+            )
           ) : (
-            <p>Items not found, disable some filters!</p>
+            <p>Loading...</p>
           )}
         </div>
       </div>
