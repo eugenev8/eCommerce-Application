@@ -70,7 +70,7 @@ export default function CatalogPage() {
         if (discPrice) {
           return {
             id: variant.id,
-            discPrice,
+            price: discPrice,
             isValid: variant.isMatchingVariant,
           };
         }
@@ -83,14 +83,14 @@ export default function CatalogPage() {
       })
       .filter((variant) => variant.isValid);
 
-    if (currentSort === 'price desc') {
+    if (currentSort === SORTING_TYPES[0].queryString) {
       allVariants.sort((a, b) => {
         if (a.price && b.price) {
           return b.price.value.centAmount - a.price.value.centAmount;
         }
         return 0;
       });
-    } else if (currentSort === 'price asc') {
+    } else if (currentSort === SORTING_TYPES[1].queryString) {
       allVariants.sort((a, b) => {
         if (a.price && b.price) {
           return a.price.value.centAmount - b.price.value.centAmount;
