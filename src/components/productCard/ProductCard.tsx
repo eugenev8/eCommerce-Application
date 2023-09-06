@@ -1,6 +1,6 @@
 import { ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './ProductCard.module.scss';
 
 type ProductCardProps = {
@@ -30,7 +30,6 @@ export function getDiscountedPriceForCountry(data: ProductVariant) {
 }
 
 export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
-  const navigate = useNavigate();
   const variant =
     variantID === 1
       ? productProjection.masterVariant
@@ -60,15 +59,8 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
   };
 
   return (
-    <div
-      onClick={() => navigate(`/product/${productProjection.key}?variant=${variant?.id}`)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          navigate(`/product/${productProjection.key}`);
-        }
-      }}
+    <Link
+      to={`/product/${productProjection.key}?variant=${variantID}`}
       className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
     >
       <div className={`${styles.productCard__images}`}>
@@ -89,6 +81,6 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
           })}
         </div>
       )}
-    </div>
+    </Link>
   );
 }
