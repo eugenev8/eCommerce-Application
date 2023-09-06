@@ -20,7 +20,7 @@ export default function useUrlParams() {
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { categoryName } = useParams();
-  const { categories, isLoading } = useAppSelector((state) => state.categoriesReducer);
+  const { categories, isLoading: isLoadingCategories } = useAppSelector((state) => state.categoriesReducer);
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     function getCategoryIdFromParams() {
       const category = categories?.find((cat) => cat.name['en-US'] === categoryName);
@@ -61,7 +61,7 @@ export default function useUrlParams() {
 
   useEffect(() => {
     async function getProducts() {
-      if (isLoading) return;
+      if (isLoadingCategories || !categories) return;
       const facetQueries = FACETS_NAMES.map((facet) => facet.query);
       facetQueries.push(PRICE_FACET.query);
 
@@ -85,13 +85,14 @@ export default function useUrlParams() {
 
       if (urlQueryState.category)
         queryArgs.queryArgs.filter.push(`categories.id: subtree("${urlQueryState.category}")`);
+
       const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute();
       setFacets(searchRes.body.facets);
       setProducts(searchRes.body.results);
     }
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, searchParams, categoryName, isLoading]);
+  }, [dispatch, searchParams, categoryName, isLoadingCategories]);
 
   return { products, facets };
 }

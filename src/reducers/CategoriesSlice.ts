@@ -6,11 +6,12 @@ import { getCategories } from './ActionCreators';
 interface CategoriesState {
   isLoading: boolean;
   error: string;
-  categories?: Category[];
+  categories: Category[] | null;
 }
 
 const initialState: CategoriesState = {
   isLoading: false,
+  categories: null,
   error: '',
 };
 
@@ -23,6 +24,10 @@ const categoriesSlice = createSlice({
       state.isLoading = false;
       state.error = '';
       state.categories = action.payload;
+    });
+    builder.addCase(getCategories.pending, (state) => {
+      state.isLoading = true;
+      return state;
     });
   },
 });
