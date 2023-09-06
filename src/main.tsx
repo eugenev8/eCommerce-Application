@@ -16,6 +16,7 @@ import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
 import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
+import DynamicCatalogCrumb from './components/breadcrumbs/DynamicCatalogCrumb';
 
 const store = setupStore();
 
@@ -40,19 +41,22 @@ const router = createBrowserRouter([
         index: true,
         element: <MainPage />,
       },
-      {
-        path: `${routesPaths.catalog}/:categoryName`,
-        element: <CatalogPage />,
-        handle: {
-          crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
-        },
-      },
+
       {
         path: routesPaths.catalog,
         element: <CatalogPage />,
         handle: {
           crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
         },
+        children: [
+          {
+            path: `${routesPaths.catalog}/:categoryName`,
+            element: <CatalogPage />,
+            handle: {
+              crumb: () => <DynamicCatalogCrumb catalogPath={routesPaths.catalog} />,
+            },
+          },
+        ],
       },
       {
         path: `product/:productKey`,

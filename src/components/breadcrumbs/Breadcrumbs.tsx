@@ -1,5 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 import { Params, useMatches } from 'react-router-dom';
+import React from 'react';
 import FlexContainer from '../containers/FlexContainer';
 import Wrapper from '../wrapper/Wrapper';
 import IconChevronRight from '../icons/IconChevronRight';
