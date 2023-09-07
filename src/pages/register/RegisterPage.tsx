@@ -2,16 +2,27 @@ import { NavLink } from 'react-router-dom';
 import RegisterForm from '../../components/forms/register/RegisterForm';
 import useRedirectIfLoggedIn from '../../hooks/useRedirectIfLoggedIn';
 
-import './RegisterPage.css';
+import styles from './RegisterPage.module.scss';
+import Wrapper from '../../components/wrapper/Wrapper';
+import FlexContainer from '../../components/containers/FlexContainer';
+import ColoredContainer from '../../components/containers/ColoredContainer';
 
 function RegisterPage() {
   useRedirectIfLoggedIn();
 
   return (
-    <div className="registerPage">
-      <RegisterForm />
-      <p>Already have an account?</p>
-      <NavLink to="/login">Login</NavLink>
+    <div className={`${styles.registerPage}`}>
+      <Wrapper>
+        <h2>Customer Registration</h2>
+        <FlexContainer style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <ColoredContainer style={{ width: '90%', margin: '3% auto' }}>
+            <RegisterForm />
+          </ColoredContainer>
+
+          <p>Already have an account?</p>
+          <NavLink to="/login">Login</NavLink>
+        </FlexContainer>
+      </Wrapper>
     </div>
   );
 }

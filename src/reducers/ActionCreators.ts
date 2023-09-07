@@ -1,70 +1,130 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { CustomerDraft, CustomerSignin } from '@commercetools/platform-sdk';
-import { TokenStore } from '@commercetools/sdk-client-v2';
-import { getAnonymousFlowApiRoot, getCustomerToken, getTokenFlowApiRoot } from '../sdk/auth';
+import {
+  Category,
+  Customer,
+  CustomerDraft,
+  CustomerSignin,
+  MyCustomerChangePassword,
+  MyCustomerUpdate,
+} from '@commercetools/platform-sdk';
+import { getCustomerData, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import toaster from '../services/toaster';
-import getAuthErrorMessage from '../utils/getAuthErrorMessage';
+import getErrorMessageForUser from '../utils/getErrorMessageForUser';
+import tokenStore from '../sdk/tokenStore';
+import { authSlice } from './AuthSlice';
 
-const loginAnonymous = createAsyncThunk<string, undefined, { rejectValue: string }>(
-  'auth/loginAnonymous',
-  async (_, { rejectWithValue }) => {
+const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectValue: string }>(
+  'customer/loginWithPassword',
+  async (user, { rejectWithValue, dispatch }) => {
     try {
-      const anonymousId = crypto.randomUUID();
-      const apiRoot = getAnonymousFlowApiRoot(anonymousId);
-      await apiRoot.get().execute();
-      apiRoots.AnonymousFlow = apiRoot;
-      return anonymousId;
-    } catch (e) {
-      if (e instanceof Error) {
-        const errorMessage = getAuthErrorMessage(e.message);
-        return rejectWithValue(errorMessage);
-      }
-      return rejectWithValue('Unknown Error!');
+      dispatch(authSlice.actions.isPending());
+
+      const customerRes = await getCustomerData(user);
+
+      dispatch(authSlice.actions.authSuccess());
+      apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
+      toaster.showSuccess('Login successful!');
+      return customerRes.body.customer;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
     }
   }
 );
 
-const loginWithPassword = createAsyncThunk<TokenStore, CustomerSignin, { rejectValue: string }>(
-  'auth/loginWithPassword',
-  async (user, { rejectWithValue }) => {
+const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: string }>(
+  'customer/signup',
+  async (customerDraft, { rejectWithValue, dispatch }) => {
     try {
-      const tokenStore = await getCustomerToken(user);
-      const apiRoot = getTokenFlowApiRoot(tokenStore.token);
-      apiRoots.TokenFlow = apiRoot;
-      localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
-      toaster.showSuccess('Login successeful!');
-      return tokenStore;
-    } catch (e) {
-      if (e instanceof Error) {
-        const errorMessage = getAuthErrorMessage(e.message);
-        return rejectWithValue(errorMessage);
-      }
-      return rejectWithValue('Unknown Error!');
-    }
-  }
-);
+      dispatch(authSlice.actions.isPending());
 
-const signupCustomer = createAsyncThunk<TokenStore, CustomerDraft, { rejectValue: string }>(
-  'auth/signupCustomer',
-  async (customerDraft, { rejectWithValue }) => {
-    try {
       await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
-      const tokenStore = await getCustomerToken({ email: customerDraft.email, password: customerDraft.password! });
-      const apiRoot = getTokenFlowApiRoot(tokenStore.token);
-      apiRoots.TokenFlow = apiRoot;
-      localStorage.setItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN, tokenStore.token);
 
-      toaster.showSuccess("Registration successful! You're now loggin in!");
-      return tokenStore;
-    } catch (e) {
-      if (e instanceof Error) {
-        const errorMessage = getAuthErrorMessage(e.message);
-        return rejectWithValue(errorMessage);
-      }
-      return rejectWithValue('Unknown Error!');
+      const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
+
+      dispatch(authSlice.actions.authSuccess());
+      apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
+      toaster.showSuccess("Registration successful! You're now login in!");
+      return customerRes.body.customer;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
     }
   }
 );
 
-export { loginAnonymous, loginWithPassword, signupCustomer };
+interface MyCustomerChangePasswordWithEmail extends MyCustomerChangePassword {
+  email: string;
+}
+
+const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswordWithEmail, { rejectValue: string }>(
+  'customer/changePassword',
+  async (values, { rejectWithValue, dispatch }) => {
+    try {
+      if (!apiRoots.TokenFlow) {
+        return rejectWithValue('Error with token flow');
+      }
+
+      await apiRoots.TokenFlow.me().password().post({ body: values }).execute();
+
+      dispatch(authSlice.actions.isPending());
+
+      const customerRes = await getCustomerData({
+        email: values.email,
+        password: values.newPassword,
+      });
+
+      dispatch(authSlice.actions.authSuccess());
+      apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
+      toaster.showSuccess('Password changed successfully!');
+      return customerRes.body.customer;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { rejectValue: string }>(
+  'customer/updateData',
+  async (updates, { rejectWithValue, dispatch }) => {
+    try {
+      if (!apiRoots.TokenFlow) {
+        return rejectWithValue('Error with token flow');
+      }
+
+      const customerRes = await apiRoots.TokenFlow.me().post({ body: updates }).execute();
+
+      return customerRes.body;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+const getCategories = createAsyncThunk<Category[], void, { rejectValue: string }>(
+  'categories/getCategories',
+  async (_, { rejectWithValue, dispatch }) => {
+    try {
+      const categoriesRes = await apiRoots.CredentialsFlow.categories().get().execute();
+      return categoriesRes.body.results;
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? getErrorMessageForUser(error.message) : getErrorMessageForUser('Unknown error');
+      dispatch(authSlice.actions.authError(errorMessage));
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export { loginWithPassword, signupCustomer, changeCustomerPassword, updateCustomerData, getCategories };

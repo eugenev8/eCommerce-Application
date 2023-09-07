@@ -1,0 +1,17 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  max-width: 600px;
+
+  margin: auto;
+
+  &__formContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+}

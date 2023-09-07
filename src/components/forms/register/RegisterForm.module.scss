@@ -1,0 +1,36 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.registerForm {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  margin: auto;
+
+  max-width: 1000px;
+}
+
+.registerForm__formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+}
+
+.registerForm__block {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.registerForm__subBlock {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 100px;
+  padding: 2% 10%;
+
+  width: inherit;
+}

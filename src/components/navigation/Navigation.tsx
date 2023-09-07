@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-import './Navigation.css';
-import { useAppDispatch } from '../../hooks/redux';
-import { authSlice } from '../../reducers/AuthSlice';
 import useLoginStatus from '../../hooks/useLoginStatus';
-import Button from '../../ui/buttons/Buttons';
+import Wrapper from '../wrapper/Wrapper';
+import FlexContainer from '../containers/FlexContainer';
+import styles from './Navigation.module.scss';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
-    <div className="burgerButton" onClick={onClick} aria-hidden>
+    <div className={`${styles.navbar__burgerButton}`} onClick={onClick} aria-hidden>
       <span />
       <span />
       <span />
@@ -17,24 +16,50 @@ function BurgerIcon({ onClick }: { onClick: () => void }) {
   );
 }
 
-export function checkActiveLink(isActive: boolean, isPending: boolean) {
-  if (isActive) {
-    return 'active';
-  }
-  if (isPending) {
-    return 'pending';
-  }
-  return '';
+function checkActiveLink(isActive: boolean, isPending: boolean) {
+  const activeClass = isActive ? styles.navbar__link_active : '';
+  const pendingClass = isPending ? styles.pending : '';
+  return `${activeClass} ${pendingClass}`;
 }
 
-type BurgerMenuProps = {
+function NavLinkWithCheck({ to, children, onClick }: { to: string; children: React.ReactNode; onClick: () => void }) {
+  return (
+    <div className={`${styles.navbar__link}`}>
+      <NavLink to={to} onClick={onClick} className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
+        {children}
+      </NavLink>
+    </div>
+  );
+}
+
+function AuthLinks({ isLoggedIn, closeMenu }: { isLoggedIn: boolean; closeMenu: () => void }) {
+  if (!isLoggedIn) {
+    return (
+      <>
+        <NavLinkWithCheck to="/login" onClick={closeMenu}>
+          Login
+        </NavLinkWithCheck>
+        <NavLinkWithCheck to="/register" onClick={closeMenu}>
+          Sign up
+        </NavLinkWithCheck>
+      </>
+    );
+  }
+
+  return (
+    <NavLinkWithCheck to="/profile" onClick={closeMenu}>
+      My profile
+    </NavLinkWithCheck>
+  );
+}
+
+interface BurgerMenuProps {
   isMenuShown: boolean;
   isLoggedIn: boolean;
   closeMenu: () => void;
-  handleLogout: () => void;
-};
+}
 
-function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: BurgerMenuProps) {
+function BurgerMenu({ isMenuShown, closeMenu, isLoggedIn }: BurgerMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,60 +75,16 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
     };
   }, [closeMenu, isMenuShown]);
 
-  const renderLoginLinks = () => {
-    if (!isLoggedIn) {
-      return (
-        <>
-          <div className="navbar__menuLink">
-            <NavLink
-              to="/login"
-              onClick={closeMenu}
-              className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}
-            >
-              Login
-            </NavLink>
-          </div>
-          <div className="navbar__menuLink">
-            <NavLink
-              to="/register"
-              onClick={closeMenu}
-              className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}
-            >
-              Sign up
-            </NavLink>
-          </div>
-        </>
-      );
-    }
-
-    return (
-      <div className="navbar__menuLink">
-        <Button
-          addedClass=""
-          innerText="Logout"
-          styling="secondary"
-          type="button"
-          variant="default"
-          onClick={handleLogout}
-        />
-      </div>
-    );
-  };
-
   return (
-    <div className={`navbar__menu ${isMenuShown ? 'navbar__menu_open' : ''}`} ref={menuRef}>
+    <div className={`${styles.navbar__menu} ${isMenuShown ? styles.navbar__menu_open : ''}`} ref={menuRef}>
       <BurgerIcon onClick={closeMenu} />
-      <div className="navbar__menuLink">
-        <NavLink
-          to="/"
-          onClick={closeMenu}
-          className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}
-        >
-          Shop
-        </NavLink>
-      </div>
-
-      {renderLoginLinks()}
+      <NavLinkWithCheck to="/" onClick={closeMenu}>
+        Shop
+      </NavLinkWithCheck>
+      <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
+        Catalog
+      </NavLinkWithCheck>
+      <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
     </div>
   );
 }
@@ -111,12 +92,8 @@ function BurgerMenu({ isMenuShown, closeMenu, handleLogout, isLoggedIn }: Burger
 export default function Navigation() {
   const [isMenuShown, setIsMenuShown] = useState(false);
   const isLoggedIn = useLoginStatus();
-  const dispatch = useAppDispatch();
-
-  const handleLogout = () => {
-    dispatch(authSlice.actions.logout());
-    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
-  };
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState<string>('');
 
   const handleOnClick = () => {
     setIsMenuShown(!isMenuShown);
@@ -126,50 +103,43 @@ export default function Navigation() {
     setIsMenuShown(false);
   };
 
-  const renderLoginLinks = () => {
-    if (!isLoggedIn) {
-      return (
-        <>
-          <div className="navbar__link">
-            <NavLink to="/login" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
-              Login
-            </NavLink>
-          </div>
-          <div className="navbar__link">
-            <NavLink to="/register" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
-              Sign up
-            </NavLink>
-          </div>
-        </>
-      );
-    }
+  function handleSearch(event: React.KeyboardEvent) {
+    if (!searchValue || event.key !== 'Enter') return;
 
-    return (
-      <Button
-        addedClass=""
-        innerText="Logout"
-        styling="secondary"
-        type="button"
-        variant="default"
-        onClick={handleLogout}
-      />
-    );
-  };
+    navigate(`/catalog?search=${searchValue.toLowerCase()}`);
+    setSearchValue('');
+  }
 
   return (
-    <nav>
-      <BurgerIcon onClick={handleOnClick} />
-      <BurgerMenu isMenuShown={isMenuShown} closeMenu={closeMenu} handleLogout={handleLogout} isLoggedIn={isLoggedIn} />
+    <nav className={`${styles.navbar}`}>
+      <Wrapper>
+        <FlexContainer style={{ gap: '2rem', justifyContent: 'space-between', alignItems: 'center', height: '100%' }}>
+          <BurgerIcon onClick={handleOnClick} />
+          <BurgerMenu isMenuShown={isMenuShown} closeMenu={closeMenu} isLoggedIn={isLoggedIn} />
+          <div className={`${styles.navbar__block}`}>
+            <NavLinkWithCheck to="/" onClick={closeMenu}>
+              Shop
+            </NavLinkWithCheck>
+            <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
+              Catalog
+            </NavLinkWithCheck>
+          </div>
+          <div className={`${styles.navbar__block}`}>
+            <input
+              className={`${styles.navbar__search}`}
+              type="text"
+              placeholder="Product search"
+              onKeyDown={handleSearch}
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+            />
+          </div>
 
-      <div className="navbar__block navbar__leftBlock">
-        <div className="navbar__link">
-          <NavLink to="/" className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
-            Shop
-          </NavLink>
-        </div>
-      </div>
-
-      <div className="navbar__block navbar__rightBlock">{renderLoginLinks()}</div>
+          <div className={`${styles.navbar__block}`}>
+            <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
+          </div>
+        </FlexContainer>
+      </Wrapper>
     </nav>
   );
 }

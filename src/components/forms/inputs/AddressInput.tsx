@@ -1,16 +1,16 @@
+import React, { useState } from 'react';
 import { Field, useField } from 'formik';
-import { useState } from 'react';
 import CountryInput from './CountryInput';
+import styles from './inputs.module.scss';
 
 interface AddressFieldProps {
   labelText: string;
-  parentClassName: string;
   placeholder: string;
   id: string;
   name: string;
 }
 
-function AddressField({ labelText, parentClassName, placeholder, id, name }: AddressFieldProps) {
+function AddressField({ labelText, placeholder, id, name }: AddressFieldProps) {
   const [field, meta] = useField(name);
   const [didFocus, setDidFocus] = useState(false);
 
@@ -20,16 +20,16 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
   const toggleErrorClass = () => {
     if (showFeedback) {
       if (meta.error) {
-        return 'input_error';
+        return styles.input_error;
       }
-      return 'input_valid';
+      return styles.input_valid;
     }
     return '';
   };
 
   return (
     <>
-      <label className={`${parentClassName}__label`} htmlFor={id}>
+      <label className={styles.label} htmlFor={id}>
         {labelText}
       </label>
       <Field
@@ -42,10 +42,10 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
         id={id}
         name={name}
         aria-describedby={`${id}-error`}
-        className={`${parentClassName}__input ${parentClassName}__${id}Input ${toggleErrorClass()}`}
+        className={`${styles.input} ${toggleErrorClass()}`}
       />
-      <div className={`input__errorMessage ${parentClassName}__errorMessage`}>
-        <div id={`${id}-error`}>{showFeedback && meta.error}</div>
+      <div className={`${styles.input__errorMessage}`}>
+        {showFeedback ? <div id={`${id}-error`}>{meta.error}</div> : ''}
       </div>
     </>
   );
@@ -53,44 +53,36 @@ function AddressField({ labelText, parentClassName, placeholder, id, name }: Add
 
 interface AddressContainerProps {
   name: string;
-  parentClassName: string;
   heading: string;
 }
 
-export default function AddressInputContainer({ name, parentClassName, heading }: AddressContainerProps) {
+export default function AddressInputContainer({ name, heading }: AddressContainerProps) {
   return (
-    <div className={`${parentClassName}__addressContainer`}>
-      <div className={`${parentClassName}__addressHeading`}>
-        <h3>{heading}</h3>
+    <div className={styles.inputContainer}>
+      <div className={styles.input__addressContainer}>
+        <div className={styles.input__addressHeading}>
+          <h3>{heading}</h3>
+        </div>
+        <AddressField
+          id={`${name}.streetName`}
+          labelText="Street"
+          name={`${name}.streetName`}
+          placeholder="Type your street"
+        />
+        <AddressField id={`${name}.city`} labelText="City" name={`${name}.city`} placeholder="Type your city" />
+        <AddressField
+          id={`${name}.postalCode`}
+          labelText="Postal"
+          name={`${name}.postalCode`}
+          placeholder="Type your postal"
+        />
+        <CountryInput
+          id={`${name}.country`}
+          labelText="Country"
+          name={`${name}.country`}
+          placeholder="Type your country"
+        />
       </div>
-      <AddressField
-        id={`${name}.streetName`}
-        labelText="Street"
-        name={`${name}.streetName`}
-        parentClassName={parentClassName}
-        placeholder="Type your street"
-      />
-      <AddressField
-        id={`${name}.city`}
-        labelText="City"
-        name={`${name}.city`}
-        parentClassName={parentClassName}
-        placeholder="Type your city"
-      />
-      <AddressField
-        id={`${name}.postalCode`}
-        labelText="Postal"
-        name={`${name}.postalCode`}
-        parentClassName={parentClassName}
-        placeholder="Type your postal"
-      />
-      <CountryInput
-        id={`${name}.country`}
-        labelText="Country"
-        name={`${name}.country`}
-        parentClassName={parentClassName}
-        placeholder="Type your country"
-      />
     </div>
   );
 }

@@ -1,0 +1,9 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.bg-colored {
+  background-color: $color-1;
+
+  width: auto;
+
+  padding: 3% 5%;
+}
