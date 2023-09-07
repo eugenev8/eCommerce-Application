@@ -72,5 +72,7 @@ const SORTING_TYPES: SortingType[] = [
   },
 ];
 
-export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET };
+const NAME_LOCALE = 'en-US';
+
+export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET, NAME_LOCALE };
 export type { FacetName };

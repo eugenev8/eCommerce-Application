@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Category } from '@commercetools/platform-sdk';
 import { useAppSelector } from './redux';
 
-export default function useCategoriesPath(categoryId: string) {
+export default function useCategoriesPath(categoryName: string) {
   const [categoriesPath, setCategoriesPath] = useState<Category[]>([]);
   const categories = useAppSelector((state) => state.categoriesReducer.categories);
 
@@ -18,10 +18,12 @@ export default function useCategoriesPath(categoryId: string) {
       return parentCategory.length ? [curCategory, ...parentCategory] : [curCategory];
     }
 
-    const path = getCategoriesPathFromState(categoryId);
-
-    setCategoriesPath(path.reverse());
-  }, [categories, categoryId]);
+    const categoryId = categories?.find((cat) => cat.name['en-US'] === categoryName)?.id;
+    if (categoryId) {
+      const path = getCategoriesPathFromState(categoryId);
+      setCategoriesPath(path.reverse());
+    } else setCategoriesPath([]);
+  }, [categories, categoryName]);
 
   return categoriesPath;
 }
