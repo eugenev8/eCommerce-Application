@@ -1,5 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import styles from './CatalogPage.module.scss';
 import Filter from '../../components/filter/Filter';
@@ -25,10 +26,15 @@ function createPriceFilterQuery(values: string[]) {
 }
 
 export default function CatalogPage() {
+  const { categoryName } = useParams();
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
   const { facets, products } = useUrlParams();
   const dispatch = useAppDispatch();
+  const [currentSort, setCurrentSort] = useState(queryState.sort);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => setCurrentSort(queryState.sort), [products]);
 
   const handleFilter = () => {
     const queryUrl = new URLSearchParams();
@@ -44,14 +50,11 @@ export default function CatalogPage() {
       }
       queryUrl.set(queryState.priceFilter.attribute, priceFilterQuery);
     }
-    if (queryState.category) {
-      queryUrl.set('categories.id', queryState.category);
-    }
 
     if (queryState.search) queryUrl.set('search', queryState.search.toLowerCase());
 
     if (queryState.sort) queryUrl.set('sort', queryState.sort);
-    navigate(`./?${queryUrl.toString()}`);
+    navigate(`./${categoryName || ''}?${queryUrl.toString()}`);
   };
 
   function handleChangeSortType(newSortType: string) {
@@ -60,8 +63,44 @@ export default function CatalogPage() {
 
   const getVariantIdForRender = (product: ProductProjection) => {
     const { masterVariant, variants } = product;
-    const allVariants = [masterVariant, ...variants];
-    return allVariants.find((variant) => variant.isMatchingVariant)?.id || 1;
+    const allVariants = [masterVariant, ...variants]
+      .map((variant) => {
+        const price = variant.prices ? variant.prices[0] : null;
+        const discPrice = variant.prices && variant.prices[0].discounted ? variant.prices[0].discounted : null;
+
+        if (discPrice) {
+          return {
+            id: variant.id,
+            price: discPrice,
+            isValid: variant.isMatchingVariant,
+          };
+        }
+
+        return {
+          id: variant.id,
+          price,
+          isValid: variant.isMatchingVariant,
+        };
+      })
+      .filter((variant) => variant.isValid);
+
+    if (currentSort === SORTING_TYPES[0].queryString) {
+      allVariants.sort((a, b) => {
+        if (a.price && b.price) {
+          return b.price.value.centAmount - a.price.value.centAmount;
+        }
+        return 0;
+      });
+    } else if (currentSort === SORTING_TYPES[1].queryString) {
+      allVariants.sort((a, b) => {
+        if (a.price && b.price) {
+          return a.price.value.centAmount - b.price.value.centAmount;
+        }
+        return 0;
+      });
+    }
+
+    return allVariants[0].id || 1;
   };
 
   return (
@@ -102,25 +141,30 @@ export default function CatalogPage() {
         </div>
 
         <div className={`${styles.catalog__rightBlock}`}>
-          {products && products.length ? (
-            <>
-              <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
-              <ProductCardsContainer>
-                {products &&
-                  products.map((productToRender) => {
-                    return (
-                      <ProductCard
-                        key={productToRender.id}
-                        productProjection={productToRender}
-                        variantID={getVariantIdForRender(productToRender)}
-                        type="small"
-                      />
-                    );
-                  })}
-              </ProductCardsContainer>
-            </>
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {products ? (
+            products.length ? (
+              <>
+                <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+                <ProductCardsContainer>
+                  {products &&
+                    products.map((productToRender) => {
+                      return (
+                        <ProductCard
+                          key={productToRender.id}
+                          productProjection={productToRender}
+                          variantID={getVariantIdForRender(productToRender)}
+                          type="small"
+                        />
+                      );
+                    })}
+                </ProductCardsContainer>
+              </>
+            ) : (
+              <p>Items not found, disable some filters!</p>
+            )
           ) : (
-            <p>Items not found, disable some filters!</p>
+            <p>Loading...</p>
           )}
         </div>
       </div>

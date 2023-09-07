@@ -16,6 +16,8 @@ import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
 import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
+import DynamicCrumb from './components/breadcrumbs/DynamicCrumb';
+import Crumb from './components/breadcrumbs/Crumb';
 
 const store = setupStore();
 
@@ -33,7 +35,7 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     handle: {
-      crumb: () => <NavLink to="/">Home</NavLink>,
+      crumb: () => <Crumb key="Home" title="Home" path="/" />,
     },
     children: [
       {
@@ -44,14 +46,25 @@ const router = createBrowserRouter([
         path: routesPaths.catalog,
         element: <CatalogPage />,
         handle: {
-          crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
+          crumb: () => <Crumb key="Catalog" title="Catalog" path={routesPaths.catalog} />,
         },
+        children: [
+          {
+            path: `${routesPaths.catalog}/:categoryName`,
+            element: <CatalogPage />,
+            handle: {
+              crumb: () => <DynamicCrumb key="DynamicCrumb" catalogPath={routesPaths.catalog} />,
+            },
+          },
+        ],
       },
       {
-        path: `${routesPaths.catalog}/:productID`,
+        path: `${routesPaths.catalog}/:categoryName/:productKey`,
         element: <ProductPage />,
         handle: {
-          crumb: () => <NavLink to={routesPaths.catalog}>Catalog</NavLink>,
+          crumb: () => {
+            return <DynamicCrumb key="DynamicCrumb" catalogPath={routesPaths.catalog} />;
+          },
         },
       },
       {
@@ -59,7 +72,7 @@ const router = createBrowserRouter([
         element: <LoginPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <NavLink to={routesPaths.login}>Login</NavLink>,
+          crumb: () => <Crumb key="Login" title="Login" path={routesPaths.login} />,
         },
       },
       {
@@ -67,14 +80,14 @@ const router = createBrowserRouter([
         element: <RegisterPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <NavLink to={routesPaths.register}>Register</NavLink>,
+          crumb: () => <Crumb key="Register" title="Register" path={routesPaths.register} />,
         },
       },
       {
         path: routesPaths.userProfile,
         element: <UserProfile />,
         handle: {
-          crumb: () => <NavLink to={routesPaths.userProfile}>Profile</NavLink>,
+          crumb: () => <Crumb key="Profile" title="Profile" path={routesPaths.userProfile} />,
         },
         children: [
           {

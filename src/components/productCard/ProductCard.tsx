@@ -1,7 +1,9 @@
 import { ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
 
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './ProductCard.module.scss';
+import { useAppSelector } from '../../hooks/redux';
+import { NAME_LOCALE } from '../../pages/catalog/types';
 
 type ProductCardProps = {
   productProjection: ProductProjection;
@@ -30,7 +32,7 @@ export function getDiscountedPriceForCountry(data: ProductVariant) {
 }
 
 export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
-  const navigate = useNavigate();
+  const categories = useAppSelector((state) => state.categoriesReducer.categories);
   const variant =
     variantID === 1
       ? productProjection.masterVariant
@@ -59,16 +61,14 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
     );
   };
 
+  function getCategoryName(categoryId: string) {
+    return categories?.find((cat) => cat.id === categoryId)?.name[NAME_LOCALE];
+  }
+  const categoryName = getCategoryName(productProjection.categories[0].id);
+
   return (
-    <div
-      onClick={() => navigate(`/catalog/${productProjection.id}?variant=${variant?.id}`)}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          navigate(`/catalog/${productProjection.id}`);
-        }
-      }}
+    <Link
+      to={`${categoryName}/${productProjection.key}?variant=${variantID}`}
       className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
     >
       <div className={`${styles.productCard__images}`}>
@@ -89,6 +89,6 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
           })}
         </div>
       )}
-    </div>
+    </Link>
   );
 }
