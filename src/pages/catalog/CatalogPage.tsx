@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -26,6 +26,7 @@ function createPriceFilterQuery(values: string[]) {
 }
 
 export default function CatalogPage() {
+  const { categoryName } = useParams();
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
   const { facets, products } = useUrlParams();
@@ -53,7 +54,7 @@ export default function CatalogPage() {
     if (queryState.search) queryUrl.set('search', queryState.search.toLowerCase());
 
     if (queryState.sort) queryUrl.set('sort', queryState.sort);
-    navigate(`./?${queryUrl.toString()}`);
+    navigate(`./${categoryName || ''}?${queryUrl.toString()}`);
   };
 
   function handleChangeSortType(newSortType: string) {
