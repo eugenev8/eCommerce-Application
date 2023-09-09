@@ -1,18 +1,22 @@
 /* eslint-disable no-param-reassign */
 import { Customer } from '@commercetools/platform-sdk';
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice, isPending, isFulfilled } from '@reduxjs/toolkit';
 import { changeCustomerPassword, loginWithPassword, signupCustomer, updateCustomerData } from './ActionCreators';
 
 interface CustomerState {
   isLoading: boolean;
   error: string;
-  customer?: Customer;
+  customer: Customer | null;
 }
 
 const initialState: CustomerState = {
   isLoading: false,
   error: '',
+  customer: null,
 };
+
+const isAPendingAction = isPending(updateCustomerData, loginWithPassword, signupCustomer, changeCustomerPassword);
+const isAFulfilledAction = isFulfilled(updateCustomerData, loginWithPassword, signupCustomer, changeCustomerPassword);
 
 const customerSlice = createSlice({
   name: 'customer',
@@ -28,22 +32,11 @@ const customerSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(loginWithPassword.fulfilled, (state, action) => {
-      state.isLoading = false;
+    builder.addMatcher(isAPendingAction, (state) => {
       state.error = '';
-      state.customer = action.payload;
+      state.isLoading = true;
     });
-    builder.addCase(signupCustomer.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.error = '';
-      state.customer = action.payload;
-    });
-    builder.addCase(changeCustomerPassword.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.error = '';
-      state.customer = action.payload;
-    });
-    builder.addCase(updateCustomerData.fulfilled, (state, action) => {
+    builder.addMatcher(isAFulfilledAction, (state, action) => {
       state.isLoading = false;
       state.error = '';
       state.customer = action.payload;
