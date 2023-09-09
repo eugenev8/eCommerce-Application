@@ -22,7 +22,7 @@ const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectVal
 
       const customerRes = await getCustomerData(user);
 
-      dispatch(authSlice.actions.authSuccess());
+      dispatch(authSlice.actions.authCustomerSuccess());
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess('Login successful!');
       return customerRes.body.customer;
@@ -45,7 +45,7 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
 
       const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
 
-      dispatch(authSlice.actions.authSuccess());
+      dispatch(authSlice.actions.authCustomerSuccess());
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess("Registration successful! You're now login in!");
       return customerRes.body.customer;
@@ -79,7 +79,6 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
         password: values.newPassword,
       });
 
-      dispatch(authSlice.actions.authSuccess());
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess('Password changed successfully!');
       return customerRes.body.customer;
