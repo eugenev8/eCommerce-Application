@@ -21,6 +21,7 @@ export default function useUrlParams() {
   const [searchParams] = useSearchParams();
   const { categoryName } = useParams();
   const { categories, isLoading: isLoadingCategories } = useAppSelector((state) => state.categoriesReducer);
+
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     function getCategoryIdFromParams() {
       const category = categories?.find((cat) => cat.name['en-US'] === categoryName);
@@ -33,10 +34,13 @@ export default function useUrlParams() {
       search: '',
       category: getCategoryIdFromParams(),
       priceFilter: null,
+      limit: 10,
+      offset: 1,
     };
 
     [...params.entries()].forEach((param) => {
       const [attribute, values] = param;
+
       switch (attribute) {
         case 'sort':
           urlQueryState.sort = values;
@@ -46,6 +50,12 @@ export default function useUrlParams() {
           break;
         case SEARCH_FACET.attribute:
           urlQueryState.search = values;
+          break;
+        case 'limit':
+          urlQueryState.limit = +values;
+          break;
+        case 'offset':
+          urlQueryState.offset = +values;
           break;
         default:
           // eslint-disable-next-line no-case-declarations
@@ -61,35 +71,42 @@ export default function useUrlParams() {
 
   useEffect(() => {
     async function getProducts() {
-      if (isLoadingCategories || !categories) return;
+      if (isLoadingCategories || !categories) return Promise.reject(Error('No categories'));
       const facetQueries = FACETS_NAMES.map((facet) => facet.query);
       facetQueries.push(PRICE_FACET.query);
 
       const urlQueryState = getQueryStateFromSearchParams(searchParams);
       dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
 
-      const queryArgs = {
+      const query = {
         queryArgs: {
           facet: facetQueries,
           sort: [urlQueryState.sort],
           markMatchingVariants: true,
           filter: urlQueryState.filters.map((filter) => `${filter.query}:${filter.values.join(',')}`),
+          'text.EN-US': '',
+          fuzzy: true,
         },
       };
       if (urlQueryState.priceFilter)
-        queryArgs.queryArgs.filter.push(
+        query.queryArgs.filter.push(
           `${PRICE_FACET.query}:range (${urlQueryState.priceFilter.values[0]} to ${urlQueryState.priceFilter.values[1]})`
         );
 
-      if (urlQueryState.search) queryArgs.queryArgs.filter.push(`${SEARCH_FACET.query}:"${urlQueryState.search}"`);
+      if (urlQueryState.search) query.queryArgs['text.EN-US'] = urlQueryState.search;
 
-      if (urlQueryState.category)
-        queryArgs.queryArgs.filter.push(`categories.id: subtree("${urlQueryState.category}")`);
-      const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute();
-      setFacets(searchRes.body.facets);
-      setProducts(searchRes.body.results);
+      if (urlQueryState.category) query.queryArgs.filter.push(`categories.id: subtree("${urlQueryState.category}")`);
+
+      const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(query).execute();
+      return searchRes.body;
     }
-    getProducts();
+
+    getProducts()
+      .then((data) => {
+        setFacets(data.facets);
+        setProducts(data.results);
+      })
+      .catch((error) => error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, searchParams, categoryName, isLoadingCategories]);
 
