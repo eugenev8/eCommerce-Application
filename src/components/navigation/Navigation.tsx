@@ -52,7 +52,7 @@ function AuthLinks({ isLoggedIn, closeMenu }: { isLoggedIn: boolean; closeMenu: 
         My profile
       </NavLinkWithCheck>
       <NavLinkWithCheck to="/basket" onClick={closeMenu}>
-        Basket
+        Basket 🛒
       </NavLinkWithCheck>
     </>
   );
