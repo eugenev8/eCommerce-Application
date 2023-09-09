@@ -19,6 +19,7 @@ function UserPageLayout({ children }: { children: ReactNode }) {
         <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
           <LoaderSpinner />
         </FlexContainer>
+        <h2>Loading...</h2>
       </Wrapper>
     );
   }
