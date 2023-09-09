@@ -12,6 +12,8 @@ export type QueryState = {
   sort: string;
   search: string;
   category?: string;
+  limit: number;
+  offset: number;
 };
 
 const initialState: QueryState = {
@@ -20,6 +22,8 @@ const initialState: QueryState = {
   search: '',
   category: 'root',
   sort: SORTING_TYPES[0].queryString,
+  limit: 10,
+  offset: 1,
 };
 
 interface QueryData extends FacetName {
