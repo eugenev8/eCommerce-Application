@@ -8,6 +8,7 @@ import { querySlice, QueryState } from '../reducers/QuerySlice';
 import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch, useAppSelector } from './redux';
+import { PaginationType } from '../components/pagination/Pagination';
 
 function getPriceParamsFromString(stringValues: string) {
   const values = stringValues.slice(1, -1).split(' ');
@@ -17,6 +18,7 @@ function getPriceParamsFromString(stringValues: string) {
 export default function useUrlParams() {
   const [products, setProducts] = useState<ProductProjection[] | null>(null);
   const [facets, setFacets] = useState<FacetResults | null>(null);
+  const [pagination, setPagination] = useState<PaginationType>();
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
   const { categoryName } = useParams();
@@ -35,7 +37,7 @@ export default function useUrlParams() {
       category: getCategoryIdFromParams(),
       priceFilter: null,
       limit: 10,
-      offset: 1,
+      offset: 0,
     };
 
     [...params.entries()].forEach((param) => {
@@ -86,6 +88,8 @@ export default function useUrlParams() {
           filter: urlQueryState.filters.map((filter) => `${filter.query}:${filter.values.join(',')}`),
           'text.EN-US': '',
           fuzzy: true,
+          limit: urlQueryState.limit,
+          offset: urlQueryState.offset,
         },
       };
       if (urlQueryState.priceFilter)
@@ -95,20 +99,32 @@ export default function useUrlParams() {
 
       if (urlQueryState.search) query.queryArgs['text.EN-US'] = urlQueryState.search;
 
+      if (urlQueryState.limit) query.queryArgs.limit = urlQueryState.limit;
+
+      if (urlQueryState.offset) query.queryArgs.offset = urlQueryState.offset;
+
       if (urlQueryState.category) query.queryArgs.filter.push(`categories.id: subtree("${urlQueryState.category}")`);
 
       const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(query).execute();
-      return searchRes.body;
+      return { data: searchRes.body, urlState: urlQueryState };
     }
 
     getProducts()
-      .then((data) => {
+      .then(({ data, urlState }) => {
         setFacets(data.facets);
         setProducts(data.results);
+
+        if (data.total) {
+          setPagination({
+            limit: urlState.limit,
+            offset: urlState.offset,
+            total: data.total,
+          });
+        }
       })
       .catch((error) => error);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, searchParams, categoryName, isLoadingCategories]);
 
-  return { products, facets };
+  return { products, facets, pagination };
 }

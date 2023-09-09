@@ -17,6 +17,7 @@ import TextFilter from '../../components/textFilter/TextFilter';
 import Button from '../../components/buttons/Buttons';
 import LoaderSpinner from '../../components/loader/Loader';
 import FlexContainer from '../../components/containers/FlexContainer';
+import Pagination from '../../components/pagination/Pagination';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -31,7 +32,7 @@ export default function CatalogPage() {
   const { categoryName } = useParams();
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
-  const { facets, products } = useUrlParams();
+  const { facets, products, pagination } = useUrlParams();
   const dispatch = useAppDispatch();
   const [currentSort, setCurrentSort] = useState(queryState.sort);
 
@@ -147,7 +148,7 @@ export default function CatalogPage() {
           {products ? (
             products.length ? (
               <>
-                <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+                <p className={`${styles.catalog__productsFound}`}>Products found: {pagination?.total}</p>
                 <ProductCardsContainer>
                   {products &&
                     products.map((productToRender) => {
@@ -161,6 +162,8 @@ export default function CatalogPage() {
                       );
                     })}
                 </ProductCardsContainer>
+
+                <Pagination total={pagination?.total} offset={pagination?.offset} limit={pagination?.limit} />
               </>
             ) : (
               <p>Items not found, disable some filters!</p>
