@@ -1,11 +1,10 @@
-import { Cart /* , CentPrecisionMoney  */ } from '@commercetools/platform-sdk';
+import { Cart } from '@commercetools/platform-sdk';
 
 const cart: Cart = {
   id: '',
   version: 0,
   lineItems: [],
   customLineItems: [],
-  /* totalPrice: {centAmount, currencyCode}, */
   taxMode: '',
   taxRoundingMode: '',
   taxCalculationMode: '',
@@ -20,6 +19,7 @@ const cart: Cart = {
   origin: '',
   createdAt: '',
   lastModifiedAt: '',
+  totalPrice: { type: 'centPrecision', centAmount: 840, currencyCode: 'USD', fractionDigits: 0.01 },
 };
 
 export default cart;

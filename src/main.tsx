@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, NavLink, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import './index.scss';
@@ -18,6 +18,7 @@ import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
 import DynamicCrumb from './components/breadcrumbs/DynamicCrumb';
 import Crumb from './components/breadcrumbs/Crumb';
+import BasketPage from './pages/basket/Basket';
 
 const store = setupStore();
 
@@ -27,6 +28,7 @@ const routesPaths = {
   register: '/register',
   userProfile: '/profile',
   catalog: '/catalog',
+  basket: '/basket',
 };
 
 const router = createBrowserRouter([
@@ -99,6 +101,13 @@ const router = createBrowserRouter([
             element: <UserAddresses />,
           },
         ],
+      },
+      {
+        path: routesPaths.basket,
+        element: <BasketPage />,
+        handle: {
+          crumb: () => <Crumb key="Basket" title="Basket" path={routesPaths.basket} />,
+        },
       },
     ],
   },
