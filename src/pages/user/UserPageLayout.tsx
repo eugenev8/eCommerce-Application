@@ -5,9 +5,20 @@ import FlexContainer from '../../components/containers/FlexContainer';
 import Wrapper from '../../components/wrapper/Wrapper';
 import { useAppSelector } from '../../hooks/redux';
 import styles from './UserPage.module.scss';
+import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
 
 function UserPageLayout({ children }: { children: ReactNode }) {
   const { customer } = useAppSelector((state) => state.customerReducer);
+
+  const isLoadingData = useLoadingStateStatus();
+
+  if (isLoadingData) {
+    return (
+      <Wrapper>
+        <h2>Loading...</h2>
+      </Wrapper>
+    );
+  }
 
   if (!customer) {
     return <Navigate to="/login" />;

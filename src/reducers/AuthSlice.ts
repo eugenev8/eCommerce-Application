@@ -2,6 +2,7 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 enum AuthStatus {
+  Initial = 'Initial',
   CredentialsFlow = 'CredentialsFlow',
   AnonymousFlow = 'AnonymousFlow',
   TokenFlow = 'TokenFlow',
@@ -15,7 +16,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   isLoading: false,
-  authStatus: AuthStatus.CredentialsFlow,
+  authStatus: AuthStatus.Initial,
   error: '',
 };
 
@@ -23,7 +24,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    authSuccess(state) {
+    authCustomerSuccess(state) {
       state.isLoading = false;
       state.authStatus = AuthStatus.TokenFlow;
     },
@@ -34,6 +35,10 @@ const authSlice = createSlice({
     authError(state, action: PayloadAction<string>) {
       state.isLoading = false;
       state.error = action.payload;
+    },
+    authCredential(state) {
+      state.isLoading = false;
+      state.authStatus = AuthStatus.CredentialsFlow;
     },
     logout() {
       return initialState;
