@@ -1,6 +1,8 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
+import styles from './Pagination.module.scss';
+
 export type PaginationType = {
   limit?: number;
   offset?: number;
@@ -32,26 +34,28 @@ export default function Pagination({ limit, offset, total }: PaginationType) {
 
   for (let i = startPage; i <= endPage; i += 1) {
     pageButtons.push(
-      <button key={i} type="button" onClick={() => handlePageChange(i)} className={i === currentPage ? 'active' : ''}>
+      <button
+        key={i}
+        type="button"
+        onClick={() => handlePageChange(i)}
+        className={i === currentPage ? styles.active : ''}
+      >
         {i}
       </button>
     );
   }
 
-  const prevPage = currentPage - 1;
-  const nextPage = currentPage + 1;
-
   return (
-    <div className="pagination">
-      {currentPage > 1 && (
-        <button type="button" onClick={() => handlePageChange(prevPage)}>
-          Previous
+    <div className={`${styles.pagination}`}>
+      {currentPage > 2 && (
+        <button type="button" onClick={() => handlePageChange(1)} disabled={currentPage === 1}>
+          {'<<'}
         </button>
       )}
       {pageButtons}
-      {currentPage < pagesQuantity && (
-        <button type="button" onClick={() => handlePageChange(nextPage)}>
-          Next
+      {currentPage < pagesQuantity - 1 && (
+        <button type="button" onClick={() => handlePageChange(pagesQuantity)} disabled={currentPage === pagesQuantity}>
+          {'>>'}
         </button>
       )}
     </div>
