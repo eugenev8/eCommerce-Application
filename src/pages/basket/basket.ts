@@ -19,7 +19,7 @@ const cart: Cart = {
   origin: '',
   createdAt: '',
   lastModifiedAt: '',
-  totalPrice: { type: 'centPrecision', centAmount: 840, currencyCode: 'USD', fractionDigits: 0.01 },
+  totalPrice: { type: 'centPrecision', centAmount: 840, currencyCode: 'USD', fractionDigits: 2 },
 };
 
 export default cart;

@@ -1,0 +1,75 @@
+.container {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 1.4rem;
+}
+.items__header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 0.4rem;
+}
+.button__container {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+.button {
+  cursor: pointer;
+}
+.buttonBlack {
+  width: 12rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+  border-radius: 15px;
+  color: #fff;
+  background-color: black;
+  margin: 0.1rem;
+  cursor: pointer;
+}
+.buttonGray {
+  width: 12rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+  border-radius: 15px;
+  color: gray;
+  background-color: rgba(255, 255, 255, 0);
+  border: 1px solid gray;
+  cursor: pointer;
+}
+.cartControls {
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.summary {
+  height: 718px;
+  &__destination {
+    font-size: 0.7rem;
+  }
+  &__button {
+    width: 24rem;
+    height: 3rem;
+    border-radius: 45px;
+    margin-bottom: 0.6rem;
+    margin-top: 1.4rem;
+    color: #fff;
+    background-color: blue;
+    outline: none;
+    border: none;
+  }
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+  }
+  &__calculations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+}
