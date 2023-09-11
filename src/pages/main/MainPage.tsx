@@ -11,6 +11,7 @@ import {
   MyCartUpdateWithCartId,
 } from '../../reducers/ActionCreators';
 import toaster from '../../services/toaster';
+import AnimatedContainer from '../../components/containers/AnimatedContainer';
 
 function MainPage() {
   const dispatch = useAppDispatch();
@@ -55,50 +56,52 @@ function MainPage() {
 
   return (
     <div className={`${styles.mainPage}`}>
-      <h1>Main page</h1>
-      <NavLink to="/">Main (you are here)</NavLink>
-      <br />
-      <NavLink to="/login">Login</NavLink>
-      <br />
-      <NavLink to="/register">Sign up</NavLink>
-      <br />
-      <br />
+      <AnimatedContainer>
+        <h1>Main page</h1>
+        <NavLink to="/">Main (you are here)</NavLink>
+        <br />
+        <NavLink to="/login">Login</NavLink>
+        <br />
+        <NavLink to="/register">Sign up</NavLink>
+        <br />
+        <br />
 
-      <button type="button" onClick={handleCreateCart} disabled={!!cart}>
-        Create
-      </button>
+        <button type="button" onClick={handleCreateCart} disabled={!!cart}>
+          Create
+        </button>
 
-      <br />
-      <br />
-      <button type="button" onClick={handleGetActiveCart} disabled={!!cart}>
-        Get Cart
-      </button>
-      <br />
-      <br />
-      <button type="button" onClick={handleAddNewLineItemById} disabled={!cart}>
-        Add product variant by id and Variant
-      </button>
-      <br />
-      <input
-        type="text"
-        value={productId}
-        onChange={(e) => setProductId(e.target.value)}
-        placeholder="product Id"
-        style={{ width: '400px' }}
-      />
-      <br />
-      <input
-        type="number"
-        value={variantId}
-        onChange={(e) => setVariantId(+e.target.value)}
-        placeholder="variantId"
-        min={1}
-        max={4}
-      />
-      <p>bfe1da8a-579c-4a09-8f85-f93b6a92257b</p>
-      <p>da0e438c-0db6-442d-9614-7780a70c8b67</p>
-      <p>84dd986d-12c9-4088-beff-3c4aeca70fea</p>
-      <p>3462e8ed-287f-4d28-8518-be9036a60d60</p>
+        <br />
+        <br />
+        <button type="button" onClick={handleGetActiveCart} disabled={!!cart}>
+          Get Cart
+        </button>
+        <br />
+        <br />
+        <button type="button" onClick={handleAddNewLineItemById} disabled={!cart}>
+          Add product variant by id and Variant
+        </button>
+        <br />
+        <input
+          type="text"
+          value={productId}
+          onChange={(e) => setProductId(e.target.value)}
+          placeholder="product Id"
+          style={{ width: '400px' }}
+        />
+        <br />
+        <input
+          type="number"
+          value={variantId}
+          onChange={(e) => setVariantId(+e.target.value)}
+          placeholder="variantId"
+          min={1}
+          max={4}
+        />
+        <p>bfe1da8a-579c-4a09-8f85-f93b6a92257b</p>
+        <p>da0e438c-0db6-442d-9614-7780a70c8b67</p>
+        <p>84dd986d-12c9-4088-beff-3c4aeca70fea</p>
+        <p>3462e8ed-287f-4d28-8518-be9036a60d60</p>
+      </AnimatedContainer>
     </div>
   );
 }
