@@ -1,3 +1,4 @@
+@use 'src/common/styles/colors.module.scss' as *;
 .container {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
@@ -23,9 +24,16 @@
   font-size: 0.8rem;
   border-radius: 15px;
   color: #fff;
-  background-color: black;
+  background-color: rgb(65, 65, 65);
   margin: 0.1rem;
   cursor: pointer;
+  &:hover {
+    background-color: scale-color($color: #000000, $saturation: 2%, $lightness: 10%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 .buttonGray {
   width: 12rem;
@@ -33,9 +41,16 @@
   font-size: 0.8rem;
   border-radius: 15px;
   color: gray;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: rgba(195, 195, 195, 0);
   border: 1px solid gray;
   cursor: pointer;
+  &:hover {
+    background-color: scale-color($color: rgb(255, 254, 255), $saturation: 2%, $lightness: 10%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
 }
 .cartControls {
   padding-top: 0.5rem;
@@ -59,6 +74,14 @@
     background-color: blue;
     outline: none;
     border: none;
+    cursor: pointer;
+    &:hover {
+      background-color: scale-color($color: $color-3, $saturation: 2%, $lightness: 10%);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
   }
   &__buttons {
     display: flex;

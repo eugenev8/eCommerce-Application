@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Wrapper from '../../components/wrapper/Wrapper';
 import styles from './basket.module.scss';
 
@@ -66,9 +66,11 @@ export default function BasketPage() {
           </div>
           <div className={styles.cartControls}>
             <div className="leftButtons">
-              <button className={styles.buttonGray} type="button">
-                Continue Shopping
-              </button>
+              <Link to="/catalog">
+                <button className={styles.buttonGray} type="button">
+                  Continue Shopping
+                </button>
+              </Link>
               <button className={styles.buttonBlack} type="button">
                 Clear Shopping Cart
               </button>
