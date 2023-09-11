@@ -5,7 +5,7 @@ enum AuthStatus {
   Initial = 'Initial',
   CredentialsFlow = 'CredentialsFlow',
   AnonymousFlow = 'AnonymousFlow',
-  TokenFlow = 'TokenFlow',
+  CustomerFlow = 'CustomerFlow',
 }
 
 interface AuthState {
@@ -24,9 +24,10 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    authCustomerSuccess(state) {
+    setAuthStatus(state, action: PayloadAction<AuthStatus>) {
+      state.error = '';
       state.isLoading = false;
-      state.authStatus = AuthStatus.TokenFlow;
+      state.authStatus = action.payload;
     },
     isPending(state) {
       state.isLoading = true;
@@ -36,12 +37,10 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    authCredential(state) {
+    logout(state) {
+      state.error = '';
       state.isLoading = false;
       state.authStatus = AuthStatus.CredentialsFlow;
-    },
-    logout() {
-      return initialState;
     },
   },
 });

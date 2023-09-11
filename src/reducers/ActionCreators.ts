@@ -15,7 +15,7 @@ import apiRoots from '../sdk/apiRoots';
 import toaster from '../services/toaster';
 import getErrorMessageForUser from '../utils/getErrorMessageForUser';
 import tokenStore from '../sdk/tokenStore';
-import { authSlice } from './AuthSlice';
+import { authSlice, AuthStatus } from './AuthSlice';
 
 const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectValue: string }>(
   'customer/loginWithPassword',
@@ -25,7 +25,7 @@ const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectVal
 
       const customerRes = await getCustomerData(user);
 
-      dispatch(authSlice.actions.authCustomerSuccess());
+      dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess('Login successful!');
       return customerRes.body.customer;
@@ -48,7 +48,7 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
 
       const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
 
-      dispatch(authSlice.actions.authCustomerSuccess());
+      dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
       apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess("Registration successful! You're now login in!");
       return customerRes.body.customer;
