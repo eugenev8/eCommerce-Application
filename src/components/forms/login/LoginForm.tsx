@@ -9,7 +9,7 @@ import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
 import { useAppDispatch } from '../../../hooks/redux';
-import { loginWithPassword } from '../../../reducers/ActionCreators';
+import { loginCustomer } from '../../../reducers/ActionCreators';
 
 const initialValues: CustomerSignin = {
   email: '',
@@ -28,7 +28,7 @@ function LoginForm() {
   const handleSubmit = (values: CustomerSignin) => {
     setIsSubmiting(true);
 
-    dispatch(loginWithPassword(values)).finally(() => {
+    dispatch(loginCustomer(values)).finally(() => {
       setIsSubmiting(false);
     });
   };

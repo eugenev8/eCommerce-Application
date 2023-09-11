@@ -4,13 +4,13 @@ import { getCredentialsFlowApiRoot } from './auth';
 type ApiRoots = {
   CredentialsFlow: ByProjectKeyRequestBuilder;
   AnonymousFlow: ByProjectKeyRequestBuilder | null;
-  TokenFlow: ByProjectKeyRequestBuilder | null;
+  CustomerFlow: ByProjectKeyRequestBuilder | null;
 };
 
 const apiRoots: ApiRoots = {
   CredentialsFlow: getCredentialsFlowApiRoot(),
   AnonymousFlow: null,
-  TokenFlow: null,
+  CustomerFlow: null,
 };
 
 export default apiRoots;

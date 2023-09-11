@@ -12,11 +12,13 @@ import {
 } from '../../reducers/ActionCreators';
 import toaster from '../../services/toaster';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import { AuthStatus } from '../../reducers/AuthSlice';
 
 function MainPage() {
   const dispatch = useAppDispatch();
   const [productId, setProductId] = useState<string>('');
   const [variantId, setVariantId] = useState<number>(1);
+  const { authStatus } = useAppSelector((state) => state.authReducer);
   const cart = useAppSelector((state) => state.cartReducer.cart);
 
   const CURRENCY = 'USD';
@@ -36,13 +38,9 @@ function MainPage() {
     return cart.lineItems.some((lineItem) => lineItem.productId === id && lineItem.variant.id === variant);
   }
 
-  function handleAddNewLineItemById() {
-    if (!productId) {
-      toaster.showError('Please set product Id!');
-      return;
-    }
+  function addNewLineItemInCustomerCart() {
     if (!cart) {
-      toaster.showError('Please load or create cart!');
+      toaster.showError('Error - cart must be in customer flow!');
       return;
     }
     if (isProductInCart(productId, variantId)) {
@@ -52,6 +50,31 @@ function MainPage() {
     const updateAction: MyCartUpdateAction = { action: 'addLineItem', productId, variantId };
     const updates: MyCartUpdateWithCartId = { version: cart.version, actions: [updateAction], cartId: cart.id };
     dispatch(addNewLineItem(updates));
+  }
+
+  function addNewLineItemInAnonymousCart() {}
+
+  function initAnonymousFlowWithFirstProduct() {}
+
+  function handleAddNewLineItemById() {
+    if (!productId) {
+      toaster.showError('Please set product Id!');
+      return;
+    }
+
+    switch (authStatus) {
+      case AuthStatus.CustomerFlow:
+        addNewLineItemInCustomerCart();
+        break;
+      case AuthStatus.AnonymousFlow:
+        addNewLineItemInAnonymousCart();
+        break;
+      case AuthStatus.CredentialsFlow:
+        initAnonymousFlowWithFirstProduct();
+        break;
+      default:
+        toaster.showError('AuthStatus trouble! Initial?');
+    }
   }
 
   return (

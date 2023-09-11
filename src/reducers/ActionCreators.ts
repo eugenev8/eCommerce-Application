@@ -17,7 +17,7 @@ import getErrorMessageForUser from '../utils/getErrorMessageForUser';
 import tokenStore from '../sdk/tokenStore';
 import { authSlice, AuthStatus } from './AuthSlice';
 
-const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectValue: string }>(
+const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: string }>(
   'customer/loginWithPassword',
   async (user, { rejectWithValue, dispatch }) => {
     try {
@@ -26,7 +26,7 @@ const loginWithPassword = createAsyncThunk<Customer, CustomerSignin, { rejectVal
       const customerRes = await getCustomerData(user);
 
       dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
-      apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
+      apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess('Login successful!');
       return customerRes.body.customer;
     } catch (error) {
@@ -49,7 +49,7 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
       const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
 
       dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
-      apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
+      apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess("Registration successful! You're now login in!");
       return customerRes.body.customer;
     } catch (error) {
@@ -69,11 +69,11 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
   'customer/changePassword',
   async (values, { rejectWithValue, dispatch }) => {
     try {
-      if (!apiRoots.TokenFlow) {
+      if (!apiRoots.CustomerFlow) {
         return rejectWithValue('Error with token flow');
       }
 
-      await apiRoots.TokenFlow.me().password().post({ body: values }).execute();
+      await apiRoots.CustomerFlow.me().password().post({ body: values }).execute();
 
       dispatch(authSlice.actions.isPending());
 
@@ -82,7 +82,7 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
         password: values.newPassword,
       });
 
-      apiRoots.TokenFlow = getTokenFlowApiRoot(tokenStore.token);
+      apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStore.token);
       toaster.showSuccess('Password changed successfully!');
       return customerRes.body.customer;
     } catch (error) {
@@ -98,11 +98,11 @@ const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { reject
   'customer/updateData',
   async (updates, { rejectWithValue, dispatch }) => {
     try {
-      if (!apiRoots.TokenFlow) {
+      if (!apiRoots.CustomerFlow) {
         return rejectWithValue('Error with token flow');
       }
 
-      const customerRes = await apiRoots.TokenFlow.me().post({ body: updates }).execute();
+      const customerRes = await apiRoots.CustomerFlow.me().post({ body: updates }).execute();
 
       return customerRes.body;
     } catch (error) {
@@ -133,10 +133,10 @@ const createCustomerCart = createAsyncThunk<Cart, CartDraft, { rejectValue: stri
   'cart/createCustomerCart',
   async (cartDraft: CartDraft, { rejectWithValue, dispatch }) => {
     try {
-      if (!apiRoots.TokenFlow) {
+      if (!apiRoots.CustomerFlow) {
         return rejectWithValue('Error with token flow');
       }
-      const cartRes = await apiRoots.TokenFlow.me().carts().post({ body: cartDraft }).execute();
+      const cartRes = await apiRoots.CustomerFlow.me().carts().post({ body: cartDraft }).execute();
       return cartRes.body;
     } catch (error) {
       const errorMessage =
@@ -151,10 +151,10 @@ const getCustomerCart = createAsyncThunk<Cart, void, { rejectValue: string }>(
   'cart/getCustomerCart',
   async (_, { rejectWithValue, dispatch }) => {
     try {
-      if (!apiRoots.TokenFlow) {
+      if (!apiRoots.CustomerFlow) {
         return rejectWithValue('Error with token flow');
       }
-      const cartRes = await apiRoots.TokenFlow.me().activeCart().get().execute();
+      const cartRes = await apiRoots.CustomerFlow.me().activeCart().get().execute();
       return cartRes.body;
     } catch (error) {
       const errorMessage =
@@ -173,10 +173,10 @@ const addNewLineItem = createAsyncThunk<Cart, MyCartUpdateWithCartId, { rejectVa
   'cart/addLineItemInCart',
   async (updateAction, { rejectWithValue, dispatch }) => {
     try {
-      if (!apiRoots.TokenFlow) {
+      if (!apiRoots.CustomerFlow) {
         return rejectWithValue('Error with token flow');
       }
-      const cartRes = await apiRoots.TokenFlow.me()
+      const cartRes = await apiRoots.CustomerFlow.me()
         .carts()
         .withId({ ID: updateAction.cartId })
         .post({ body: updateAction })
@@ -193,7 +193,7 @@ const addNewLineItem = createAsyncThunk<Cart, MyCartUpdateWithCartId, { rejectVa
 );
 
 export {
-  loginWithPassword,
+  loginCustomer,
   signupCustomer,
   changeCustomerPassword,
   updateCustomerData,

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Customer } from '@commercetools/platform-sdk';
 import { PayloadAction, createSlice, isPending, isFulfilled } from '@reduxjs/toolkit';
-import { changeCustomerPassword, loginWithPassword, signupCustomer, updateCustomerData } from './ActionCreators';
+import { changeCustomerPassword, loginCustomer, signupCustomer, updateCustomerData } from './ActionCreators';
 
 interface CustomerState {
   isLoading: boolean;
@@ -15,8 +15,8 @@ const initialState: CustomerState = {
   customer: null,
 };
 
-const isAPendingAction = isPending(updateCustomerData, loginWithPassword, signupCustomer, changeCustomerPassword);
-const isAFulfilledAction = isFulfilled(updateCustomerData, loginWithPassword, signupCustomer, changeCustomerPassword);
+const isAPendingAction = isPending(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
+const isAFulfilledAction = isFulfilled(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
 
 const customerSlice = createSlice({
   name: 'customer',
