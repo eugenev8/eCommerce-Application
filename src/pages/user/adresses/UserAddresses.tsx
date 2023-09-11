@@ -144,7 +144,7 @@ export default function UserAddresses() {
     }
     dispatch(updateCustomerData(setDefaultAddressUpdate)).then((payloadAction) => {
       if (payloadAction.type.includes('rejected')) {
-        // show error on the form
+        toaster.showError('Something went wrong.');
         return;
       }
       toaster.showSuccess('Address is set as default successfully!');
@@ -154,11 +154,11 @@ export default function UserAddresses() {
   const handleDeleteAddress = (address: Address, addressType: AddressType) => {
     if (addressType === AddressType.Shipping) {
       if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
-        console.log('This is the last shipping address. Do not delete'); // show error on the form
+        toaster.showError('This is the last shipping address. Do not delete');
         return;
       }
     } else if (customer.billingAddressIds && customer.billingAddressIds.length < 2) {
-      console.log('This is the last billing address. Do not delete'); // show error on the form
+      toaster.showError('This is the last billing address. Do not delete');
       return;
     }
 
@@ -169,7 +169,8 @@ export default function UserAddresses() {
 
     dispatch(updateCustomerData(deleteAddressUpdate)).then((payloadAction) => {
       if (payloadAction.type.includes('rejected')) {
-        // show error on the form
+        toaster.showError('Something went wrong.');
+
         return;
       }
       toaster.showSuccess('Address deleted!');
@@ -189,7 +190,8 @@ export default function UserAddresses() {
 
     dispatch(updateCustomerData(clearDefaultAddressUpdate)).then((payloadAction) => {
       if (payloadAction.type.includes('rejected')) {
-        // show error on the form
+        toaster.showError('Something went wrong.');
+
         return;
       }
       toaster.showSuccess('Default address cleared!');

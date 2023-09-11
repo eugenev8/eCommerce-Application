@@ -6,6 +6,7 @@ import Wrapper from '../../components/wrapper/Wrapper';
 import { useAppSelector } from '../../hooks/redux';
 import styles from './UserPage.module.scss';
 import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
+import LoaderSpinner from '../../components/loader/Loader';
 
 function UserPageLayout({ children }: { children: ReactNode }) {
   const { customer } = useAppSelector((state) => state.customerReducer);
@@ -15,7 +16,9 @@ function UserPageLayout({ children }: { children: ReactNode }) {
   if (isLoadingData) {
     return (
       <Wrapper>
-        <h2>Loading...</h2>
+        <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+          <LoaderSpinner />
+        </FlexContainer>
       </Wrapper>
     );
   }

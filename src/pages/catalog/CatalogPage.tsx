@@ -15,6 +15,8 @@ import ProductCardsContainer from '../../components/containers/ProductCardsConta
 import CategoryFilter from '../../components/categoryFilter/CategoryFilter';
 import TextFilter from '../../components/textFilter/TextFilter';
 import Button from '../../components/buttons/Buttons';
+import LoaderSpinner from '../../components/loader/Loader';
+import FlexContainer from '../../components/containers/FlexContainer';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -164,7 +166,9 @@ export default function CatalogPage() {
               <p>Items not found, disable some filters!</p>
             )
           ) : (
-            <p>Loading...</p>
+            <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+              <LoaderSpinner />
+            </FlexContainer>
           )}
         </div>
       </div>

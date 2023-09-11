@@ -15,7 +15,7 @@ export default function CommonInput({ labelText, type, placeholder, id, name }: 
   const [didFocus, setDidFocus] = useState(false);
 
   const handleFocus = () => setDidFocus(true);
-  const showFeedback = (!!didFocus && field.value.trim().length > 1) || meta.touched;
+  const showFeedback = (field.value && !!didFocus && field.value.trim().length > 1) || meta.touched;
 
   const toggleErrorClass = () => {
     if (showFeedback) {
