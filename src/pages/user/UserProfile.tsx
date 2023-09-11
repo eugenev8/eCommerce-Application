@@ -12,7 +12,7 @@ function UserProfile() {
   const handleLogout = () => {
     dispatch(authSlice.actions.logout());
     dispatch(customerSlice.actions.clearCustomerData());
-    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
   };
 
   return (

@@ -29,7 +29,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.authStatus = action.payload;
     },
-    isPending(state) {
+    setIsPending(state) {
       state.isLoading = true;
       state.error = '';
     },

@@ -5,7 +5,7 @@ import { getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import { authSlice, AuthStatus } from '../reducers/AuthSlice';
 import { customerSlice } from '../reducers/CustomerSlice';
-import { getCustomerCart } from '../reducers/ActionCreators';
+import { getAnonymousCart, getCustomerCart } from '../reducers/ActionCreators';
 
 export default function useLoadAuthState() {
   const dispatch = useAppDispatch();
@@ -15,25 +15,41 @@ export default function useLoadAuthState() {
     async function initState() {
       try {
         const customerTokenStoreData = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
-        if (!customerTokenStoreData) {
-          dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
+        if (customerTokenStoreData) {
+          const customerTokenStore: TokenStore = JSON.parse(customerTokenStoreData);
+
+          dispatch(authSlice.actions.setIsPending());
+
+          const apiRoot = getTokenFlowApiRoot(customerTokenStore.token);
+          const customerRes = await apiRoot.me().get().execute();
+
+          apiRoots.CustomerFlow = apiRoot;
+          dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
+          dispatch(customerSlice.actions.initCustomerData(customerRes.body));
+          dispatch(getCustomerCart());
           return;
         }
-        const customerTokenStore: TokenStore = JSON.parse(customerTokenStoreData);
+        const anonymousTokenStoreData = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
+        if (anonymousTokenStoreData) {
+          const anonymousTokenStore: TokenStore = JSON.parse(anonymousTokenStoreData);
 
-        dispatch(authSlice.actions.isPending());
+          dispatch(authSlice.actions.setIsPending());
 
-        const apiRoot = getTokenFlowApiRoot(customerTokenStore.token);
-        const customerRes = await apiRoot.me().get().execute();
-
-        apiRoots.CustomerFlow = apiRoot;
-        dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
-        dispatch(customerSlice.actions.initCustomerData(customerRes.body));
-        dispatch(getCustomerCart());
+          dispatch(getAnonymousCart(anonymousTokenStore.token)).then((data) => {
+            if (data.type.includes('fulfilled')) {
+              dispatch(authSlice.actions.setAuthStatus(AuthStatus.AnonymousFlow));
+            } else {
+              dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
+            }
+          });
+          return;
+        }
+        dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
       } catch (e) {
         if (e instanceof Error) {
           if (e.message === 'invalid_token') {
             localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
+            localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
             dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
           } else {
             throw e;

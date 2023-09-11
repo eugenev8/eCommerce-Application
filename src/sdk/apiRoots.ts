@@ -2,12 +2,14 @@ import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/dec
 import { getCredentialsFlowApiRoot } from './auth';
 
 type ApiRoots = {
+  Initial: null;
   CredentialsFlow: ByProjectKeyRequestBuilder;
   AnonymousFlow: ByProjectKeyRequestBuilder | null;
   CustomerFlow: ByProjectKeyRequestBuilder | null;
 };
 
 const apiRoots: ApiRoots = {
+  Initial: null,
   CredentialsFlow: getCredentialsFlowApiRoot(),
   AnonymousFlow: null,
   CustomerFlow: null,

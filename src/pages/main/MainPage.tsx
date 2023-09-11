@@ -4,15 +4,13 @@ import { NavLink } from 'react-router-dom';
 import styles from './MainPage.module.scss';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import {
-  addNewLineItem,
-  createCustomerCart,
-  getCustomerCart,
-  MyCartUpdateWithCartId,
-} from '../../reducers/ActionCreators';
+import { addNewLineItem, createAnonymousCart, MyCartUpdateAdvanced } from '../../reducers/ActionCreators';
 import toaster from '../../services/toaster';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import { AuthStatus } from '../../reducers/AuthSlice';
+import apiRoots from '../../sdk/apiRoots';
+import { getTokenFlowApiRoot } from '../../sdk/auth';
+import tokenStores from '../../sdk/tokenStores';
 
 function MainPage() {
   const dispatch = useAppDispatch();
@@ -23,14 +21,9 @@ function MainPage() {
 
   const CURRENCY = 'USD';
 
-  function handleCreateCart() {
+  function createCartDraft(): CartDraft {
     const lineItemDraft: LineItemDraft = { productId, variantId };
-    const cartDraft: CartDraft = { currency: CURRENCY, lineItems: [lineItemDraft] };
-    dispatch(createCustomerCart(cartDraft));
-  }
-
-  function handleGetActiveCart() {
-    dispatch(getCustomerCart());
+    return { currency: CURRENCY, lineItems: [lineItemDraft] };
   }
 
   function isProductInCart(id: string, variant: number) {
@@ -38,7 +31,7 @@ function MainPage() {
     return cart.lineItems.some((lineItem) => lineItem.productId === id && lineItem.variant.id === variant);
   }
 
-  function addNewLineItemInCustomerCart() {
+  function addNewLineItemInCart() {
     if (!cart) {
       toaster.showError('Error - cart must be in customer flow!');
       return;
@@ -48,13 +41,22 @@ function MainPage() {
       return;
     }
     const updateAction: MyCartUpdateAction = { action: 'addLineItem', productId, variantId };
-    const updates: MyCartUpdateWithCartId = { version: cart.version, actions: [updateAction], cartId: cart.id };
+    const updates: MyCartUpdateAdvanced = {
+      version: cart.version,
+      actions: [updateAction],
+      cartId: cart.id,
+      authStatus,
+    };
     dispatch(addNewLineItem(updates));
   }
 
-  function addNewLineItemInAnonymousCart() {}
-
-  function initAnonymousFlowWithFirstProduct() {}
+  function initAnonymousFlowWithFirstProduct() {
+    dispatch(createAnonymousCart(createCartDraft())).then((data) => {
+      if (data.type.includes('fulfilled')) {
+        apiRoots.AnonymousFlow = getTokenFlowApiRoot(tokenStores.anonymous.token);
+      }
+    });
+  }
 
   function handleAddNewLineItemById() {
     if (!productId) {
@@ -64,10 +66,8 @@ function MainPage() {
 
     switch (authStatus) {
       case AuthStatus.CustomerFlow:
-        addNewLineItemInCustomerCart();
-        break;
       case AuthStatus.AnonymousFlow:
-        addNewLineItemInAnonymousCart();
+        addNewLineItemInCart();
         break;
       case AuthStatus.CredentialsFlow:
         initAnonymousFlowWithFirstProduct();
@@ -89,18 +89,7 @@ function MainPage() {
         <br />
         <br />
 
-        <button type="button" onClick={handleCreateCart} disabled={!!cart}>
-          Create
-        </button>
-
-        <br />
-        <br />
-        <button type="button" onClick={handleGetActiveCart} disabled={!!cart}>
-          Get Cart
-        </button>
-        <br />
-        <br />
-        <button type="button" onClick={handleAddNewLineItemById} disabled={!cart}>
+        <button type="button" onClick={handleAddNewLineItemById}>
           Add product variant by id and Variant
         </button>
         <br />

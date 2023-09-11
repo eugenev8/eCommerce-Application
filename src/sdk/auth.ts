@@ -7,7 +7,7 @@ import {
 } from '@commercetools/sdk-client-v2';
 import { CustomerSignin, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
-import { tokenCache } from './tokenStore';
+import { customerTokenCache, anonymousTokenCache } from './tokenStores';
 
 const apiLink = import.meta.env.VITE_SDK_API_LINK;
 const authLink = import.meta.env.VITE_SDK_AUTH_LINK;
@@ -38,8 +38,7 @@ function getCredentialsFlowApiRoot(): ByProjectKeyRequestBuilder {
     .withHttpMiddleware(httpMiddlewareOptions)
     .build();
 
-  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
-  return apiRoot;
+  return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
 
 function getAnonymousFlowApiRoot(anonymousId: string): ByProjectKeyRequestBuilder {
@@ -51,6 +50,7 @@ function getAnonymousFlowApiRoot(anonymousId: string): ByProjectKeyRequestBuilde
       clientSecret,
       anonymousId,
     },
+    tokenCache: anonymousTokenCache,
     scopes,
     fetch,
   };
@@ -60,8 +60,7 @@ function getAnonymousFlowApiRoot(anonymousId: string): ByProjectKeyRequestBuilde
     .withAnonymousSessionFlow(anonymousAuthMiddlewareOptions)
     .build();
 
-  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
-  return apiRoot;
+  return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
 
 function getTokenFlowApiRoot(token: string): ByProjectKeyRequestBuilder {
@@ -70,8 +69,7 @@ function getTokenFlowApiRoot(token: string): ByProjectKeyRequestBuilder {
     .withExistingTokenFlow(`Bearer ${token}`, { force: true })
     .build();
 
-  const apiRoot = createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
-  return apiRoot;
+  return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
 
 async function getCustomerData(customerSignin: CustomerSignin) {
@@ -83,7 +81,7 @@ async function getCustomerData(customerSignin: CustomerSignin) {
       clientSecret,
       user: { username: customerSignin.email, password: customerSignin.password },
     },
-    tokenCache,
+    tokenCache: customerTokenCache,
     scopes,
     fetch,
   };

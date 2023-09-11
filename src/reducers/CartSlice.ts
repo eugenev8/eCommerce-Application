@@ -1,7 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { Cart } from '@commercetools/platform-sdk';
 import { createSlice, isFulfilled, isPending } from '@reduxjs/toolkit';
-import { addNewLineItem, createCustomerCart, getCustomerCart } from './ActionCreators';
+import {
+  addNewLineItem,
+  createAnonymousCart,
+  createCustomerCart,
+  getAnonymousCart,
+  getCustomerCart,
+} from './ActionCreators';
 
 interface CartState {
   isLoading: boolean;
@@ -15,8 +21,20 @@ const initialState: CartState = {
   cart: null,
 };
 
-const isAPendingAction = isPending(createCustomerCart, getCustomerCart, addNewLineItem);
-const isAFulfilledAction = isFulfilled(createCustomerCart, getCustomerCart, addNewLineItem);
+const isAPendingAction = isPending(
+  createCustomerCart,
+  getCustomerCart,
+  addNewLineItem,
+  createAnonymousCart,
+  getAnonymousCart
+);
+const isAFulfilledAction = isFulfilled(
+  createCustomerCart,
+  getCustomerCart,
+  addNewLineItem,
+  createAnonymousCart,
+  getAnonymousCart
+);
 
 const cartSlice = createSlice({
   name: 'cart',
