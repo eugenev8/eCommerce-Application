@@ -9,6 +9,7 @@ import apiRoots from '../../sdk/apiRoots';
 import LoaderSpinner from '../../components/loader/Loader';
 import ModalContainer from '../../components/modal/ModalContainer';
 import Button from '../../components/buttons/Buttons';
+import AnimatedContainer from '../../components/containers/AnimatedContainer';
 
 type CurrencyCode = 'USD' | 'EUR';
 
@@ -76,28 +77,32 @@ export default function ProductPage() {
 
   if (isLoading || (!isLoading && isError)) {
     return (
-      <Wrapper>
-        <FlexContainer
-          style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
-        >
-          {isLoading ? <LoaderSpinner /> : <h2>Product not found!</h2>}
-          {!isLoading && isError && (
-            <Link to=".." relative="path">
-              Go to catalog
-            </Link>
-          )}
-        </FlexContainer>
-      </Wrapper>
+      <AnimatedContainer>
+        <Wrapper>
+          <FlexContainer
+            style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+          >
+            {isLoading ? <LoaderSpinner /> : <h2>Product not found!</h2>}
+            {!isLoading && isError && (
+              <Link to=".." relative="path">
+                Go to catalog
+              </Link>
+            )}
+          </FlexContainer>
+        </Wrapper>
+      </AnimatedContainer>
     );
   }
 
   if (!product) {
     return (
-      <Wrapper>
-        <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-          <LoaderSpinner />
-        </FlexContainer>
-      </Wrapper>
+      <AnimatedContainer>
+        <Wrapper>
+          <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+            <LoaderSpinner />
+          </FlexContainer>
+        </Wrapper>
+      </AnimatedContainer>
     );
   }
 
@@ -173,71 +178,73 @@ export default function ProductPage() {
 
   return (
     <Suspense fallback={<LoaderSpinner />}>
-      <Wrapper>
-        <div className={`${styles.product__block}`}>
-          <div className={`${styles.product__description}`}>
-            <h2>{product.masterData.current.name['en-US']}</h2>
-            <p>{formattedDescription}</p>
-            <p>SKU: {selectedVariant?.sku}</p>
+      <AnimatedContainer>
+        <Wrapper>
+          <div className={`${styles.product__block}`}>
+            <div className={`${styles.product__description}`}>
+              <h2>{product.masterData.current.name['en-US']}</h2>
+              <p>{formattedDescription}</p>
+              <p>SKU: {selectedVariant?.sku}</p>
+            </div>
+
+            <div className={`${styles.product__slider}`}>
+              <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
+            </div>
           </div>
 
-          <div className={`${styles.product__slider}`}>
-            <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
-          </div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Variant</th>
-              <th>Attributes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allVariants.map((productVariant) => (
-              <tr
-                key={productVariant.id}
-                onClick={() => {
-                  const variantParam = { variant: productVariant.id.toString() };
-                  setSearchParams(variantParam);
-                  setSelectedVariant(productVariant);
-                }}
-                className={productVariant === selectedVariant ? styles.selectedVariant : ''}
-              >
-                <td>{productVariant.sku}</td>
-                <td>
-                  {productVariant.attributes?.map((attribute) => (
-                    <div key={attribute.name}>
-                      {attribute.name}: {attribute.value}
-                    </div>
-                  ))}
-                </td>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Attributes</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {allVariants.map((productVariant) => (
+                <tr
+                  key={productVariant.id}
+                  onClick={() => {
+                    const variantParam = { variant: productVariant.id.toString() };
+                    setSearchParams(variantParam);
+                    setSelectedVariant(productVariant);
+                  }}
+                  className={productVariant === selectedVariant ? styles.selectedVariant : ''}
+                >
+                  <td>{productVariant.sku}</td>
+                  <td>
+                    {productVariant.attributes?.map((attribute) => (
+                      <div key={attribute.name}>
+                        {attribute.name}: {attribute.value}
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {renderPrice()}
+          {renderPrice()}
 
-        <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-          {images.length > 0 && (
-            <>
-              <FlexContainer style={{ width: '80vmin' }}>
-                <SwiperContainer imageUrlArray={images} initialSlide={selectedImageIndex} onImageClick={() => null} />
-              </FlexContainer>
-              <Button
-                styling="secondary"
-                innerText="Close"
-                variant="default"
-                type="button"
-                addedClass=""
-                style={{ margin: 'auto' }}
-                onClick={() => setIsModalOpen(false)}
-              />
-            </>
-          )}
-        </ModalContainer>
-      </Wrapper>
+          <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
+            {images.length > 0 && (
+              <>
+                <FlexContainer style={{ width: '80vmin' }}>
+                  <SwiperContainer imageUrlArray={images} initialSlide={selectedImageIndex} onImageClick={() => null} />
+                </FlexContainer>
+                <Button
+                  styling="secondary"
+                  innerText="Close"
+                  variant="default"
+                  type="button"
+                  addedClass=""
+                  style={{ margin: 'auto' }}
+                  onClick={() => setIsModalOpen(false)}
+                />
+              </>
+            )}
+          </ModalContainer>
+        </Wrapper>
+      </AnimatedContainer>
     </Suspense>
   );
 }

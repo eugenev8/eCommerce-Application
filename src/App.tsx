@@ -6,18 +6,30 @@ import useToasterErrorMessage from './hooks/useToasterErrorMessage';
 import useLoadAuthState from './hooks/useLoadAuthState';
 import Breadcrumbs from './components/breadcrumbs/Breadcrumbs';
 import useLoadShopData from './hooks/useLoadShopData';
+import FlexContainer from './components/containers/FlexContainer';
+import LoaderSpinner from './components/loader/Loader';
+import AnimatedContainer from './components/containers/AnimatedContainer';
 
 export default function App() {
   useToasterErrorMessage();
-  useLoadAuthState();
+  const isAuthLoaded = useLoadAuthState();
   useLoadShopData();
 
   return (
-    <>
-      <Navigation />
-      <Breadcrumbs />
-      <Outlet />
-      <ToastContainer />
-    </>
+    <AnimatedContainer>
+      {!isAuthLoaded && (
+        <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <LoaderSpinner />
+        </FlexContainer>
+      )}
+      {isAuthLoaded && (
+        <>
+          <Navigation />
+          <Breadcrumbs />
+          <Outlet />
+          <ToastContainer />
+        </>
+      )}
+    </AnimatedContainer>
   );
 }

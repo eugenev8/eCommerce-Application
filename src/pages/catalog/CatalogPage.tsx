@@ -17,6 +17,7 @@ import TextFilter from '../../components/textFilter/TextFilter';
 import Button from '../../components/buttons/Buttons';
 import LoaderSpinner from '../../components/loader/Loader';
 import FlexContainer from '../../components/containers/FlexContainer';
+import AnimatedContainer from '../../components/containers/AnimatedContainer';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -106,72 +107,74 @@ export default function CatalogPage() {
   };
 
   return (
-    <Wrapper>
-      <h2>Catalog</h2>
-      <div className={`${styles.catalog__wrapper}`}>
-        <div className={`${styles.catalog__leftBlock}`}>
-          <Button
-            styling="primary"
-            innerText="Apply"
-            variant="default"
-            type="button"
-            addedClass=""
-            onClick={handleFilter}
-            style={{ margin: '1rem auto' }}
-          />
+    <AnimatedContainer>
+      <Wrapper>
+        <h2>Catalog</h2>
+        <div className={`${styles.catalog__wrapper}`}>
+          <div className={`${styles.catalog__leftBlock}`}>
+            <Button
+              styling="primary"
+              innerText="Apply"
+              variant="default"
+              type="button"
+              addedClass=""
+              onClick={handleFilter}
+              style={{ margin: '1rem auto' }}
+            />
 
-          <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
-            {SORTING_TYPES.map((type) => (
-              <option key={type.name} value={type.queryString}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-          <CategoryFilter />
+            <select onChange={(e) => handleChangeSortType(e.target.value)} value={queryState.sort}>
+              {SORTING_TYPES.map((type) => (
+                <option key={type.name} value={type.queryString}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+            <CategoryFilter />
 
-          <TextFilter onEnterKeyPress={handleFilter} />
-          <div className={styles.catalog}>
-            {facets &&
-              Object.entries(facets).map((facetData) => {
-                const [queryAttribute] = facetData;
-                if (queryAttribute === PRICE_FACET.query) {
-                  return <PriceFilter facet={facetData} key={queryAttribute} />;
-                }
-                return <Filter facet={facetData} key={queryAttribute} />;
-              })}
+            <TextFilter onEnterKeyPress={handleFilter} />
+            <div className={styles.catalog}>
+              {facets &&
+                Object.entries(facets).map((facetData) => {
+                  const [queryAttribute] = facetData;
+                  if (queryAttribute === PRICE_FACET.query) {
+                    return <PriceFilter facet={facetData} key={queryAttribute} />;
+                  }
+                  return <Filter facet={facetData} key={queryAttribute} />;
+                })}
+            </div>
+          </div>
+
+          <div className={`${styles.catalog__rightBlock}`}>
+            {/* eslint-disable-next-line no-nested-ternary */}
+            {products ? (
+              products.length ? (
+                <>
+                  <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+                  <ProductCardsContainer>
+                    {products &&
+                      products.map((productToRender) => {
+                        return (
+                          <ProductCard
+                            key={productToRender.id}
+                            productProjection={productToRender}
+                            variantID={getVariantIdForRender(productToRender)}
+                            type="small"
+                          />
+                        );
+                      })}
+                  </ProductCardsContainer>
+                </>
+              ) : (
+                <p>Items not found, disable some filters!</p>
+              )
+            ) : (
+              <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+                <LoaderSpinner />
+              </FlexContainer>
+            )}
           </div>
         </div>
-
-        <div className={`${styles.catalog__rightBlock}`}>
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {products ? (
-            products.length ? (
-              <>
-                <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
-                <ProductCardsContainer>
-                  {products &&
-                    products.map((productToRender) => {
-                      return (
-                        <ProductCard
-                          key={productToRender.id}
-                          productProjection={productToRender}
-                          variantID={getVariantIdForRender(productToRender)}
-                          type="small"
-                        />
-                      );
-                    })}
-                </ProductCardsContainer>
-              </>
-            ) : (
-              <p>Items not found, disable some filters!</p>
-            )
-          ) : (
-            <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
-              <LoaderSpinner />
-            </FlexContainer>
-          )}
-        </div>
-      </div>
-    </Wrapper>
+      </Wrapper>
+    </AnimatedContainer>
   );
 }
