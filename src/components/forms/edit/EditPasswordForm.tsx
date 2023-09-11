@@ -1,5 +1,6 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import { useState } from 'react';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
@@ -22,6 +23,8 @@ const validationSchema = Yup.object({
 });
 
 export default function EditPasswordForm({ onSave, email, version }: EditEmailFormProps) {
+  const [isSubmitting, setSubmitting] = useState(false);
+
   const initialValues = {
     oldPassword: '',
     newPassword: '',
@@ -31,16 +34,22 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
   const dispatch = useAppDispatch();
 
   const handleSubmit = (values: typeof initialValues) => {
+    setSubmitting(true);
+
     dispatch(
       changeCustomerPassword({ currentPassword: values.oldPassword, newPassword: values.newPassword, version, email })
-    ).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        onSave(false);
-      } else {
-        onSave(true);
-      }
-    });
+    )
+      .then((payloadAction) => {
+        if (payloadAction.type.includes('rejected')) {
+          // show error on the form
+          onSave(false);
+        } else {
+          onSave(true);
+        }
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -72,11 +81,12 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
 
           <Button
             type="submit"
-            innerText="Update password"
+            innerText={isSubmitting ? 'Updating...' : 'Update password'}
             styling="primary"
             variant="default"
             addedClass=""
             style={{ margin: 'auto' }}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>

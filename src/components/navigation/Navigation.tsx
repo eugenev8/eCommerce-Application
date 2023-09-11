@@ -5,6 +5,8 @@ import useLoginStatus from '../../hooks/useLoginStatus';
 import Wrapper from '../wrapper/Wrapper';
 import FlexContainer from '../containers/FlexContainer';
 import styles from './Navigation.module.scss';
+import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
+import LoaderSpinner from '../loader/Loader';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -94,6 +96,7 @@ export default function Navigation() {
   const isLoggedIn = useLoginStatus();
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState<string>('');
+  const isDataLoading = useLoadingStateStatus();
 
   const handleOnClick = () => {
     setIsMenuShown(!isMenuShown);
@@ -136,7 +139,8 @@ export default function Navigation() {
           </div>
 
           <div className={`${styles.navbar__block}`}>
-            <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
+            {isDataLoading && <LoaderSpinner />}
+            {!isDataLoading && <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />}
           </div>
         </FlexContainer>
       </Wrapper>

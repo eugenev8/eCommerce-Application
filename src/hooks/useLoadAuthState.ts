@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch } from './redux';
 import { getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
@@ -7,6 +7,7 @@ import { customerSlice } from '../reducers/CustomerSlice';
 
 export default function useLoadAuthState() {
   const dispatch = useAppDispatch();
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     async function initState() {
@@ -36,6 +37,8 @@ export default function useLoadAuthState() {
         }
       }
     }
-    initState();
+    initState().finally(() => setIsLoaded(true));
   }, [dispatch]);
+
+  return isLoaded;
 }

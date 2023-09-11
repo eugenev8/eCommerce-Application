@@ -6,6 +6,8 @@ import Wrapper from '../../components/wrapper/Wrapper';
 import { useAppSelector } from '../../hooks/redux';
 import styles from './UserPage.module.scss';
 import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
+import LoaderSpinner from '../../components/loader/Loader';
+import AnimatedContainer from '../../components/containers/AnimatedContainer';
 
 function UserPageLayout({ children }: { children: ReactNode }) {
   const { customer } = useAppSelector((state) => state.customerReducer);
@@ -14,9 +16,13 @@ function UserPageLayout({ children }: { children: ReactNode }) {
 
   if (isLoadingData) {
     return (
-      <Wrapper>
-        <h2>Loading...</h2>
-      </Wrapper>
+      <AnimatedContainer>
+        <Wrapper>
+          <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
+            <LoaderSpinner />
+          </FlexContainer>
+        </Wrapper>
+      </AnimatedContainer>
     );
   }
 
@@ -25,13 +31,15 @@ function UserPageLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <Wrapper>
-      <h2>Hello, {customer.firstName}</h2>
-      <FlexContainer style={{ gap: '10%', flexWrap: 'wrap' }}>
-        <ColoredContainer className={`${styles.userPage__menu}`}>{children}</ColoredContainer>
-        <Outlet />
-      </FlexContainer>
-    </Wrapper>
+    <AnimatedContainer>
+      <Wrapper>
+        <h2>Hello, {customer.firstName}</h2>
+        <FlexContainer style={{ gap: '10%', flexWrap: 'wrap' }}>
+          <ColoredContainer className={`${styles.userPage__menu}`}>{children}</ColoredContainer>
+          <Outlet />
+        </FlexContainer>
+      </Wrapper>
+    </AnimatedContainer>
   );
 }
 

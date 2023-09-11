@@ -83,6 +83,7 @@ export default function RegisterForm() {
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
@@ -130,8 +131,9 @@ export default function RegisterForm() {
   }
 
   const handleSubmit = (values: RegisterFormValues) => {
+    setIsSubmiting(true);
     const customerDraft = createCustomerDraft(values);
-    dispatch(signupCustomer(customerDraft));
+    dispatch(signupCustomer(customerDraft)).finally(() => setIsSubmiting(false));
   };
 
   return (
@@ -218,7 +220,14 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          <Button innerText="Join us" styling="primary" type="submit" variant="default" addedClass="" />
+          <Button
+            disabled={isSubmiting}
+            innerText={isSubmiting ? 'Submiting...' : 'Join us'}
+            styling="primary"
+            type="submit"
+            variant="default"
+            addedClass=""
+          />
         </Form>
       </Formik>
     </div>

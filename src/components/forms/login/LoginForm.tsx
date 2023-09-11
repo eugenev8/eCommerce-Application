@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { CustomerSignin } from '@commercetools/platform-sdk';
@@ -22,10 +22,15 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm() {
+  const [isSubmiting, setIsSubmiting] = useState(false);
   const dispatch = useAppDispatch();
 
   const handleSubmit = (values: CustomerSignin) => {
-    dispatch(loginWithPassword(values));
+    setIsSubmiting(true);
+
+    dispatch(loginWithPassword(values)).finally(() => {
+      setIsSubmiting(false);
+    });
   };
 
   return (
@@ -44,7 +49,14 @@ function LoginForm() {
 
           <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
 
-          <Button innerText="Sign In" styling="primary" type="submit" variant="default" addedClass="" />
+          <Button
+            innerText={isSubmiting ? 'Submiting...' : 'Sign In'}
+            styling="primary"
+            type="submit"
+            variant="default"
+            addedClass=""
+            disabled={isSubmiting}
+          />
         </Form>
       </Formik>
     </div>
