@@ -1,9 +1,8 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Product, ProductVariant } from '@commercetools/platform-sdk';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import styles from './ProductPage.module.scss';
 import Wrapper from '../../components/wrapper/Wrapper';
-
 import SwiperContainer from '../../components/swiper/Swiper';
 import FlexContainer from '../../components/containers/FlexContainer';
 import apiRoots from '../../sdk/apiRoots';
@@ -15,73 +14,58 @@ type CurrencyCode = 'USD' | 'EUR';
 
 export default function ProductPage() {
   const { productKey } = useParams();
-  const [product, setProduct] = useState<Product | null>();
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const searchProductMemoized = useMemo(() => {
-    return async (key: string) => {
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchData = async () => {
       setIsLoading(true);
       setIsError(false);
 
       try {
-        const result = await apiRoots.CredentialsFlow.products()
-          .withKey({
-            key,
-          })
-          .get()
-          .execute();
+        if (!productKey) {
+          throw new Error('Product key is missing');
+        }
 
-        return result.body;
+        const result = await apiRoots.CredentialsFlow.products().withKey({ key: productKey }).get().execute();
+
+        if (!ignore) {
+          setProduct(result.body);
+        }
       } catch (error) {
-        setIsError(true);
-        return null;
+        if (!ignore) {
+          setIsError(true);
+        }
       } finally {
         setIsLoading(false);
       }
     };
-  }, []);
 
-  useEffect(() => {
-    if (!productKey) {
-      setProduct(null);
-      setIsError(false);
-    }
-
-    let ignore = false;
-
-    if (productKey) {
-      searchProductMemoized(productKey)
-        .then((data) => {
-          if (!ignore) {
-            setProduct(data);
-          }
-        })
-        .catch(() => setIsError(true));
-    }
+    fetchData();
 
     return () => {
       ignore = true;
     };
-  }, [productKey, searchProductMemoized]);
+  }, [productKey]);
 
   useEffect(() => {
     const oldTitle = document.title;
 
     if (product) {
-      if (searchParams.has('variant') && searchParams.get('variant') !== '1') {
-        const id = searchParams.get('variant') || '2';
-        const variant = product.masterData.current.variants.find((productVariant) => {
-          return productVariant.id === +id;
-        });
-        setSelectedVariant(variant);
-      } else {
-        setSelectedVariant(product.masterData.current.masterVariant);
-      }
+      const variantId = searchParams.get('variant');
+      const variant =
+        variantId && variantId !== '1'
+          ? product.masterData.current.variants.find((productVariant) => productVariant.id === +variantId)
+          : product.masterData.current.masterVariant;
+
+      setSelectedVariant(variant || null);
       document.title = product.masterData.current.name['en-US'];
     }
 
@@ -90,42 +74,54 @@ export default function ProductPage() {
     };
   }, [product, searchParams]);
 
-  if (isLoading)
+  if (isLoading || (!isLoading && isError)) {
     return (
       <Wrapper>
         <FlexContainer
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '60vh',
-          }}
+          style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
         >
+          {isLoading ? <LoaderSpinner /> : <h2>Product not found!</h2>}
+          {!isLoading && isError && (
+            <Link to=".." relative="path">
+              Go to catalog
+            </Link>
+          )}
+        </FlexContainer>
+      </Wrapper>
+    );
+  }
+
+  if (!product) {
+    return (
+      <Wrapper>
+        <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
           <LoaderSpinner />
         </FlexContainer>
       </Wrapper>
     );
+  }
 
-  if (!isLoading && isError)
+  if (!selectedVariant) {
     return (
       <Wrapper>
         <FlexContainer
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '60vh',
-            flexDirection: 'column',
-          }}
+          style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
         >
-          <h2>Product not found!</h2>
-          <Link to=".." relative="path">
-            Go to catalog
-          </Link>
+          <h3>Variant doesnt exists!</h3>
+          <Button
+            addedClass=""
+            innerText="Go to master variant"
+            styling="primary"
+            type="button"
+            variant="default"
+            onClick={() => {
+              setSearchParams({ variant: '1' });
+              setSelectedVariant(product.masterData.current.masterVariant);
+            }}
+          />
         </FlexContainer>
       </Wrapper>
     );
-
-  if (!product) {
-    return null;
   }
 
   const { masterVariant, variants } = product.masterData.current;
@@ -136,53 +132,38 @@ export default function ProductPage() {
     setIsModalOpen(true);
   };
 
-  function getImagesForVariant() {
-    if (selectedVariant && selectedVariant.images) {
-      return selectedVariant.images.map((image) => image.url);
-    }
+  const getImagesForVariant = () => (selectedVariant?.images || []).map((image) => image.url);
 
-    return [];
-  }
-
-  function getPriceForCountry(data: ProductVariant, currencyCode: CurrencyCode) {
+  const getPriceForCountry = (data: ProductVariant, currencyCode: CurrencyCode) => {
     const price = data?.prices?.find((p) => p.value.currencyCode === currencyCode);
+    return price ? price.value.centAmount / 100 : null;
+  };
 
-    if (price) {
-      return price.value.centAmount / 100;
-    }
-
-    return null;
-  }
-
-  function getDiscountedPriceForCountry(data: ProductVariant, currencyCode: CurrencyCode) {
+  const getDiscountedPriceForCountry = (data: ProductVariant, currencyCode: CurrencyCode) => {
     const price = data?.prices?.find((p) => p.value.currencyCode === currencyCode);
-
-    if (price && price.discounted) {
-      return price.discounted.value.centAmount / 100;
-    }
-
-    return null;
-  }
+    return price && price.discounted ? price.discounted.value.centAmount / 100 : null;
+  };
 
   const images = getImagesForVariant();
 
   const renderPrice = () => {
-    if (!selectedVariant) {
-      return null;
-    }
+    if (!selectedVariant) return null;
+
     const price = getPriceForCountry(selectedVariant, 'USD');
     const discPrice = getDiscountedPriceForCountry(selectedVariant, 'USD');
 
     if (!price) return <p>Price not set yet!</p>;
 
-    if (!discPrice) {
-      return <div className={`${styles.price}`}>${price.toFixed(2)}</div>;
-    }
-
     return (
       <div className={`${styles.price}`}>
-        <span className={`${styles.product__oldPrice}`}>${price.toFixed(2)}</span>{' '}
-        <span className={`${styles.product__discPrice}`}>${discPrice.toFixed(2)}</span>
+        {discPrice ? (
+          <>
+            <span className={`${styles.product__oldPrice}`}>${price.toFixed(2)}</span>{' '}
+            <span className={`${styles.product__discPrice}`}>${discPrice.toFixed(2)}</span>
+          </>
+        ) : (
+          <span>${price.toFixed(2)}</span>
+        )}
       </div>
     );
   };
@@ -196,7 +177,6 @@ export default function ProductPage() {
         <div className={`${styles.product__block}`}>
           <div className={`${styles.product__description}`}>
             <h2>{product.masterData.current.name['en-US']}</h2>
-            {!selectedVariant && <h3>Incorrect product variant. Please choose another variant!</h3>}
             <p>{formattedDescription}</p>
             <p>SKU: {selectedVariant?.sku}</p>
           </div>

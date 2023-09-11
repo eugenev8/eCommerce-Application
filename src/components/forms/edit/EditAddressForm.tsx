@@ -1,6 +1,7 @@
 import { Formik, Form } from 'formik';
 
 import { Address, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { useState } from 'react';
 import CommonInput from '../inputs/CommonInput';
 import { AddressValidaiton } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
@@ -8,6 +9,7 @@ import FlexContainer from '../../containers/FlexContainer';
 import CountryInput from '../inputs/CountryInput';
 import { useAppDispatch } from '../../../hooks/redux';
 import { updateCustomerData } from '../../../reducers/ActionCreators';
+import toaster from '../../../services/toaster';
 
 interface EditAddressFormProps {
   address: Address;
@@ -18,6 +20,8 @@ interface EditAddressFormProps {
 const validationSchema = AddressValidaiton;
 
 export default function EditAddressForm({ address, version, onSave }: EditAddressFormProps) {
+  const [isSubmitting, setSubmitting] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const initialValues = {
@@ -29,19 +33,25 @@ export default function EditAddressForm({ address, version, onSave }: EditAddres
   };
 
   const handleSubmit = (values: Address) => {
+    setSubmitting(true);
+
     const changeAddressUpdate: MyCustomerUpdate = {
       version,
       actions: [{ action: 'changeAddress', address: values, addressId: address.id }],
     };
 
-    dispatch(updateCustomerData(changeAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        onSave(false);
-      } else {
-        onSave(true);
-      }
-    });
+    dispatch(updateCustomerData(changeAddressUpdate))
+      .then((payloadAction) => {
+        if (payloadAction.type.includes('rejected')) {
+          toaster.showError('Something went wrong!');
+          onSave(false);
+        } else {
+          onSave(true);
+        }
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -86,11 +96,12 @@ export default function EditAddressForm({ address, version, onSave }: EditAddres
 
           <Button
             type="submit"
-            innerText="Update address"
+            innerText={isSubmitting ? 'Updating...' : 'Update address'}
             styling="primary"
             variant="default"
             addedClass=""
             style={{ margin: 'auto' }}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>

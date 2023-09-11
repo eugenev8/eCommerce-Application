@@ -11,7 +11,6 @@ import Button from '../../../components/buttons/Buttons';
 import UserContactInfo from '../../../components/userInfo/contacts/UserContacts';
 import EditCustomerSmallForm from '../../../components/forms/edit/EditCustomerForm';
 import EditPasswordForm from '../../../components/forms/edit/EditPasswordForm';
-import toaster from '../../../services/toaster';
 
 export default function UserAccount() {
   const { customer } = useAppSelector((state) => state.customerReducer);
@@ -78,7 +77,6 @@ export default function UserAccount() {
               customer={customer}
               onSave={(isUpdated) => {
                 if (isUpdated) {
-                  toaster.showSuccess('Personal data changed successfully!');
                   handleModalClose();
                 }
               }}

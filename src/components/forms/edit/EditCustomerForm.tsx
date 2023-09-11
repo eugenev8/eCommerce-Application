@@ -2,12 +2,14 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 
 import { Customer, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { useState } from 'react';
 import CommonInput from '../inputs/CommonInput';
 import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { useAppDispatch } from '../../../hooks/redux';
 import { updateCustomerData } from '../../../reducers/ActionCreators';
+import toaster from '../../../services/toaster';
 
 interface EditCustomerFormProps {
   customer: Customer;
@@ -22,6 +24,8 @@ const validationSchema = Yup.object({
 });
 
 export default function EditCustomerSmallForm({ customer, onSave }: EditCustomerFormProps) {
+  const [isSubmitting, setSubmitting] = useState(false);
+
   const dispatch = useAppDispatch();
 
   const initialValues = {
@@ -62,16 +66,27 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
   }
 
   const handleSubmit = (values: Pick<Customer, 'firstName' | 'lastName' | 'email' | 'dateOfBirth'>) => {
+    setSubmitting(true);
+
     const updates = createMyCustomerUpdate(values);
-    if (!updates.actions.length) return; // show "no changes"
-    dispatch(updateCustomerData(updates)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        onSave(false);
-      } else {
-        onSave(true);
-      }
-    });
+    if (!updates.actions.length) {
+      toaster.showError('Nothing to change!');
+      setSubmitting(false);
+      return;
+    }
+    dispatch(updateCustomerData(updates))
+      .then((payloadAction) => {
+        if (payloadAction.type.includes('rejected')) {
+          toaster.showError('Something went wrong!');
+          onSave(false);
+        } else {
+          toaster.showSuccess('Personal data changed successfully!');
+          onSave(true);
+        }
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -115,11 +130,12 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
 
           <Button
             type="submit"
-            innerText="Update"
+            innerText={isSubmitting ? 'Updating...' : 'Update'}
             styling="primary"
             variant="default"
             addedClass=""
             style={{ margin: 'auto' }}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>
