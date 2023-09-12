@@ -10,6 +10,7 @@ import Button from '../../buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
 import { useAppDispatch } from '../../../hooks/redux';
 import { loginCustomer } from '../../../reducers/ActionCreators/CustomerActions';
+import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
 
 const initialValues: CustomerSignin = {
   email: '',
@@ -24,11 +25,11 @@ const validationSchema = Yup.object({
 function LoginForm() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const dispatch = useAppDispatch();
-
+  const anonymousCart = useCreateAnonymousCartIdentifier();
   const handleSubmit = (values: CustomerSignin) => {
     setIsSubmiting(true);
 
-    dispatch(loginCustomer(values)).finally(() => {
+    dispatch(loginCustomer({ ...values, anonymousCart })).finally(() => {
       setIsSubmiting(false);
     });
   };

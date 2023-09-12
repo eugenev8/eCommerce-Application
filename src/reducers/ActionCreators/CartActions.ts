@@ -4,13 +4,9 @@ import { getAnonymousFlowApiRoot, getTokenFlowApiRoot } from '../../sdk/auth';
 import apiRoots from '../../sdk/apiRoots';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
 import { authSlice, AuthStatus } from '../AuthSlice';
-// eslint-disable-next-line import/no-cycle
-import { RootState } from '../../store';
 import toaster from '../../services/toaster';
 
 const PROJECT_CURRENCY = 'USD';
-
-const setCart = createAsyncThunk<Cart, Cart>('cart/setCart', async (cart) => cart);
 
 const createCustomerCart = createAsyncThunk<Cart, void, { rejectValue: string }>(
   'cart/createCustomerCart',
@@ -66,27 +62,31 @@ const getAnonymousCart = createAsyncThunk<Cart, string, { rejectValue: string }>
   }
 );
 
-const addNewLineItem = createAsyncThunk<Cart, MyCartUpdate, { rejectValue: string; state: RootState }>(
+export interface MyCartUpdateAdvanced extends MyCartUpdate {
+  cartId: string;
+  authStatus: AuthStatus;
+}
+
+const addNewLineItem = createAsyncThunk<Cart, MyCartUpdateAdvanced, { rejectValue: string }>(
   'cart/addLineItemInCart',
-  async (updateAction, { rejectWithValue, dispatch, getState }) => {
+  async (updateActionAdvanced, { rejectWithValue, dispatch }) => {
     try {
-      const { authStatus } = getState().authReducer;
-      const { cart } = getState().cartReducer;
-
-      if (authStatus === AuthStatus.Initial || authStatus === AuthStatus.CredentialsFlow) {
-        toaster.showError(`apiRoots[authStatus]  ${apiRoots[authStatus]}`);
-        return rejectWithValue('apiRoots[authStatus]');
+      if (
+        !apiRoots[updateActionAdvanced.authStatus] ||
+        updateActionAdvanced.authStatus === AuthStatus.Initial ||
+        updateActionAdvanced.authStatus === AuthStatus.CredentialsFlow
+      ) {
+        toaster.showError(
+          `Troubles with apiRoots[updateAction.authStatus] ${apiRoots[updateActionAdvanced.authStatus]}`
+        );
+        return rejectWithValue(
+          `Troubles with apiRoots[updateAction.authStatus] ${apiRoots[updateActionAdvanced.authStatus]}`
+        );
       }
-
-      if (!cart) {
-        toaster.showError(`!cart `);
-        return rejectWithValue('!cart');
-      }
-
-      const cartRes = await apiRoots[authStatus]!.me()
+      const cartRes = await apiRoots[updateActionAdvanced.authStatus]!.me()
         .carts()
-        .withId({ ID: cart.id })
-        .post({ body: updateAction })
+        .withId({ ID: updateActionAdvanced.cartId })
+        .post({ body: updateActionAdvanced })
         .execute();
       return cartRes.body;
     } catch (error) {
@@ -118,12 +118,4 @@ const createAnonymousCart = createAsyncThunk<Cart, CartDraft, { rejectValue: str
   }
 );
 
-export {
-  PROJECT_CURRENCY,
-  setCart,
-  createCustomerCart,
-  getCustomerCart,
-  addNewLineItem,
-  createAnonymousCart,
-  getAnonymousCart,
-};
+export { PROJECT_CURRENCY, createCustomerCart, getCustomerCart, addNewLineItem, createAnonymousCart, getAnonymousCart };

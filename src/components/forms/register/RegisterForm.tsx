@@ -19,6 +19,7 @@ import Button from '../../buttons/Buttons';
 import { useAppDispatch } from '../../../hooks/redux';
 import { signupCustomer } from '../../../reducers/ActionCreators/CustomerActions';
 import CheckboxInput from '../inputs/CheckboxInput';
+import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
 
 interface RegisterFormValues {
   email: string;
@@ -84,7 +85,7 @@ export default function RegisterForm() {
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-
+  const anonymousCart = useCreateAnonymousCartIdentifier();
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
       setIsDefaultBillingAddress(!isDefaultShippingAddress);
@@ -125,6 +126,7 @@ export default function RegisterForm() {
       lastName: values.lastName,
       dateOfBirth: values.dateOfBirth,
       ...newCustomerAddresses,
+      anonymousCart,
     };
 
     return customerDraft;

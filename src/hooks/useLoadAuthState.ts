@@ -25,7 +25,7 @@ export default function useLoadAuthState() {
 
           apiRoots.CustomerFlow = apiRoot;
           dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
-          dispatch(customerSlice.actions.initCustomerData(customerRes.body));
+          dispatch(customerSlice.actions.setCustomer(customerRes.body));
           dispatch(getCustomerCart());
           return;
         }

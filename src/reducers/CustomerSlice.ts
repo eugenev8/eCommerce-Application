@@ -1,11 +1,9 @@
 /* eslint-disable no-param-reassign */
 import { Customer } from '@commercetools/platform-sdk';
-import { createSlice, isPending, isFulfilled } from '@reduxjs/toolkit';
-// eslint-disable-next-line import/no-cycle
+import { createSlice, isPending, isFulfilled, PayloadAction } from '@reduxjs/toolkit';
 import {
   changeCustomerPassword,
   loginCustomer,
-  setCustomer,
   signupCustomer,
   updateCustomerData,
 } from './ActionCreators/CustomerActions';
@@ -22,25 +20,19 @@ const initialState: CustomerState = {
   customer: null,
 };
 
-const isAPendingAction = isPending(
-  setCustomer,
-  updateCustomerData,
-  loginCustomer,
-  signupCustomer,
-  changeCustomerPassword
-);
-const isAFulfilledAction = isFulfilled(
-  setCustomer,
-  updateCustomerData,
-  loginCustomer,
-  signupCustomer,
-  changeCustomerPassword
-);
+const isAPendingAction = isPending(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
+const isAFulfilledAction = isFulfilled(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
 
 const customerSlice = createSlice({
   name: 'customer',
   initialState,
   reducers: {
+    setCustomer(state, action: PayloadAction<Customer>) {
+      state.isLoading = false;
+      state.error = '';
+      state.customer = action.payload;
+    },
+
     clearCustomerData() {
       return initialState;
     },

@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import {
-  CartResourceIdentifier,
   Customer,
   CustomerDraft,
   CustomerSignin,
@@ -13,42 +12,21 @@ import toaster from '../../services/toaster';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
 import tokenStores from '../../sdk/tokenStores';
 import { authSlice, AuthStatus } from '../AuthSlice';
-// eslint-disable-next-line import/no-cycle
-import { createCustomerCart, getCustomerCart, setCart } from './CartActions';
-import { RootState } from '../../store';
 
-const setCustomer = createAsyncThunk<Customer, Customer>('customer/setCustomer', async (customer) => customer);
-
-function createAnonymousCart(getState: () => RootState): CartResourceIdentifier | undefined {
-  const { authStatus } = getState().authReducer;
-  const { cart } = getState().cartReducer;
-
-  let anonymousCart: CartResourceIdentifier | undefined;
-  if (authStatus === AuthStatus.AnonymousFlow) {
-    if (!cart) {
-      toaster.showError('Anonymous cart trouble!');
-    } else {
-      anonymousCart = { id: cart.id, key: cart.key, typeId: 'cart' };
-    }
-  }
-  return anonymousCart;
-}
+import { createCustomerCart, getCustomerCart } from './CartActions';
+import { cartSlice } from '../CartSlice';
 
 function eraseAnonymousDataInLocalStorage() {
   localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
   localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_ID);
 }
 
-const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: string; state: RootState }>(
+const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: string }>(
   'customer/loginWithPassword',
-  async (customerSignin, { rejectWithValue, dispatch, getState }) => {
+  async (customerSignin, { rejectWithValue, dispatch }) => {
     try {
-      const anonymousCart = createAnonymousCart(getState);
-
-      const customerSigninWithCart: CustomerSignin = { ...customerSignin, anonymousCart };
-
       dispatch(authSlice.actions.setIsPending());
-      const customerRes = await getCustomerData(customerSigninWithCart);
+      const customerRes = await getCustomerData(customerSignin);
 
       toaster.showSuccess('Login successful!');
 
@@ -57,7 +35,7 @@ const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: 
       apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStores.customer.token);
       eraseAnonymousDataInLocalStorage();
       if (customerRes.body.cart) {
-        dispatch(setCart(customerRes.body.cart));
+        dispatch(cartSlice.actions.setCart(customerRes.body.cart));
       } else {
         dispatch(getCustomerCart());
       }
@@ -71,17 +49,13 @@ const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: 
   }
 );
 
-const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: string; state: RootState }>(
+const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: string }>(
   'customer/signup',
-  async (customerDraft, { rejectWithValue, dispatch, getState }) => {
+  async (customerDraft, { rejectWithValue, dispatch }) => {
     try {
-      const anonymousCart = createAnonymousCart(getState);
-
-      const customerDraftWithCart: CustomerDraft = { ...customerDraft, anonymousCart };
-
       dispatch(authSlice.actions.setIsPending());
 
-      await apiRoots.CredentialsFlow.customers().post({ body: customerDraftWithCart }).execute();
+      await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
 
       const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
 
@@ -90,7 +64,7 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
       toaster.showSuccess("Registration successful! You're now login in!");
       eraseAnonymousDataInLocalStorage();
       if (customerRes.body.cart) {
-        dispatch(setCart(customerRes.body.cart));
+        dispatch(cartSlice.actions.setCart(customerRes.body.cart));
       } else {
         dispatch(createCustomerCart());
       }
@@ -157,4 +131,4 @@ const updateCustomerData = createAsyncThunk<Customer, MyCustomerUpdate, { reject
   }
 );
 
-export { setCustomer, loginCustomer, signupCustomer, changeCustomerPassword, updateCustomerData };
+export { loginCustomer, signupCustomer, changeCustomerPassword, updateCustomerData };
