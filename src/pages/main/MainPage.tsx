@@ -1,15 +1,10 @@
 import { useState } from 'react';
-import { CartDraft, LineItemDraft, MyCartUpdateAction } from '@commercetools/platform-sdk';
+import { CartDraft, LineItemDraft, MyCartUpdate, MyCartUpdateAction } from '@commercetools/platform-sdk';
 import { NavLink } from 'react-router-dom';
 import styles from './MainPage.module.scss';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import {
-  addNewLineItem,
-  createAnonymousCart,
-  MyCartUpdateAdvanced,
-  PROJECT_CURRENCY,
-} from '../../reducers/ActionCreators/CartActions';
+import { addNewLineItem, createAnonymousCart, PROJECT_CURRENCY } from '../../reducers/ActionCreators/CartActions';
 import toaster from '../../services/toaster';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import { AuthStatus } from '../../reducers/AuthSlice';
@@ -44,11 +39,9 @@ function MainPage() {
       return;
     }
     const updateAction: MyCartUpdateAction = { action: 'addLineItem', productId, variantId };
-    const updates: MyCartUpdateAdvanced = {
+    const updates: MyCartUpdate = {
       version: cart.version,
       actions: [updateAction],
-      cartId: cart.id,
-      authStatus,
     };
     dispatch(addNewLineItem(updates));
   }

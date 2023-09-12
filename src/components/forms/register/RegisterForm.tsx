@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { BaseAddress, CartResourceIdentifier, CustomerDraft } from '@commercetools/platform-sdk';
+import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 
 import styles from './RegisterForm.module.scss'; // Import the module SCSS styles
 import PasswordInput from '../inputs/PasswordInput';
@@ -16,11 +16,9 @@ import {
   PasswordValidation,
 } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useAppDispatch } from '../../../hooks/redux';
 import { signupCustomer } from '../../../reducers/ActionCreators/CustomerActions';
 import CheckboxInput from '../inputs/CheckboxInput';
-import { AuthStatus } from '../../../reducers/AuthSlice';
-import toaster from '../../../services/toaster';
 
 interface RegisterFormValues {
   email: string;
@@ -86,8 +84,6 @@ export default function RegisterForm() {
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const { authStatus } = useAppSelector((state) => state.authReducer);
-  const { cart } = useAppSelector((state) => state.cartReducer);
 
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
@@ -121,14 +117,6 @@ export default function RegisterForm() {
 
   function createCustomerDraft(values: RegisterFormValues) {
     const newCustomerAddresses = createNewCustomerAddresses(values.shippingAddress, values.billingAddress);
-    let anonymousCart: CartResourceIdentifier | undefined;
-    if (authStatus === AuthStatus.AnonymousFlow) {
-      if (!cart) {
-        toaster.showError('Anonymous cart trouble!');
-      } else {
-        anonymousCart = { id: cart.id, key: cart.key, typeId: 'cart' };
-      }
-    }
 
     const customerDraft: CustomerDraft = {
       email: values.email,
@@ -137,7 +125,6 @@ export default function RegisterForm() {
       lastName: values.lastName,
       dateOfBirth: values.dateOfBirth,
       ...newCustomerAddresses,
-      anonymousCart,
     };
 
     return customerDraft;
@@ -146,14 +133,7 @@ export default function RegisterForm() {
   const handleSubmit = (values: RegisterFormValues) => {
     setIsSubmiting(true);
     const customerDraft = createCustomerDraft(values);
-    dispatch(signupCustomer(customerDraft))
-      .then((data) => {
-        if (data.type.includes('fulfilled')) {
-          localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
-          localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_ID);
-        }
-      })
-      .finally(() => setIsSubmiting(false));
+    dispatch(signupCustomer(customerDraft)).finally(() => setIsSubmiting(false));
   };
 
   return (

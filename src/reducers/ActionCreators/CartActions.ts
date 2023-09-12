@@ -4,8 +4,13 @@ import { getAnonymousFlowApiRoot, getTokenFlowApiRoot } from '../../sdk/auth';
 import apiRoots from '../../sdk/apiRoots';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
 import { authSlice, AuthStatus } from '../AuthSlice';
+// eslint-disable-next-line import/no-cycle
+import { RootState } from '../../store';
+import toaster from '../../services/toaster';
 
 const PROJECT_CURRENCY = 'USD';
+
+const setCart = createAsyncThunk<Cart, Cart>('cart/setCart', async (cart) => cart);
 
 const createCustomerCart = createAsyncThunk<Cart, void, { rejectValue: string }>(
   'cart/createCustomerCart',
@@ -61,24 +66,28 @@ const getAnonymousCart = createAsyncThunk<Cart, string, { rejectValue: string }>
   }
 );
 
-export interface MyCartUpdateAdvanced extends MyCartUpdate {
-  cartId: string;
-  authStatus: AuthStatus;
-}
-
-const addNewLineItem = createAsyncThunk<Cart, MyCartUpdateAdvanced, { rejectValue: string }>(
+const addNewLineItem = createAsyncThunk<Cart, MyCartUpdate, { rejectValue: string; state: RootState }>(
   'cart/addLineItemInCart',
-  async (updateAction, { rejectWithValue, dispatch }) => {
+  async (updateAction, { rejectWithValue, dispatch, getState }) => {
     try {
-      if (!updateAction.authStatus || !apiRoots[updateAction.authStatus]) {
-        return rejectWithValue(`Error with ${updateAction.authStatus}`);
+      const { authStatus } = getState().authReducer;
+      const { cart } = getState().cartReducer;
+
+      if (authStatus === AuthStatus.Initial || authStatus === AuthStatus.CredentialsFlow) {
+        toaster.showError(`apiRoots[authStatus]  ${apiRoots[authStatus]}`);
+        return rejectWithValue('apiRoots[authStatus]');
       }
-      const cartRes = await apiRoots[updateAction.authStatus]!.me()
+
+      if (!cart) {
+        toaster.showError(`!cart `);
+        return rejectWithValue('!cart');
+      }
+
+      const cartRes = await apiRoots[authStatus]!.me()
         .carts()
-        .withId({ ID: updateAction.cartId })
+        .withId({ ID: cart.id })
         .post({ body: updateAction })
         .execute();
-
       return cartRes.body;
     } catch (error) {
       const errorMessage =
@@ -109,4 +118,12 @@ const createAnonymousCart = createAsyncThunk<Cart, CartDraft, { rejectValue: str
   }
 );
 
-export { PROJECT_CURRENCY, createCustomerCart, getCustomerCart, addNewLineItem, createAnonymousCart, getAnonymousCart };
+export {
+  PROJECT_CURRENCY,
+  setCart,
+  createCustomerCart,
+  getCustomerCart,
+  addNewLineItem,
+  createAnonymousCart,
+  getAnonymousCart,
+};

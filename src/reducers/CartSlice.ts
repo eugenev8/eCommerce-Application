@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Cart } from '@commercetools/platform-sdk';
-import { createSlice, isFulfilled, isPending, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, isFulfilled, isPending } from '@reduxjs/toolkit';
+// eslint-disable-next-line import/no-cycle
 import {
   addNewLineItem,
   createAnonymousCart,
@@ -40,11 +41,6 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    setCart(state, action: PayloadAction<Cart>) {
-      state.isLoading = false;
-      state.error = '';
-      state.cart = action.payload;
-    },
     clearCart() {
       return initialState;
     },
