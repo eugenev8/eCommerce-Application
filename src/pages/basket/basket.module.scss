@@ -1,23 +1,28 @@
 @use 'src/common/styles/colors.module.scss' as *;
+
 .container {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
   gap: 1.4rem;
 }
+
 .items__header {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 0.4rem;
 }
+
 .button__container {
   display: flex;
   flex-direction: column;
   align-items: end;
 }
+
 .button {
   cursor: pointer;
 }
+
 .buttonBlack {
   width: 12rem;
   height: 2.5rem;
@@ -27,6 +32,7 @@
   background-color: rgb(65, 65, 65);
   margin: 0.1rem;
   cursor: pointer;
+
   &:hover {
     background-color: scale-color($color: #000000, $saturation: 2%, $lightness: 10%);
   }
@@ -35,6 +41,7 @@
     opacity: 0.6;
   }
 }
+
 .buttonGray {
   width: 12rem;
   height: 2.5rem;
@@ -44,6 +51,7 @@
   background-color: rgba(195, 195, 195, 0);
   border: 1px solid gray;
   cursor: pointer;
+
   &:hover {
     background-color: scale-color($color: rgb(255, 254, 255), $saturation: 2%, $lightness: 10%);
   }
@@ -52,6 +60,7 @@
     opacity: 0.6;
   }
 }
+
 .cartControls {
   padding-top: 0.5rem;
   display: flex;
@@ -61,10 +70,13 @@
 
 .summary {
   height: 718px;
+
   &__destination {
     font-size: 0.7rem;
   }
-  &__button {
+
+  &__button,
+  &__promo > button {
     width: 24rem;
     height: 3rem;
     border-radius: 45px;
@@ -75,6 +87,7 @@
     outline: none;
     border: none;
     cursor: pointer;
+
     &:hover {
       background-color: scale-color($color: $color-3, $saturation: 2%, $lightness: 10%);
     }
@@ -83,16 +96,36 @@
       opacity: 0.6;
     }
   }
+
   &__buttons {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-self: center;
   }
+
   &__calculations {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     gap: 2rem;
+  }
+
+  &__promo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+
+    & > input {
+      box-sizing: border-box;
+      width: 175px;
+      color: #666666;
+      transition: all 250ms ease;
+      outline: none;
+      width: 100%;
+      padding: 3% 3%;
+      border-radius: 3px;
+      border: 1px solid #cacdd8;
+    }
   }
 }

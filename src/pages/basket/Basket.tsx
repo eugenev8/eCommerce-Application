@@ -86,8 +86,10 @@ export default function BasketPage() {
           <h3>Summary</h3>
           <p>Estimate Shipping and Tax</p>
           <p className={styles.summary__destination}>Enter your destination to get a shipping estimate.</p>
-          <div>
+          <div className={styles.summary__promo}>
             <p>Apply Discount Code</p>
+            <input type="text" name="promo" id="promo" placeholder="Enter discount code" />
+            <button type="button">Apply</button>
           </div>
           <div className={styles.summary__calculations}>
             <div>Subtotal</div>
