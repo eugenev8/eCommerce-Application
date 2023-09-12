@@ -5,6 +5,7 @@ import { useAppDispatch } from '../../hooks/redux';
 import { authSlice } from '../../reducers/AuthSlice';
 import { customerSlice } from '../../reducers/CustomerSlice';
 import Button from '../../components/buttons/Buttons';
+import { cartSlice } from '../../reducers/CartSlice';
 
 function UserProfile() {
   const dispatch = useAppDispatch();
@@ -12,6 +13,7 @@ function UserProfile() {
   const handleLogout = () => {
     dispatch(authSlice.actions.logout());
     dispatch(customerSlice.actions.clearCustomerData());
+    dispatch(cartSlice.actions.clearCart());
     localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
   };
 

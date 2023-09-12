@@ -5,7 +5,7 @@ import { getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import { authSlice, AuthStatus } from '../reducers/AuthSlice';
 import { customerSlice } from '../reducers/CustomerSlice';
-import { getAnonymousCart, getCustomerCart } from '../reducers/ActionCreators';
+import { getAnonymousCart, getCustomerCart } from '../reducers/ActionCreators/CartActions';
 
 export default function useLoadAuthState() {
   const dispatch = useAppDispatch();
@@ -50,6 +50,7 @@ export default function useLoadAuthState() {
           if (e.message === 'invalid_token') {
             localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
             localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
+            localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_ID);
             dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
           } else {
             throw e;

@@ -11,7 +11,7 @@ import styles from './UserAddresses.module.scss';
 import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
 import Button from '../../../components/buttons/Buttons';
 import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
-import { updateCustomerData } from '../../../reducers/ActionCreators';
+import { updateCustomerData } from '../../../reducers/ActionCreators/CustomerActions';
 import toaster from '../../../services/toaster';
 import { AddressType } from './types';
 

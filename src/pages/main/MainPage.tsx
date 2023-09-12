@@ -4,7 +4,12 @@ import { NavLink } from 'react-router-dom';
 import styles from './MainPage.module.scss';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { addNewLineItem, createAnonymousCart, MyCartUpdateAdvanced } from '../../reducers/ActionCreators';
+import {
+  addNewLineItem,
+  createAnonymousCart,
+  MyCartUpdateAdvanced,
+  PROJECT_CURRENCY,
+} from '../../reducers/ActionCreators/CartActions';
 import toaster from '../../services/toaster';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import { AuthStatus } from '../../reducers/AuthSlice';
@@ -19,11 +24,9 @@ function MainPage() {
   const { authStatus } = useAppSelector((state) => state.authReducer);
   const cart = useAppSelector((state) => state.cartReducer.cart);
 
-  const CURRENCY = 'USD';
-
   function createCartDraft(): CartDraft {
     const lineItemDraft: LineItemDraft = { productId, variantId };
-    return { currency: CURRENCY, lineItems: [lineItemDraft] };
+    return { currency: PROJECT_CURRENCY, lineItems: [lineItemDraft] };
   }
 
   function isProductInCart(id: string, variant: number) {
@@ -117,5 +120,7 @@ function MainPage() {
     </div>
   );
 }
+
+export { PROJECT_CURRENCY };
 
 export default MainPage;

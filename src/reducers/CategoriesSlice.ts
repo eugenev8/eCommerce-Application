@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Category } from '@commercetools/platform-sdk';
 import { createSlice } from '@reduxjs/toolkit';
-import { getCategories } from './ActionCreators';
+import { getCategories } from './ActionCreators/CategoriesActions';
 
 interface CategoriesState {
   isLoading: boolean;

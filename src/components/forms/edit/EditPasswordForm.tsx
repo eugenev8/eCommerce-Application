@@ -6,7 +6,7 @@ import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
 import PasswordInput from '../inputs/PasswordInput';
 import { useAppDispatch } from '../../../hooks/redux';
-import { changeCustomerPassword } from '../../../reducers/ActionCreators';
+import { changeCustomerPassword } from '../../../reducers/ActionCreators/CustomerActions';
 
 interface EditEmailFormProps {
   onSave: (updatedPassword: boolean) => void;

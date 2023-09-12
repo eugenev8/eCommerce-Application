@@ -1,7 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { Customer } from '@commercetools/platform-sdk';
 import { PayloadAction, createSlice, isPending, isFulfilled } from '@reduxjs/toolkit';
-import { changeCustomerPassword, loginCustomer, signupCustomer, updateCustomerData } from './ActionCreators';
+import {
+  changeCustomerPassword,
+  loginCustomer,
+  signupCustomer,
+  updateCustomerData,
+} from './ActionCreators/CustomerActions';
 
 interface CustomerState {
   isLoading: boolean;
