@@ -79,6 +79,7 @@ export default function useManageCart() {
   }
 
   return {
+    cart,
     findItemInCart,
     addLineItem,
     removeLineItem,
