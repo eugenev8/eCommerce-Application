@@ -122,3 +122,26 @@
 .product__discPrice {
   color: inherit;
 }
+
+.productCard__removeButton,
+.productCard__addButton {
+  flex: 1 1 50%;
+
+  font-weight: 500;
+
+  min-width: auto;
+
+  padding: 4% 2%;
+
+  border-radius: 0;
+
+  background-color: inherit;
+
+  cursor: pointer;
+}
+
+.productCard__cartQuantity {
+  width: fit-content;
+
+  margin: 1rem auto 0;
+}
