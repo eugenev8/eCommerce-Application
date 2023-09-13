@@ -4,6 +4,8 @@ import {
   PasswordAuthMiddlewareOptions,
   AnonymousAuthMiddlewareOptions,
   AuthMiddlewareOptions,
+  TokenCache,
+  RefreshAuthMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 import { CustomerSignin, createApiBuilderFromCtpClient } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
@@ -71,6 +73,27 @@ function getTokenFlowApiRoot(token: string): ByProjectKeyRequestBuilder {
   return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
 
+function getRefreshTokenFlowApiRoot(refreshToken: string, tokenCache: TokenCache): ByProjectKeyRequestBuilder {
+  const refreshAuthMiddlewareOptions: RefreshAuthMiddlewareOptions = {
+    host: authLink,
+    projectKey,
+    credentials: {
+      clientId,
+      clientSecret,
+    },
+    refreshToken,
+    tokenCache,
+    fetch,
+  };
+
+  const client = new ClientBuilder()
+    .withHttpMiddleware(httpMiddlewareOptions)
+    .withRefreshTokenFlow(refreshAuthMiddlewareOptions)
+    .build();
+
+  return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
+}
+
 async function getCustomerData(customerSignin: CustomerSignin) {
   const passwordAuthMiddlewareOptions: PasswordAuthMiddlewareOptions = {
     host: authLink,
@@ -93,4 +116,10 @@ async function getCustomerData(customerSignin: CustomerSignin) {
   return apiRoot.login().post({ body: customerSignin }).execute();
 }
 
-export { getCredentialsFlowApiRoot, getAnonymousFlowApiRoot, getTokenFlowApiRoot, getCustomerData };
+export {
+  getCredentialsFlowApiRoot,
+  getAnonymousFlowApiRoot,
+  getTokenFlowApiRoot,
+  getCustomerData,
+  getRefreshTokenFlowApiRoot,
+};
