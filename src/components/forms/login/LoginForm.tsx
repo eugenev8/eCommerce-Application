@@ -9,7 +9,9 @@ import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
 import { useAppDispatch } from '../../../hooks/redux';
-import { loginWithPassword } from '../../../reducers/ActionCreators';
+import { loginCustomer } from '../../../reducers/ActionCreators/Customer';
+import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
+import toaster from '../../../services/toaster';
 
 const initialValues: CustomerSignin = {
   email: '',
@@ -24,13 +26,19 @@ const validationSchema = Yup.object({
 function LoginForm() {
   const [isSubmiting, setIsSubmiting] = useState(false);
   const dispatch = useAppDispatch();
-
+  const anonymousCart = useCreateAnonymousCartIdentifier();
   const handleSubmit = (values: CustomerSignin) => {
     setIsSubmiting(true);
 
-    dispatch(loginWithPassword(values)).finally(() => {
-      setIsSubmiting(false);
-    });
+    dispatch(loginCustomer({ ...values, anonymousCart }))
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Login successful!');
+        }
+      })
+      .finally(() => {
+        setIsSubmiting(false);
+      });
   };
 
   return (

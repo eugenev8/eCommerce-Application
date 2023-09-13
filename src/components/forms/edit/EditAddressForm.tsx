@@ -8,7 +8,7 @@ import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import CountryInput from '../inputs/CountryInput';
 import { useAppDispatch } from '../../../hooks/redux';
-import { updateCustomerData } from '../../../reducers/ActionCreators';
+import { updateCustomerData } from '../../../reducers/ActionCreators/Customer';
 import toaster from '../../../services/toaster';
 
 interface EditAddressFormProps {
