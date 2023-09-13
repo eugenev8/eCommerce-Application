@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Category } from '@commercetools/platform-sdk';
 import { createSlice } from '@reduxjs/toolkit';
-import { getCategories } from './ActionCreators';
+import { getCategories } from './ActionCreators/Categories';
 
 interface CategoriesState {
   isLoading: boolean;
@@ -27,7 +27,11 @@ const categoriesSlice = createSlice({
     });
     builder.addCase(getCategories.pending, (state) => {
       state.isLoading = true;
-      return state;
+      state.error = '';
+    });
+    builder.addCase(getCategories.rejected, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Undefined?';
     });
   },
 });

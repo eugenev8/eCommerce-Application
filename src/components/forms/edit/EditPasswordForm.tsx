@@ -6,7 +6,8 @@ import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
 import PasswordInput from '../inputs/PasswordInput';
 import { useAppDispatch } from '../../../hooks/redux';
-import { changeCustomerPassword } from '../../../reducers/ActionCreators';
+import { changeCustomerPassword } from '../../../reducers/ActionCreators/Customer';
+import toaster from '../../../services/toaster';
 
 interface EditEmailFormProps {
   onSave: (updatedPassword: boolean) => void;
@@ -40,11 +41,11 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
       changeCustomerPassword({ currentPassword: values.oldPassword, newPassword: values.newPassword, version, email })
     )
       .then((payloadAction) => {
-        if (payloadAction.type.includes('rejected')) {
-          // show error on the form
-          onSave(false);
-        } else {
+        if (payloadAction.type.includes('fulfilled')) {
+          toaster.showSuccess('Password changed successfully!');
           onSave(true);
+        } else {
+          onSave(false);
         }
       })
       .finally(() => {

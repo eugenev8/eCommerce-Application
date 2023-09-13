@@ -5,14 +5,14 @@ import Navigation from './components/navigation/Navigation';
 import useToasterErrorMessage from './hooks/useToasterErrorMessage';
 import useLoadAuthState from './hooks/useLoadAuthState';
 import Breadcrumbs from './components/breadcrumbs/Breadcrumbs';
-import useLoadShopData from './hooks/useLoadShopData';
+import useLoadCategoriesData from './hooks/useLoadCategoriesData';
 import FlexContainer from './components/containers/FlexContainer';
 import LoaderSpinner from './components/loader/Loader';
 
 export default function App() {
   useToasterErrorMessage();
   const isAuthLoaded = useLoadAuthState();
-  useLoadShopData();
+  useLoadCategoriesData();
 
   return (
     <>

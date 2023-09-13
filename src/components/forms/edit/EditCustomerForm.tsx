@@ -8,7 +8,7 @@ import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { useAppDispatch } from '../../../hooks/redux';
-import { updateCustomerData } from '../../../reducers/ActionCreators';
+import { updateCustomerData } from '../../../reducers/ActionCreators/Customer';
 import toaster from '../../../services/toaster';
 
 interface EditCustomerFormProps {
