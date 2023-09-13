@@ -5,7 +5,7 @@ import { getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import { authSlice, AuthStatus } from '../reducers/AuthSlice';
 import { customerSlice } from '../reducers/CustomerSlice';
-import { getAnonymousCart, getCustomerCart } from '../reducers/ActionCreators/CartActions';
+import { getCart } from '../reducers/ActionCreators/Cart';
 
 export default function useLoadAuthState() {
   const dispatch = useAppDispatch();
@@ -22,26 +22,19 @@ export default function useLoadAuthState() {
 
           const apiRoot = getTokenFlowApiRoot(customerTokenStore.token);
           const customerRes = await apiRoot.me().get().execute();
-
           apiRoots.CustomerFlow = apiRoot;
           dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
           dispatch(customerSlice.actions.setCustomer(customerRes.body));
-          dispatch(getCustomerCart());
+          dispatch(getCart(AuthStatus.CustomerFlow));
           return;
         }
         const anonymousTokenStoreData = localStorage.getItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
         if (anonymousTokenStoreData) {
           const anonymousTokenStore: TokenStore = JSON.parse(anonymousTokenStoreData);
-
-          dispatch(authSlice.actions.setIsPending());
-
-          dispatch(getAnonymousCart(anonymousTokenStore.token)).then((data) => {
-            if (data.type.includes('fulfilled')) {
-              dispatch(authSlice.actions.setAuthStatus(AuthStatus.AnonymousFlow));
-            } else {
-              dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
-            }
-          });
+          dispatch(authSlice.actions.setAuthStatus(AuthStatus.AnonymousFlow));
+          apiRoots.AnonymousFlow = getTokenFlowApiRoot(anonymousTokenStore.token);
+          // dispatch(authSlice.actions.setIsPending());
+          dispatch(getCart(AuthStatus.AnonymousFlow));
           return;
         }
         dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));

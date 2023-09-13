@@ -1,12 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Customer } from '@commercetools/platform-sdk';
-import { createSlice, isPending, isFulfilled, PayloadAction } from '@reduxjs/toolkit';
-import {
-  changeCustomerPassword,
-  loginCustomer,
-  signupCustomer,
-  updateCustomerData,
-} from './ActionCreators/CustomerActions';
+import { createSlice, isPending, isFulfilled, PayloadAction, isRejected } from '@reduxjs/toolkit';
+import { changeCustomerPassword, loginCustomer, signupCustomer, updateCustomerData } from './ActionCreators/Customer';
 
 interface CustomerState {
   isLoading: boolean;
@@ -22,6 +17,7 @@ const initialState: CustomerState = {
 
 const isAPendingAction = isPending(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
 const isAFulfilledAction = isFulfilled(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
+const isARejectedAction = isRejected(updateCustomerData, loginCustomer, signupCustomer, changeCustomerPassword);
 
 const customerSlice = createSlice({
   name: 'customer',
@@ -32,7 +28,6 @@ const customerSlice = createSlice({
       state.error = '';
       state.customer = action.payload;
     },
-
     clearCustomerData() {
       return initialState;
     },
@@ -46,6 +41,10 @@ const customerSlice = createSlice({
       state.isLoading = false;
       state.error = '';
       state.customer = action.payload;
+    });
+    builder.addMatcher(isARejectedAction, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Undefined?';
     });
   },
 });

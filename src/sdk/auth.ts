@@ -41,14 +41,13 @@ function getCredentialsFlowApiRoot(): ByProjectKeyRequestBuilder {
   return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
 
-function getAnonymousFlowApiRoot(anonymousId: string): ByProjectKeyRequestBuilder {
+function getAnonymousFlowApiRoot(): ByProjectKeyRequestBuilder {
   const anonymousAuthMiddlewareOptions: AnonymousAuthMiddlewareOptions = {
     host: authLink,
     projectKey,
     credentials: {
       clientId,
       clientSecret,
-      anonymousId,
     },
     tokenCache: anonymousTokenCache,
     scopes,

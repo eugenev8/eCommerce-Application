@@ -17,9 +17,10 @@ import {
 } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import { useAppDispatch } from '../../../hooks/redux';
-import { signupCustomer } from '../../../reducers/ActionCreators/CustomerActions';
+import { signupCustomer } from '../../../reducers/ActionCreators/Customer';
 import CheckboxInput from '../inputs/CheckboxInput';
 import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
+import toaster from '../../../services/toaster';
 
 interface RegisterFormValues {
   email: string;
@@ -135,7 +136,13 @@ export default function RegisterForm() {
   const handleSubmit = (values: RegisterFormValues) => {
     setIsSubmiting(true);
     const customerDraft = createCustomerDraft(values);
-    dispatch(signupCustomer(customerDraft)).finally(() => setIsSubmiting(false));
+    dispatch(signupCustomer(customerDraft))
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess("Registration successful! You're now login in!");
+        }
+      })
+      .finally(() => setIsSubmiting(false));
   };
 
   return (

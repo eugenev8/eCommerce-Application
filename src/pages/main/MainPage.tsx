@@ -1,20 +1,15 @@
 import { useState } from 'react';
-import { CartDraft, LineItemDraft, MyCartUpdateAction } from '@commercetools/platform-sdk';
+import { MyCartUpdateAction } from '@commercetools/platform-sdk';
 import { NavLink } from 'react-router-dom';
 import styles from './MainPage.module.scss';
 
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import {
-  addNewLineItem,
-  createAnonymousCart,
-  MyCartUpdateAdvanced,
-  PROJECT_CURRENCY,
-} from '../../reducers/ActionCreators/CartActions';
+import { createCart, MyCartUpdateAdvanced, PROJECT_CURRENCY, updateCart } from '../../reducers/ActionCreators/Cart';
 import toaster from '../../services/toaster';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
-import { AuthStatus } from '../../reducers/AuthSlice';
+import { authSlice, AuthStatus } from '../../reducers/AuthSlice';
 import apiRoots from '../../sdk/apiRoots';
-import { getTokenFlowApiRoot } from '../../sdk/auth';
+import { getAnonymousFlowApiRoot, getTokenFlowApiRoot } from '../../sdk/auth';
 import tokenStores from '../../sdk/tokenStores';
 
 function MainPage() {
@@ -24,22 +19,17 @@ function MainPage() {
   const { authStatus } = useAppSelector((state) => state.authReducer);
   const cart = useAppSelector((state) => state.cartReducer.cart);
 
-  function createCartDraft(): CartDraft {
-    const lineItemDraft: LineItemDraft = { productId, variantId };
-    return { currency: PROJECT_CURRENCY, lineItems: [lineItemDraft] };
-  }
-
-  function isProductInCart(id: string, variant: number) {
-    if (!cart) return false;
-    return cart.lineItems.some((lineItem) => lineItem.productId === id && lineItem.variant.id === variant);
+  function getLineItemFromCart() {
+    return cart?.lineItems.find((lineItem) => lineItem.productId === productId && lineItem.variant.id === variantId);
   }
 
   function addNewLineItemInCart() {
     if (!cart) {
-      toaster.showError('Error - cart must be in customer flow!');
+      toaster.showError('Error - cart must be in anon/customer flow!');
       return;
     }
-    if (isProductInCart(productId, variantId)) {
+
+    if (getLineItemFromCart()) {
       toaster.showError('Product is already in your cart!');
       return;
     }
@@ -50,18 +40,50 @@ function MainPage() {
       cartId: cart.id,
       authStatus,
     };
-    dispatch(addNewLineItem(updates));
+    dispatch(updateCart(updates));
   }
 
   function initAnonymousFlowWithFirstProduct() {
-    dispatch(createAnonymousCart(createCartDraft())).then((data) => {
+    apiRoots.AnonymousFlow = getAnonymousFlowApiRoot();
+    dispatch(authSlice.actions.setAuthStatus(AuthStatus.AnonymousFlow));
+    dispatch(createCart(AuthStatus.AnonymousFlow)).then((data) => {
       if (data.type.includes('fulfilled')) {
         apiRoots.AnonymousFlow = getTokenFlowApiRoot(tokenStores.anonymous.token);
+      } else {
+        dispatch(authSlice.actions.setAuthStatus(AuthStatus.CredentialsFlow));
       }
     });
   }
 
-  function handleAddNewLineItemById() {
+  function handleRemoveLineItem() {
+    if (!productId) {
+      toaster.showError('Please set product Id!');
+      return;
+    }
+    if (authStatus === AuthStatus.CredentialsFlow || authStatus === AuthStatus.Initial) {
+      toaster.showError(`Flow ${authStatus}`);
+      return;
+    }
+    if (!cart) {
+      toaster.showError('Error - cart must be in anon/customer flow!');
+      return;
+    }
+    const lineItem = getLineItemFromCart();
+    if (!lineItem) {
+      toaster.showError(`This product is not in the cart!`);
+      return;
+    }
+    const updateAction: MyCartUpdateAction = { action: 'removeLineItem', lineItemId: lineItem.id };
+    const updates: MyCartUpdateAdvanced = {
+      version: cart.version,
+      actions: [updateAction],
+      cartId: cart.id,
+      authStatus,
+    };
+    dispatch(updateCart(updates));
+  }
+
+  function handleAddNewLineItem() {
     if (!productId) {
       toaster.showError('Please set product Id!');
       return;
@@ -92,8 +114,14 @@ function MainPage() {
         <br />
         <br />
 
-        <button type="button" onClick={handleAddNewLineItemById}>
+        <button type="button" onClick={handleAddNewLineItem}>
           Add product variant by id and Variant
+        </button>
+        <br />
+
+        <br />
+        <button type="button" onClick={handleRemoveLineItem}>
+          Remove Variant
         </button>
         <br />
         <input

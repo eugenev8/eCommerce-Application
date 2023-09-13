@@ -9,8 +9,9 @@ import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
 import { useAppDispatch } from '../../../hooks/redux';
-import { loginCustomer } from '../../../reducers/ActionCreators/CustomerActions';
+import { loginCustomer } from '../../../reducers/ActionCreators/Customer';
 import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
+import toaster from '../../../services/toaster';
 
 const initialValues: CustomerSignin = {
   email: '',
@@ -29,9 +30,15 @@ function LoginForm() {
   const handleSubmit = (values: CustomerSignin) => {
     setIsSubmiting(true);
 
-    dispatch(loginCustomer({ ...values, anonymousCart })).finally(() => {
-      setIsSubmiting(false);
-    });
+    dispatch(loginCustomer({ ...values, anonymousCart }))
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Login successful!');
+        }
+      })
+      .finally(() => {
+        setIsSubmiting(false);
+      });
   };
 
   return (

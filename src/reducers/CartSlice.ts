@@ -1,13 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { Cart } from '@commercetools/platform-sdk';
-import { createSlice, isFulfilled, isPending, PayloadAction } from '@reduxjs/toolkit';
-import {
-  addNewLineItem,
-  createAnonymousCart,
-  createCustomerCart,
-  getAnonymousCart,
-  getCustomerCart,
-} from './ActionCreators/CartActions';
+import { createSlice, isFulfilled, isPending, PayloadAction, isRejected } from '@reduxjs/toolkit';
+import { updateCart, createCart, getCart } from './ActionCreators/Cart';
 
 interface CartState {
   isLoading: boolean;
@@ -21,20 +15,9 @@ const initialState: CartState = {
   cart: null,
 };
 
-const isAPendingAction = isPending(
-  createCustomerCart,
-  getCustomerCart,
-  addNewLineItem,
-  createAnonymousCart,
-  getAnonymousCart
-);
-const isAFulfilledAction = isFulfilled(
-  createCustomerCart,
-  getCustomerCart,
-  addNewLineItem,
-  createAnonymousCart,
-  getAnonymousCart
-);
+const isAPendingAction = isPending(updateCart, getCart, createCart);
+const isAFulfilledAction = isFulfilled(updateCart, getCart, createCart);
+const isARejectedAction = isRejected(updateCart, getCart, createCart);
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -58,6 +41,10 @@ const cartSlice = createSlice({
       state.isLoading = false;
       state.error = '';
       state.cart = action.payload;
+    });
+    builder.addMatcher(isARejectedAction, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload || 'Undefined?';
     });
   },
 });
