@@ -184,7 +184,7 @@ export default function ProductPage() {
       return (
         <Button
           addedClass={`${styles.product_cartButton}`}
-          innerText="Add to Cart"
+          innerText={isCartLoading ? 'Adding...' : 'Add to Cart'}
           styling="secondary"
           type="button"
           variant="default"
@@ -200,18 +200,7 @@ export default function ProductPage() {
         <FlexContainer style={{ gap: '1rem' }}>
           <Button
             addedClass={`${styles.product_cartButton}`}
-            innerText="+"
-            styling="secondary"
-            type="button"
-            variant="default"
-            onClick={() => {
-              addLineItem(product.id, selectedVariant.id);
-            }}
-            disabled={isCartLoading}
-          />
-          <Button
-            addedClass={`${styles.product_cartButton}`}
-            innerText="-"
+            innerText={isCartLoading ? 'Removing...' : 'Remove from cart'}
             styling="secondary"
             type="button"
             variant="default"

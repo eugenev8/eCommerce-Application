@@ -79,7 +79,7 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
         <FlexContainer>
           <Button
             addedClass={`${styles.productCard__addButton}`}
-            innerText="Add to Cart"
+            innerText={isCartLoading ? '...' : 'Add to Cart'}
             styling="secondary"
             type="button"
             variant="default"
@@ -95,19 +95,8 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
       <FlexContainer style={{ flexDirection: 'column' }}>
         <FlexContainer>
           <Button
-            addedClass={`${styles.productCard__addButton}`}
-            innerText="Add more"
-            styling="secondary"
-            type="button"
-            variant="default"
-            onClick={() => {
-              addLineItem(productProjection.id, variant.id);
-            }}
-            disabled={isCartLoading}
-          />
-          <Button
             addedClass={`${styles.productCard__removeButton}`}
-            innerText="Remove"
+            innerText={isCartLoading ? '...' : 'Remove from cart'}
             styling="secondary"
             type="button"
             variant="default"
