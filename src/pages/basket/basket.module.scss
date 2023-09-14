@@ -4,19 +4,27 @@
   display: grid;
   grid-template-columns: 2.5fr 1fr;
   gap: 1.4rem;
+  @media screen and (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .items__header {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr;
   gap: 0.4rem;
+  margin-bottom: 1rem;
+  @media screen and (max-width: 720px) {
+    display: none;
+  }
 }
 
 .button__container {
   display: flex;
   flex-direction: column;
   align-items: end;
+  grid-area: buttoncontainer;
 }
 
 .button {
@@ -139,11 +147,30 @@
   outline: none;
   border: none;
 }
+#root > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) {
+  grid-area: specs;
+}
+#root > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(3) {
+  grid-area: price;
+}
+#root > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div.quantity {
+  grid-area: quantity;
+}
+#root > div:nth-child(3) > div > div:nth-child(1) > div:nth-child(2) > div:nth-child(5) {
+  grid-area: subtotal;
+}
 .basket__item {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
   &__img > img {
+    grid-area: img;
     width: 4rem;
     height: 4rem;
+  }
+  @media screen and (max-width: 720px) {
+    max-width: 20rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    grid-template-areas: 'img specs price quantity subtotal buttoncontainer';
   }
 }
