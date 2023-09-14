@@ -69,15 +69,9 @@ function AuthLinks({ isLoggedIn, closeMenu }: { isLoggedIn: boolean; closeMenu: 
   }
 
   return (
-    <>
-      <NavLinkWithCheck id={styles.cartLink} to="/cart" onClick={closeMenu}>
-        <CartMenu />
-      </NavLinkWithCheck>
-
-      <NavLinkWithCheck to="/profile" onClick={closeMenu}>
-        My profile
-      </NavLinkWithCheck>
-    </>
+    <NavLinkWithCheck to="/profile" onClick={closeMenu}>
+      My profile
+    </NavLinkWithCheck>
   );
 }
 
@@ -165,6 +159,9 @@ export default function Navigation() {
           </div>
 
           <div className={`${styles.navbar__block}`}>
+            <NavLinkWithCheck id={styles.cartLink} to="/cart" onClick={closeMenu}>
+              <CartMenu />
+            </NavLinkWithCheck>
             {isDataLoading && <LoaderSpinner />}
             {!isDataLoading && <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />}
           </div>
