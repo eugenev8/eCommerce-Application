@@ -106,6 +106,9 @@ function BurgerMenu({ isMenuShown, closeMenu, isLoggedIn }: BurgerMenuProps) {
       <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
         Catalog
       </NavLinkWithCheck>
+      <NavLinkWithCheck id={styles.cartLink} to="/cart" onClick={closeMenu}>
+        <CartMenu />
+      </NavLinkWithCheck>
       <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
     </div>
   );
