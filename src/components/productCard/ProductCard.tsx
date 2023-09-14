@@ -36,7 +36,7 @@ export function getDiscountedPriceForCountry(data: ProductVariant) {
 
 export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
   const { addLineItem, findItemInCart, removeLineItem, isCartLoading } = useManageCart();
-  const { getCategoryIdByName, getCategoriesPathByCategoryId } = useCategoriesMethods();
+  const { getCategoriesPathByCategoryId } = useCategoriesMethods();
   const variant =
     variantID === 1
       ? productProjection.masterVariant
@@ -111,12 +111,12 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
     );
   };
 
-  const categoryId = getCategoryIdByName(productProjection.categories[0].id) || '';
-
   return (
     <FlexContainer style={{ flexDirection: 'column' }}>
       <Link
-        to={`/product/${getCategoriesPathByCategoryId(categoryId)}/${productProjection.key}?variant=${variantID}`}
+        to={`/product/${getCategoriesPathByCategoryId(productProjection.categories[0].id)}/${
+          productProjection.key
+        }?variant=${variantID}`}
         className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
       >
         <div className={`${styles.productCard__images}`}>
