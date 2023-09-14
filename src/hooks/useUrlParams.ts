@@ -9,6 +9,19 @@ import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch, useAppSelector } from './redux';
 
+type QueryArgs = {
+  queryArgs: {
+    markMatchingVariants?: boolean;
+    filter: string[];
+    'filter.facets'?: string | string[];
+    'filter.query'?: string | string[];
+    facet?: string[];
+    sort?: string | string[];
+    limit?: number;
+    offset?: number;
+  };
+};
+
 function getPriceParamsFromString(stringValues: string) {
   const values = stringValues.slice(1, -1).split(' ');
   return [values[0], values[2]];
@@ -68,7 +81,7 @@ export default function useUrlParams() {
       const urlQueryState = getQueryStateFromSearchParams(searchParams);
       dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
 
-      const queryArgs = {
+      const queryArgs: QueryArgs = {
         queryArgs: {
           facet: facetQueries,
           sort: [urlQueryState.sort],
@@ -83,8 +96,10 @@ export default function useUrlParams() {
 
       if (urlQueryState.search) queryArgs.queryArgs.filter.push(`${SEARCH_FACET.query}:"${urlQueryState.search}"`);
 
-      if (urlQueryState.category)
+      if (urlQueryState.category) {
         queryArgs.queryArgs.filter.push(`categories.id: subtree("${urlQueryState.category}")`);
+        queryArgs.queryArgs['filter.facets'] = `categories.id: subtree("${urlQueryState.category}")`;
+      }
 
       const searchRes = await apiRoots.CredentialsFlow.productProjections().search().get(queryArgs).execute();
       setFacets(searchRes.body.facets);

@@ -1,0 +1,202 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.container {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 1.4rem;
+  @media screen and (max-width: 720px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.items__header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr;
+  justify-content: space-evenly;
+  justify-items: center;
+  align-content: space-evenly;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  @media screen and (max-width: 720px) {
+    display: none;
+  }
+}
+
+.button__container {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+.button {
+  cursor: pointer;
+  background: none;
+  outline: none;
+  border: 0px;
+  padding: 0.5rem;
+}
+
+.buttonBlackGray{
+  width: 12rem;
+  height: 2.5rem;
+  font-size: 0.8rem;
+  border-radius: 35px;
+}
+
+.buttonBlack {
+  color: #fff;
+  background-color: $color-7;
+  margin: 0.1rem;
+  cursor: pointer;
+
+  &:hover {
+    background-color: scale-color($color: #000000, $saturation: 2%, $lightness: 10%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.buttonGray {
+  color: $color-5;
+  background-color: rgba(195, 195, 195, 0);
+  border: 1px solid $color-5;
+  cursor: pointer;
+
+  &:hover {
+    background-color: scale-color($color: rgb(255, 254, 255), $saturation: 2%, $lightness: 10%);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.cartControls {
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  @media screen and (max-width: 720px) {
+    justify-content: center;
+  }
+}
+
+.summary {
+  height: 45rem;
+
+  &__destination {
+    font-size: 0.7rem;
+  }
+
+  &__button,
+  &__promo > button {
+    width: 24rem;
+    height: 3rem;
+    border-radius: 45px;
+    margin-bottom: 0.6rem;
+    margin-top: 1.4rem;
+    color: #fff;
+    background-color: blue;
+    outline: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: scale-color($color: $color-3, $saturation: 2%, $lightness: 10%);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+  }
+
+  &__calculations {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+
+  &__promo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+
+    & > input {
+      box-sizing: border-box;
+      width: 175px;
+      color: #666666;
+      transition: all 250ms ease;
+      outline: none;
+      width: 100%;
+      padding: 3% 3%;
+      border-radius: 3px;
+      border: 1px solid #cacdd8;
+    }
+  }
+}
+.quantity > input {
+  width: 3rem;
+  height: 2rem;
+  background-color: #f5f7ff;
+  outline: none;
+  border: none;
+}
+.basket__item {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+  justify-content: space-evenly;
+  justify-items: center;
+  align-content: space-evenly;
+  align-items: center;
+  padding: 1.25rem;
+  border-bottom: solid 1px $color-6;
+  border-top: solid 1px $color-6;
+  &__img > img {
+    grid-area: img;
+    width: 4rem;
+    height: 4rem;
+  }
+  @media screen and (max-width: 720px) {
+    max-width: 20rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+
+  }
+}
+.leftButtons > a{
+  margin-right: 1rem;
+  @media screen and (max-width: 720px) {
+    display: none;
+  }
+}
+.leftButtons > button{
+  @media screen and (max-width: 720px) {
+    display: none;
+  }
+}
+.rightButtons > a{
+  margin-left: 1rem;
+  @media screen and (max-width: 720px) {
+    display: none;
+  }
+}
+.rightButtons > button{
+  @media screen and (max-width: 720px) {
+    width: 22rem;
+    height: 3rem;
+    margin-left: -1rem;
+  }
+}
