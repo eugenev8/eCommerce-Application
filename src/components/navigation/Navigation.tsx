@@ -7,6 +7,7 @@ import FlexContainer from '../containers/FlexContainer';
 import styles from './Navigation.module.scss';
 import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
 import LoaderSpinner from '../loader/Loader';
+import CartMenu from '../cartMenu/CartMenu';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -24,15 +25,34 @@ function checkActiveLink(isActive: boolean, isPending: boolean) {
   return `${activeClass} ${pendingClass}`;
 }
 
-function NavLinkWithCheck({ to, children, onClick }: { to: string; children: React.ReactNode; onClick: () => void }) {
+function NavLinkWithCheck({
+  to,
+  children,
+  onClick,
+  id,
+}: {
+  to: string;
+  children: React.ReactNode;
+  onClick: () => void;
+  id?: string;
+}) {
   return (
     <div className={`${styles.navbar__link}`}>
-      <NavLink to={to} onClick={onClick} className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
+      <NavLink
+        id={id}
+        to={to}
+        onClick={onClick}
+        className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}
+      >
         {children}
       </NavLink>
     </div>
   );
 }
+
+NavLinkWithCheck.defaultProps = {
+  id: undefined,
+};
 
 function AuthLinks({ isLoggedIn, closeMenu }: { isLoggedIn: boolean; closeMenu: () => void }) {
   if (!isLoggedIn) {
@@ -49,9 +69,15 @@ function AuthLinks({ isLoggedIn, closeMenu }: { isLoggedIn: boolean; closeMenu: 
   }
 
   return (
-    <NavLinkWithCheck to="/profile" onClick={closeMenu}>
-      My profile
-    </NavLinkWithCheck>
+    <>
+      <NavLinkWithCheck id={styles.cartLink} to="/cart" onClick={closeMenu}>
+        <CartMenu />
+      </NavLinkWithCheck>
+
+      <NavLinkWithCheck to="/profile" onClick={closeMenu}>
+        My profile
+      </NavLinkWithCheck>
+    </>
   );
 }
 
