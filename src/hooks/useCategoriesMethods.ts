@@ -44,6 +44,7 @@ export default function useCategoriesMethods() {
   }
 
   function getCategoriesPathByCategoryId(categoryId: string) {
+    if (!categoryId) return '';
     return getCategoriesPathFromState(categoryId)
       .reverse()
       .map((cat) => cat.name[NAME_LOCALE])

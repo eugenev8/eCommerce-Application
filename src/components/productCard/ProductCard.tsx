@@ -3,11 +3,10 @@ import { LineItem, ProductProjection, ProductVariant } from '@commercetools/plat
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './ProductCard.module.scss';
-import { useAppSelector } from '../../hooks/redux';
-import { NAME_LOCALE } from '../../pages/catalog/types';
 import FlexContainer from '../containers/FlexContainer';
 import useManageCart from '../../hooks/useManageCart';
 import Button from '../buttons/Buttons';
+import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 
 type ProductCardProps = {
   productProjection: ProductProjection;
@@ -37,7 +36,7 @@ export function getDiscountedPriceForCountry(data: ProductVariant) {
 
 export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
   const { addLineItem, findItemInCart, removeLineItem, isCartLoading } = useManageCart();
-  const categories = useAppSelector((state) => state.categoriesReducer.categories);
+  const { getCategoryIdByName, getCategoriesPathByCategoryId } = useCategoriesMethods();
   const variant =
     variantID === 1
       ? productProjection.masterVariant
@@ -112,25 +111,12 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
     );
   };
 
-  function getCategoryPathNames(categoryName: string) {
-    const curCategory = categories?.find((cat) => cat.name[NAME_LOCALE] === categoryName);
-    let categoryPath = categoryName;
-    if (curCategory && Object.hasOwn(curCategory, 'parent')) {
-      const parentCategory = categories?.find((cat) => cat.id === curCategory.parent?.id);
-      categoryPath = `${parentCategory?.name[NAME_LOCALE]}/${categoryPath}`;
-    }
-    return categoryPath;
-  }
-
-  function getCategoryName(categoryId: string) {
-    return categories?.find((cat) => cat.id === categoryId)?.name[NAME_LOCALE];
-  }
-  const categoryId = getCategoryName(productProjection.categories[0].id)!;
+  const categoryId = getCategoryIdByName(productProjection.categories[0].id) || '';
 
   return (
     <FlexContainer style={{ flexDirection: 'column' }}>
       <Link
-        to={`/product/${getCategoryPathNames(categoryId)}/${productProjection.key}?variant=${variantID}`}
+        to={`/product/${getCategoriesPathByCategoryId(categoryId)}/${productProjection.key}?variant=${variantID}`}
         className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
       >
         <div className={`${styles.productCard__images}`}>
