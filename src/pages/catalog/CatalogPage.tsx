@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ProductProjection } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -18,6 +18,7 @@ import Button from '../../components/buttons/Buttons';
 import LoaderSpinner from '../../components/loader/Loader';
 import FlexContainer from '../../components/containers/FlexContainer';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -29,12 +30,12 @@ function createPriceFilterQuery(values: string[]) {
 }
 
 export default function CatalogPage() {
-  const { categoryName, subcategoryName } = useParams();
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
   const { facets, products } = useUrlParams();
   const dispatch = useAppDispatch();
   const [currentSort, setCurrentSort] = useState(queryState.sort);
+  const { getCategoriesPathByCategoryId } = useCategoriesMethods();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setCurrentSort(queryState.sort), [products]);
@@ -57,7 +58,8 @@ export default function CatalogPage() {
     if (queryState.search) queryUrl.set('search', queryState.search.toLowerCase());
 
     if (queryState.sort) queryUrl.set('sort', queryState.sort);
-    const categoriesPath = `${categoryName}${subcategoryName ? `/${subcategoryName}` : ''}`;
+
+    const categoriesPath = queryState.category ? getCategoriesPathByCategoryId(queryState.category) : '';
     navigate(`./${categoriesPath}?${queryUrl.toString()}`);
   };
 

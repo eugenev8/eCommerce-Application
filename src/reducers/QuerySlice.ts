@@ -9,9 +9,9 @@ interface FilterQuery extends FacetName {
 export type QueryState = {
   filters: FilterQuery[];
   priceFilter: FilterQuery | null;
-  category: string;
   sort: string;
   search: string;
+  category?: string;
 };
 
 const initialState: QueryState = {

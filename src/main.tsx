@@ -16,7 +16,6 @@ import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
 import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
-// import DynamicCrumb from './components/breadcrumbs/DynamicCrumb';
 import Crumb from './components/breadcrumbs/Crumb';
 
 const store = setupStore();

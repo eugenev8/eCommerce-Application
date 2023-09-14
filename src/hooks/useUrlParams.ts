@@ -5,9 +5,10 @@ import {
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { querySlice, QueryState } from '../reducers/QuerySlice';
-import { FACETS_NAMES, NAME_LOCALE, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
+import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch, useAppSelector } from './redux';
+import useCategoriesMethods from './useCategoriesMethods';
 
 function getPriceParamsFromString(stringValues: string) {
   const values = stringValues.slice(1, -1).split(' ');
@@ -21,19 +22,20 @@ export default function useUrlParams() {
   const [searchParams] = useSearchParams();
   const { categoryName, subcategoryName } = useParams();
   const { categories, isLoading: isLoadingCategories } = useAppSelector((state) => state.categoriesReducer);
+
+  const { getCategoryIdByName } = useCategoriesMethods();
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     function getCategoryIdFromParams() {
-      const catName = subcategoryName || categoryName;
-      const category = categories?.find((cat) => cat.name[NAME_LOCALE] === catName);
-      return category?.id || '';
+      const catName = subcategoryName || categoryName || '';
+      return getCategoryIdByName(catName);
     }
 
     const urlQueryState: QueryState = {
       sort: SORTING_TYPES[0].queryString,
       filters: [],
       search: '',
-      category: getCategoryIdFromParams(),
       priceFilter: null,
+      category: getCategoryIdFromParams(),
     };
 
     [...params.entries()].forEach((param) => {
@@ -93,7 +95,7 @@ export default function useUrlParams() {
     }
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, searchParams, categoryName, isLoadingCategories]);
+  }, [dispatch, searchParams, categoryName, subcategoryName, isLoadingCategories]);
 
   return { products, facets };
 }
