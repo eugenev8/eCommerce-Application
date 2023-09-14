@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Params, RouterProvider } from 'react-router-dom';
 import { Provider } from 'react-redux';
 
 import './index.scss';
@@ -16,7 +16,7 @@ import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
 import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
-import DynamicCrumb from './components/breadcrumbs/DynamicCrumb';
+// import DynamicCrumb from './components/breadcrumbs/DynamicCrumb';
 import Crumb from './components/breadcrumbs/Crumb';
 
 const store = setupStore();
@@ -27,6 +27,7 @@ const routesPaths = {
   register: '/register',
   userProfile: '/profile',
   catalog: '/catalog',
+  product: '/product',
 };
 
 const router = createBrowserRouter([
@@ -52,20 +53,99 @@ const router = createBrowserRouter([
           {
             path: `${routesPaths.catalog}/:categoryName`,
             element: <CatalogPage />,
-            handle: {
-              crumb: () => <DynamicCrumb key="DynamicCrumb" catalogPath={routesPaths.catalog} />,
+            loader: ({ params }) => {
+              return params;
             },
+            handle: {
+              crumb: (params: Params<string>) => (
+                <Crumb
+                  key="Category"
+                  title={params.categoryName || 'Category'}
+                  path={`${routesPaths.catalog}/${params.categoryName}`}
+                />
+              ),
+            },
+            children: [
+              {
+                path: `${routesPaths.catalog}/:categoryName/:subcategoryName`,
+                element: <CatalogPage />,
+                loader: ({ params }) => {
+                  return params;
+                },
+                handle: {
+                  crumb: (params: Params<string>) => (
+                    <Crumb
+                      key="Subcategory"
+                      title={params.subcategoryName || 'Subcategory'}
+                      path={`${routesPaths.catalog}/${params.categoryName}/${params.subcategoryName}`}
+                    />
+                  ),
+                },
+              },
+            ],
           },
         ],
       },
       {
-        path: `${routesPaths.catalog}/:categoryName/:productKey`,
+        path: `${routesPaths.product}`,
         element: <ProductPage />,
         handle: {
-          crumb: () => {
-            return <DynamicCrumb key="DynamicCrumb" catalogPath={routesPaths.catalog} />;
-          },
+          crumb: () => <Crumb key="Catalog" title="Catalog" path={routesPaths.catalog} />,
         },
+        children: [
+          {
+            path: `${routesPaths.product}/:categoryName`,
+            element: <ProductPage />,
+            loader: ({ params }) => {
+              return params;
+            },
+            handle: {
+              crumb: (params: Params<string>) => (
+                <Crumb
+                  key="Subcategory"
+                  title={params.categoryName || 'Category'}
+                  path={`${routesPaths.catalog}/${params.categoryName}`}
+                />
+              ),
+            },
+            children: [
+              {
+                path: `${routesPaths.product}/:categoryName/:subcategoryName`,
+                element: <ProductPage />,
+                loader: ({ params }) => {
+                  return params;
+                },
+                handle: {
+                  crumb: (params: Params<string>) => (
+                    <Crumb
+                      key="Subcategory"
+                      title={params.subcategoryName || 'Subcategory'}
+                      path={`${routesPaths.catalog}/${params.categoryName}/${params.subcategoryName}`}
+                    />
+                  ),
+                },
+                children: [
+                  {
+                    path: `${routesPaths.product}/:categoryName/:subcategoryName/:productKey`,
+                    element: <ProductPage />,
+                    loader: ({ params }) => {
+                      return params;
+                    },
+                    handle: {
+                      crumb: (params: Params<string>) => (
+                        <Crumb
+                          key="productKey"
+                          title={params.productKey || 'productKey'}
+                          path={`${routesPaths.product}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`}
+                        />
+                      ),
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
       {
         path: routesPaths.login,

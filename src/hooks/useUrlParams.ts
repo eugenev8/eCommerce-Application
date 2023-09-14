@@ -5,7 +5,7 @@ import {
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { querySlice, QueryState } from '../reducers/QuerySlice';
-import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
+import { FACETS_NAMES, NAME_LOCALE, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch, useAppSelector } from './redux';
 
@@ -19,11 +19,12 @@ export default function useUrlParams() {
   const [facets, setFacets] = useState<FacetResults | null>(null);
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
-  const { categoryName } = useParams();
+  const { categoryName, subcategoryName } = useParams();
   const { categories, isLoading: isLoadingCategories } = useAppSelector((state) => state.categoriesReducer);
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     function getCategoryIdFromParams() {
-      const category = categories?.find((cat) => cat.name['en-US'] === categoryName);
+      const catName = subcategoryName || categoryName;
+      const category = categories?.find((cat) => cat.name[NAME_LOCALE] === catName);
       return category?.id || '';
     }
 

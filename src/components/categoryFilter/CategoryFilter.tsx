@@ -6,6 +6,7 @@ import 'rc-tree/assets/index.css';
 import { useAppSelector } from '../../hooks/redux';
 
 import './CategoryFilter.scss';
+import { NAME_LOCALE } from '../../pages/catalog/types';
 
 interface CategoryNode {
   key: string;
@@ -40,7 +41,12 @@ export default function CategoryFilter() {
     if (selectedKeys[0] === 'root') navigate(`/catalog?${searchParams.toString()}`);
     const category = categories?.find((cat) => cat.id === selectedKeys[0]);
     if (!category) return;
-    navigate(`/catalog/${category.name['en-US']}?${searchParams.toString()}`);
+    let categoryPath = category.name[NAME_LOCALE];
+    if (Object.hasOwn(category, 'parent')) {
+      const parentCategory = categories?.find((cat) => cat.id === category.parent?.id);
+      categoryPath = `${parentCategory?.name[NAME_LOCALE]}/${categoryPath}`;
+    }
+    navigate(`/catalog/${categoryPath}?${searchParams.toString()}`);
   }
 
   return (

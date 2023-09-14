@@ -112,15 +112,25 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
     );
   };
 
+  function getCategoryPathNames(categoryName: string) {
+    const curCategory = categories?.find((cat) => cat.name[NAME_LOCALE] === categoryName);
+    let categoryPath = categoryName;
+    if (curCategory && Object.hasOwn(curCategory, 'parent')) {
+      const parentCategory = categories?.find((cat) => cat.id === curCategory.parent?.id);
+      categoryPath = `${parentCategory?.name[NAME_LOCALE]}/${categoryPath}`;
+    }
+    return categoryPath;
+  }
+
   function getCategoryName(categoryId: string) {
     return categories?.find((cat) => cat.id === categoryId)?.name[NAME_LOCALE];
   }
-  const categoryName = getCategoryName(productProjection.categories[0].id);
+  const categoryId = getCategoryName(productProjection.categories[0].id)!;
 
   return (
     <FlexContainer style={{ flexDirection: 'column' }}>
       <Link
-        to={`${categoryName}/${productProjection.key}?variant=${variantID}`}
+        to={`/product/${getCategoryPathNames(categoryId)}/${productProjection.key}?variant=${variantID}`}
         className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
       >
         <div className={`${styles.productCard__images}`}>
