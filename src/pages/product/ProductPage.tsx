@@ -10,6 +10,7 @@ import LoaderSpinner from '../../components/loader/Loader';
 import ModalContainer from '../../components/modal/ModalContainer';
 import Button from '../../components/buttons/Buttons';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import useManageCart from '../../hooks/useManageCart';
 
 type CurrencyCode = 'USD' | 'EUR';
 
@@ -22,6 +23,7 @@ export default function ProductPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { addLineItem, findItemInCart, removeLineItem, isCartLoading } = useManageCart();
 
   useEffect(() => {
     let ignore = false;
@@ -131,6 +133,7 @@ export default function ProductPage() {
 
   const { masterVariant, variants } = product.masterData.current;
   const allVariants = [masterVariant, ...variants];
+  const lineItem = findItemInCart(product.id, selectedVariant.id);
 
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
@@ -176,8 +179,54 @@ export default function ProductPage() {
   const { description } = product.masterData.current;
   const formattedDescription = (description && description['en-US']) || 'No description';
 
+  const renderAddToCart = () => {
+    if (!lineItem) {
+      return (
+        <Button
+          addedClass={`${styles.product_cartButton}`}
+          innerText={isCartLoading ? 'Adding...' : 'Add to Cart'}
+          styling="secondary"
+          type="button"
+          variant="default"
+          onClick={() => {
+            addLineItem(product.id, selectedVariant.id);
+          }}
+          disabled={isCartLoading}
+        />
+      );
+    }
+    return (
+      <FlexContainer style={{ flexDirection: 'column' }}>
+        <FlexContainer style={{ gap: '1rem' }}>
+          <Button
+            addedClass={`${styles.product_cartButton}`}
+            innerText={isCartLoading ? 'Removing...' : 'Remove from cart'}
+            styling="secondary"
+            type="button"
+            variant="default"
+            onClick={() => {
+              removeLineItem(lineItem.id);
+            }}
+            disabled={isCartLoading}
+          />
+        </FlexContainer>
+      </FlexContainer>
+    );
+  };
+
   return (
     <Suspense fallback={<LoaderSpinner />}>
+      <div className={`${styles.product_header}`}>
+        <AnimatedContainer>
+          <Wrapper>
+            <div className={`${styles.product_headerInfo}`}>
+              {renderPrice()}
+              {lineItem && <p>In cart: {lineItem.quantity}</p>}
+              {renderAddToCart()}
+            </div>
+          </Wrapper>
+        </AnimatedContainer>
+      </div>
       <AnimatedContainer>
         <Wrapper>
           <div className={`${styles.product__block}`}>
@@ -222,8 +271,6 @@ export default function ProductPage() {
               ))}
             </tbody>
           </table>
-
-          {renderPrice()}
 
           <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
             {images.length > 0 && (

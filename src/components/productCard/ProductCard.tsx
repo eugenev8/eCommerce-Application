@@ -1,9 +1,13 @@
-import { ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
+import { LineItem, ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
 
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import styles from './ProductCard.module.scss';
 import { useAppSelector } from '../../hooks/redux';
 import { NAME_LOCALE } from '../../pages/catalog/types';
+import FlexContainer from '../containers/FlexContainer';
+import useManageCart from '../../hooks/useManageCart';
+import Button from '../buttons/Buttons';
 
 type ProductCardProps = {
   productProjection: ProductProjection;
@@ -32,11 +36,19 @@ export function getDiscountedPriceForCountry(data: ProductVariant) {
 }
 
 export default function ProductCard({ productProjection, variantID, type }: ProductCardProps) {
+  const { addLineItem, findItemInCart, removeLineItem, isCartLoading } = useManageCart();
   const categories = useAppSelector((state) => state.categoriesReducer.categories);
   const variant =
     variantID === 1
       ? productProjection.masterVariant
       : productProjection.variants.find((productVariant) => productVariant?.id === variantID);
+  const [productInCart, setProductInCart] = useState<false | LineItem | undefined>(
+    findItemInCart(productProjection.id, variantID)
+  );
+
+  useEffect(() => {
+    setProductInCart(findItemInCart(productProjection.id, variantID));
+  }, [findItemInCart, productProjection.id, variantID]);
 
   if (!variant) {
     return <p>Variant not found</p>;
@@ -61,34 +73,76 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
     );
   };
 
+  const renderAddToCart = () => {
+    if (!productInCart) {
+      return (
+        <FlexContainer>
+          <Button
+            addedClass={`${styles.productCard__addButton}`}
+            innerText={isCartLoading ? '...' : 'Add to Cart'}
+            styling="secondary"
+            type="button"
+            variant="default"
+            onClick={() => {
+              addLineItem(productProjection.id, variant.id);
+            }}
+            disabled={isCartLoading}
+          />
+        </FlexContainer>
+      );
+    }
+    return (
+      <FlexContainer style={{ flexDirection: 'column' }}>
+        <FlexContainer>
+          <Button
+            addedClass={`${styles.productCard__removeButton}`}
+            innerText={isCartLoading ? '...' : 'Remove from cart'}
+            styling="secondary"
+            type="button"
+            variant="default"
+            onClick={() => {
+              removeLineItem(productInCart.id);
+            }}
+            disabled={isCartLoading}
+          />
+        </FlexContainer>
+
+        <p className={`${styles.productCard__cartQuantity}`}>In cart: {productInCart.quantity}</p>
+      </FlexContainer>
+    );
+  };
+
   function getCategoryName(categoryId: string) {
     return categories?.find((cat) => cat.id === categoryId)?.name[NAME_LOCALE];
   }
   const categoryName = getCategoryName(productProjection.categories[0].id);
 
   return (
-    <Link
-      to={`${categoryName}/${productProjection.key}?variant=${variantID}`}
-      className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
-    >
-      <div className={`${styles.productCard__images}`}>
-        {(images?.length && <img src={images[0]} alt="Main" />) || <p>No photo yet</p>}
-      </div>
-      <div className={`${styles.productCard__info}`}>
-        {renderPrice()}
-        <p>{productProjection.name['en-US']}</p>
-      </div>
-      {variant.attributes?.length && (
-        <div className={`${styles.productCard__attributes}`}>
-          {variant.attributes.map((attribute) => {
-            return (
-              <p key={attribute.name + attribute.value}>
-                {attribute.name}: {typeof attribute.value === 'object' ? attribute.value.label : attribute.value}
-              </p>
-            );
-          })}
+    <FlexContainer style={{ flexDirection: 'column' }}>
+      <Link
+        to={`${categoryName}/${productProjection.key}?variant=${variantID}`}
+        className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
+      >
+        <div className={`${styles.productCard__images}`}>
+          {(images?.length && <img src={images[0]} alt="Main" />) || <p>No photo yet</p>}
         </div>
-      )}
-    </Link>
+        <div className={`${styles.productCard__info}`}>
+          {renderPrice()}
+          <p>{productProjection.name['en-US']}</p>
+        </div>
+        {variant.attributes?.length && (
+          <div className={`${styles.productCard__attributes}`}>
+            {variant.attributes.map((attribute) => {
+              return (
+                <p key={attribute.name + attribute.value}>
+                  {attribute.name}: {typeof attribute.value === 'object' ? attribute.value.label : attribute.value}
+                </p>
+              );
+            })}
+          </div>
+        )}
+      </Link>
+      <div>{renderAddToCart()}</div>
+    </FlexContainer>
   );
 }
