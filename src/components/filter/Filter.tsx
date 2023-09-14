@@ -65,7 +65,7 @@ export default function Filter({ facet }: FilterProps) {
         return (
           <label
             key={term.term + term.count + term.productCount + facetInfo.prefix}
-            className={`${styles.label}`}
+            className={`${styles.label} ${sortedFacetData.length === 1 && styles.disabled}`}
             htmlFor={term.term + term.count + term.productCount + facetInfo.prefix}
           >
             {`${term.term} `} {facetInfo.prefix}
@@ -74,6 +74,7 @@ export default function Filter({ facet }: FilterProps) {
               checked={!!(filter && filter.values.includes(`"${term.term}"`))}
               onChange={(e) => handleClickCheckbox(e.target.checked, `"${term.term}"`)}
               id={term.term + term.count + term.productCount + facetInfo.prefix}
+              disabled={sortedFacetData.length === 1}
             />
           </label>
         );
