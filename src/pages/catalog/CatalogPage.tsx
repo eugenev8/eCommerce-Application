@@ -19,6 +19,7 @@ import LoaderSpinner from '../../components/loader/Loader';
 import FlexContainer from '../../components/containers/FlexContainer';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
+import Pagination from '../../components/pagination/Pagination';
 
 function createPriceFilterQuery(values: string[]) {
   const [min, max] = values;
@@ -32,7 +33,7 @@ function createPriceFilterQuery(values: string[]) {
 export default function CatalogPage() {
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
-  const { facets, products } = useUrlParams();
+  const { facets, products, pagination } = useUrlParams();
   const dispatch = useAppDispatch();
   const [currentSort, setCurrentSort] = useState(queryState.sort);
   const { getCategoriesPathByCategoryId } = useCategoriesMethods();
@@ -166,6 +167,8 @@ export default function CatalogPage() {
                         );
                       })}
                   </ProductCardsContainer>
+
+                  <Pagination total={pagination?.total} offset={pagination?.offset} limit={pagination?.limit} />
                 </>
               ) : (
                 <p>Items not found, disable some filters!</p>

@@ -23,7 +23,7 @@ const initialState: QueryState = {
   category: 'root',
   sort: SORTING_TYPES[0].queryString,
   limit: 10,
-  offset: 1,
+  offset: 0,
 };
 
 interface QueryData extends FacetName {
