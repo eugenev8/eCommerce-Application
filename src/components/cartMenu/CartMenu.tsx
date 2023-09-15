@@ -2,11 +2,12 @@ import { LineItem } from '@commercetools/platform-sdk';
 import useManageCart from '../../hooks/useManageCart';
 import IconBasket from '../icons/IconBasket';
 import styles from './CartMenu.module.scss';
+import { NAME_LOCALE } from '../../pages/catalog/types';
 
 function lineItem(lineItemInCart: LineItem) {
   return (
     <div key={lineItemInCart.id} className={styles.cartMenu__item}>
-      <p className={styles.cartMenu__item_name}>{lineItemInCart.name['en-US']}</p>
+      <p className={styles.cartMenu__item_name}>{lineItemInCart.name[NAME_LOCALE]}</p>
       <p className={styles.cartMenu__item_quantity}>{lineItemInCart.quantity}</p>
       <p className={styles.cartMenu__item_price}>${(lineItemInCart.totalPrice.centAmount / 100).toFixed(2)}</p>
     </div>
