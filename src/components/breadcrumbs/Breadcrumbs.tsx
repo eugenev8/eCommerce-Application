@@ -3,6 +3,8 @@ import { Params, useMatches } from 'react-router-dom';
 import React from 'react';
 import FlexContainer from '../containers/FlexContainer';
 import Wrapper from '../wrapper/Wrapper';
+import IconChevronRight from '../icons/IconChevronRight';
+import styles from './Breadcrumbs.module.scss';
 
 interface Match {
   id: string;
@@ -23,7 +25,18 @@ export default function Breadcrumbs() {
 
   return (
     <Wrapper style={{ height: '40px', margin: '20px auto' }}>
-      <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%' }}>{crumbs}</FlexContainer>
+      <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%' }}>
+        {crumbs.map((crumb, index) => (
+          <FlexContainer key={index} style={{ gap: '20px', alignItems: 'center' }}>
+            {index !== 0 && (
+              <FlexContainer style={{ height: '100%', width: '20px' }}>
+                <IconChevronRight />
+              </FlexContainer>
+            )}
+            <div className={`${styles.breadcrumbText}`}>{crumb}</div>
+          </FlexContainer>
+        ))}
+      </FlexContainer>
     </Wrapper>
   );
 }

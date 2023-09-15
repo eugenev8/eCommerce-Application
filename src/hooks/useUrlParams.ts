@@ -8,6 +8,7 @@ import { querySlice, QueryState } from '../reducers/QuerySlice';
 import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch, useAppSelector } from './redux';
+import useCategoriesMethods from './useCategoriesMethods';
 
 type QueryArgs = {
   queryArgs: {
@@ -32,20 +33,22 @@ export default function useUrlParams() {
   const [facets, setFacets] = useState<FacetResults | null>(null);
   const dispatch = useAppDispatch();
   const [searchParams] = useSearchParams();
-  const { categoryName } = useParams();
+  const { categoryName, subcategoryName } = useParams();
   const { categories, isLoading: isLoadingCategories } = useAppSelector((state) => state.categoriesReducer);
+
+  const { getCategoryIdByName } = useCategoriesMethods();
   function getQueryStateFromSearchParams(params: URLSearchParams) {
     function getCategoryIdFromParams() {
-      const category = categories?.find((cat) => cat.name['en-US'] === categoryName);
-      return category?.id || '';
+      const catName = subcategoryName || categoryName || '';
+      return getCategoryIdByName(catName);
     }
 
     const urlQueryState: QueryState = {
       sort: SORTING_TYPES[0].queryString,
       filters: [],
       search: '',
-      category: getCategoryIdFromParams(),
       priceFilter: null,
+      category: getCategoryIdFromParams(),
     };
 
     [...params.entries()].forEach((param) => {
@@ -107,7 +110,7 @@ export default function useUrlParams() {
     }
     getProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, searchParams, categoryName, isLoadingCategories]);
+  }, [dispatch, searchParams, categoryName, subcategoryName, isLoadingCategories]);
 
   return { products, facets };
 }
