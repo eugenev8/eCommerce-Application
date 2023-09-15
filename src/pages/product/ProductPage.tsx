@@ -11,6 +11,8 @@ import ModalContainer from '../../components/modal/ModalContainer';
 import Button from '../../components/buttons/Buttons';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import useManageCart from '../../hooks/useManageCart';
+// eslint-disable-next-line import/no-cycle
+import { ROUTES_PATHS } from '../../main';
 
 type CurrencyCode = 'USD' | 'EUR';
 
@@ -34,7 +36,9 @@ export default function ProductPage() {
 
       try {
         if (!productKey) {
-          throw new Error('Product key is missing');
+          // throw new Error('Product key is missing');
+          setIsError(true);
+          return;
         }
 
         const result = await apiRoots.CredentialsFlow.products().withKey({ key: productKey }).get().execute();
@@ -85,11 +89,7 @@ export default function ProductPage() {
             style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
           >
             {isLoading ? <LoaderSpinner /> : <h2>Product not found!</h2>}
-            {!isLoading && isError && (
-              <Link to=".." relative="path">
-                Go to catalog
-              </Link>
-            )}
+            {!isLoading && isError && <Link to={ROUTES_PATHS.catalog}>Go to catalog</Link>}
           </FlexContainer>
         </Wrapper>
       </AnimatedContainer>

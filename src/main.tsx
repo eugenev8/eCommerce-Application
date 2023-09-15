@@ -14,13 +14,16 @@ import AuthGuardLoader from './pages/AuthGuardLoader';
 import UserProfile from './pages/user/UserProfile';
 import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
+// eslint-disable-next-line import/no-cycle
 import CatalogPage from './pages/catalog/CatalogPage';
+// eslint-disable-next-line import/no-cycle
 import ProductPage from './pages/product/ProductPage';
 import Crumb from './components/breadcrumbs/Crumb';
 
 const store = setupStore();
 
-const routesPaths = {
+// eslint-disable-next-line import/prefer-default-export
+export const ROUTES_PATHS = {
   main: '/',
   login: '/login',
   register: '/register',
@@ -31,7 +34,7 @@ const routesPaths = {
 
 const router = createBrowserRouter([
   {
-    path: routesPaths.main,
+    path: ROUTES_PATHS.main,
     element: <App />,
     errorElement: <ErrorPage />,
     handle: {
@@ -43,14 +46,14 @@ const router = createBrowserRouter([
         element: <MainPage />,
       },
       {
-        path: routesPaths.catalog,
+        path: ROUTES_PATHS.catalog,
         element: <CatalogPage />,
         handle: {
-          crumb: () => <Crumb key="Catalog" title="Catalog" path={routesPaths.catalog} />,
+          crumb: () => <Crumb key="Catalog" title="Catalog" path={ROUTES_PATHS.catalog} />,
         },
         children: [
           {
-            path: `${routesPaths.catalog}/:categoryName`,
+            path: `${ROUTES_PATHS.catalog}/:categoryName`,
             element: <CatalogPage />,
             loader: ({ params }) => {
               return params;
@@ -60,13 +63,13 @@ const router = createBrowserRouter([
                 <Crumb
                   key="Category"
                   title={params.categoryName || 'Category'}
-                  path={`${routesPaths.catalog}/${params.categoryName}`}
+                  path={`${ROUTES_PATHS.catalog}/${params.categoryName}`}
                 />
               ),
             },
             children: [
               {
-                path: `${routesPaths.catalog}/:categoryName/:subcategoryName`,
+                path: `${ROUTES_PATHS.catalog}/:categoryName/:subcategoryName`,
                 element: <CatalogPage />,
                 loader: ({ params }) => {
                   return params;
@@ -76,7 +79,7 @@ const router = createBrowserRouter([
                     <Crumb
                       key="Subcategory"
                       title={params.subcategoryName || 'Subcategory'}
-                      path={`${routesPaths.catalog}/${params.categoryName}/${params.subcategoryName}`}
+                      path={`${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}`}
                     />
                   ),
                 },
@@ -86,14 +89,14 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${routesPaths.product}`,
+        path: `${ROUTES_PATHS.product}`,
         element: <ProductPage />,
         handle: {
-          crumb: () => <Crumb key="Catalog" title="Catalog" path={routesPaths.catalog} />,
+          crumb: () => <Crumb key="Catalog" title="Catalog" path={ROUTES_PATHS.catalog} />,
         },
         children: [
           {
-            path: `${routesPaths.product}/:categoryName`,
+            path: `${ROUTES_PATHS.product}/:categoryName`,
             element: <ProductPage />,
             loader: ({ params }) => {
               return params;
@@ -103,13 +106,13 @@ const router = createBrowserRouter([
                 <Crumb
                   key="Subcategory"
                   title={params.categoryName || 'Category'}
-                  path={`${routesPaths.catalog}/${params.categoryName}`}
+                  path={`${ROUTES_PATHS.catalog}/${params.categoryName}`}
                 />
               ),
             },
             children: [
               {
-                path: `${routesPaths.product}/:categoryName/:subcategoryName`,
+                path: `${ROUTES_PATHS.product}/:categoryName/:subcategoryName`,
                 element: <ProductPage />,
                 loader: ({ params }) => {
                   return params;
@@ -119,13 +122,13 @@ const router = createBrowserRouter([
                     <Crumb
                       key="Subcategory"
                       title={params.subcategoryName || 'Subcategory'}
-                      path={`${routesPaths.catalog}/${params.categoryName}/${params.subcategoryName}`}
+                      path={`${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}`}
                     />
                   ),
                 },
                 children: [
                   {
-                    path: `${routesPaths.product}/:categoryName/:subcategoryName/:productKey`,
+                    path: `${ROUTES_PATHS.product}/:categoryName/:subcategoryName/:productKey`,
                     element: <ProductPage />,
                     loader: ({ params }) => {
                       return params;
@@ -135,7 +138,7 @@ const router = createBrowserRouter([
                         <Crumb
                           key="productKey"
                           title={params.productKey || 'productKey'}
-                          path={`${routesPaths.product}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`}
+                          path={`${ROUTES_PATHS.product}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`}
                         />
                       ),
                     },
@@ -147,26 +150,26 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: routesPaths.login,
+        path: ROUTES_PATHS.login,
         element: <LoginPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <Crumb key="Login" title="Login" path={routesPaths.login} />,
+          crumb: () => <Crumb key="Login" title="Login" path={ROUTES_PATHS.login} />,
         },
       },
       {
-        path: routesPaths.register,
+        path: ROUTES_PATHS.register,
         element: <RegisterPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <Crumb key="Register" title="Register" path={routesPaths.register} />,
+          crumb: () => <Crumb key="Register" title="Register" path={ROUTES_PATHS.register} />,
         },
       },
       {
-        path: routesPaths.userProfile,
+        path: ROUTES_PATHS.userProfile,
         element: <UserProfile />,
         handle: {
-          crumb: () => <Crumb key="Profile" title="Profile" path={routesPaths.userProfile} />,
+          crumb: () => <Crumb key="Profile" title="Profile" path={ROUTES_PATHS.userProfile} />,
         },
         children: [
           {

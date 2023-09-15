@@ -7,6 +7,8 @@ import { useAppSelector } from '../../hooks/redux';
 
 import './CategoryFilter.scss';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
+// eslint-disable-next-line import/no-cycle
+import { ROUTES_PATHS } from '../../main';
 
 export default function CategoryFilter() {
   const checkedCat = useAppSelector((state) => state.queryReducer.category);
@@ -16,9 +18,9 @@ export default function CategoryFilter() {
 
   function handleSelect(selectedKeys: Key[]) {
     if (!selectedKeys) return;
-    if (selectedKeys[0] === 'root') navigate(`/catalog?${searchParams.toString()}`);
+    if (selectedKeys[0] === 'root') navigate(`${ROUTES_PATHS.catalog}?${searchParams.toString()}`);
     const categoriesPath = getCategoriesPathByCategoryId(selectedKeys[0].toString());
-    navigate(`/catalog/${categoriesPath}?${searchParams.toString()}`);
+    navigate(`${ROUTES_PATHS.catalog}/${categoriesPath}?${searchParams.toString()}`);
   }
 
   return (

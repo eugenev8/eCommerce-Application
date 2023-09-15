@@ -7,6 +7,8 @@ import FlexContainer from '../containers/FlexContainer';
 import useManageCart from '../../hooks/useManageCart';
 import Button from '../buttons/Buttons';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
+// eslint-disable-next-line import/no-cycle
+import { ROUTES_PATHS } from '../../main';
 
 type ProductCardProps = {
   productProjection: ProductProjection;
@@ -114,7 +116,7 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
   return (
     <FlexContainer style={{ flexDirection: 'column' }}>
       <Link
-        to={`/product/${getCategoriesPathByCategoryId(productProjection.categories[0].id)}/${
+        to={`${ROUTES_PATHS.product}/${getCategoriesPathByCategoryId(productProjection.categories[0].id)}/${
           productProjection.key
         }?variant=${variantID}`}
         className={`${styles.productCard} ${type === 'wide' ? styles.productCard_fullWidth : ''}`}
