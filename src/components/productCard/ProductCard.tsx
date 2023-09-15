@@ -7,6 +7,7 @@ import useManageCart from '../../hooks/useManageCart';
 import Button from '../buttons/Buttons';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 import ROUTES_PATHS from '../../routesPaths';
+import { NAME_LOCALE } from '../../pages/catalog/types';
 
 type ProductCardProps = {
   productProjection: ProductProjection;
@@ -124,7 +125,7 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
         </div>
         <div className={`${styles.productCard__info}`}>
           {renderPrice()}
-          <p>{productProjection.name['en-US']}</p>
+          <p>{productProjection.name[NAME_LOCALE]}</p>
         </div>
         {variant.attributes?.length && (
           <div className={`${styles.productCard__attributes}`}>

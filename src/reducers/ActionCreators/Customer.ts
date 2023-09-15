@@ -10,7 +10,7 @@ import { getCustomerData, getTokenFlowApiRoot } from '../../sdk/auth';
 import apiRoots from '../../sdk/apiRoots';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
 import tokenStores from '../../sdk/tokenStores';
-import { authSlice, AuthStatus } from '../AuthSlice';
+import { authActions, AuthStatus } from '../AuthSlice';
 
 import { createCart, getCart } from './Cart';
 import { cartSlice } from '../CartSlice';
@@ -23,10 +23,10 @@ const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: 
   'customer/loginWithPassword',
   async (customerSignin, { rejectWithValue, dispatch }) => {
     try {
-      dispatch(authSlice.actions.setIsPending());
+      dispatch(authActions.setIsPending());
       const customerRes = await getCustomerData(customerSignin);
 
-      dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
+      dispatch(authActions.setAuthStatus(AuthStatus.CustomerFlow));
 
       apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStores.customer.token);
       eraseAnonymousDataInLocalStorage();
@@ -48,13 +48,13 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
   'customer/signup',
   async (customerDraft, { rejectWithValue, dispatch }) => {
     try {
-      dispatch(authSlice.actions.setIsPending());
+      dispatch(authActions.setIsPending());
 
       await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
 
       const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
 
-      dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
+      dispatch(authActions.setAuthStatus(AuthStatus.CustomerFlow));
       apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStores.customer.token);
 
       eraseAnonymousDataInLocalStorage();

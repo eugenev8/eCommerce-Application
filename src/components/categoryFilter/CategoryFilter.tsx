@@ -8,6 +8,7 @@ import { useAppSelector } from '../../hooks/redux';
 import './CategoryFilter.scss';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 import ROUTES_PATHS from '../../routesPaths';
+import { ROOT_CATEGORY } from '../../reducers/QuerySlice';
 
 export default function CategoryFilter() {
   const checkedCat = useAppSelector((state) => state.queryReducer.category);
@@ -17,16 +18,16 @@ export default function CategoryFilter() {
 
   function handleSelect(selectedKeys: Key[]) {
     if (!selectedKeys) return;
-    if (selectedKeys[0] === 'root') navigate(`${ROUTES_PATHS.catalog}?${searchParams.toString()}`);
+    if (selectedKeys[0] === ROOT_CATEGORY) navigate(`${ROUTES_PATHS.catalog}?${searchParams.toString()}`);
     const categoriesPath = getCategoriesPathByCategoryId(selectedKeys[0].toString());
-    navigate(`${ROUTES_PATHS.catalog}/${categoriesPath}?${searchParams.toString()}`);
+    navigate(`${ROUTES_PATHS.catalog}/${categoriesPath}`);
   }
 
   return (
     <>
       <h4>Categories</h4>
       <Tree
-        selectedKeys={[checkedCat || 'root']}
+        selectedKeys={[checkedCat || ROOT_CATEGORY]}
         showIcon={false}
         treeData={getCategoriesTree()}
         defaultExpandAll

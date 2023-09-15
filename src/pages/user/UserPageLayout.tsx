@@ -8,6 +8,7 @@ import styles from './UserPage.module.scss';
 import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
 import LoaderSpinner from '../../components/loader/Loader';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import ROUTES_PATHS from '../../routesPaths';
 
 function UserPageLayout({ children }: { children: ReactNode }) {
   const { customer } = useAppSelector((state) => state.customerReducer);
@@ -27,7 +28,7 @@ function UserPageLayout({ children }: { children: ReactNode }) {
   }
 
   if (!customer) {
-    return <Navigate to="/login" />;
+    return <Navigate to={ROUTES_PATHS.login} />;
   }
 
   return (

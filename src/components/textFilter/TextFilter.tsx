@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './TextFilter.module.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { querySlice } from '../../reducers/QuerySlice';
+import { queryActions } from '../../reducers/QuerySlice';
 
 interface TextFilterProps {
   onEnterKeyPress: () => void; // Callback function to handle Enter key press
@@ -13,7 +13,7 @@ export default function TextFilter({ onEnterKeyPress }: TextFilterProps) {
   const searchState = useAppSelector((state) => state.queryReducer.search);
 
   function handleChangeSearchText(searchText: string) {
-    dispatch(querySlice.actions.changeSearchText(searchText));
+    dispatch(queryActions.changeSearchText(searchText));
   }
 
   function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
