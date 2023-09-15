@@ -95,7 +95,7 @@
 
   &__button,
   &__promo > button {
-    width: 24rem;
+    width: 19rem;
     height: 3rem;
     border-radius: 45px;
     margin-bottom: 0.6rem;
@@ -164,6 +164,9 @@
   padding: 1.25rem;
   border-bottom: solid 1px $color-6;
   border-top: solid 1px $color-6;
+  &__img {
+    grid-area: 1 / 1 / 2 / 2;
+  }
   &__img > img {
     grid-area: img;
     width: 4rem;
@@ -171,11 +174,39 @@
   }
   @media screen and (max-width: 720px) {
     max-width: 20rem;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 1fr);
   }
 }
+@media screen and (max-width: 720px) {
+      .specs { grid-area: 1 / 2 / 2 / 5; }
+      .basket__item__img { grid-area: 1 / 1 / 2 / 2; }
+      .price { grid-area: 2 / 1 / 3 / 2; position: relative; }
+      .price::before {
+        content: "Price";
+        position: absolute;
+        margin-top: -30px;
+        font-weight: 600;
+      }
+      .quantity { grid-area: 2 / 2 / 3 / 3; position: relative; }
+      .quantity::before{
+        content: "Qty";
+        position: absolute;
+        margin-top: -23px;
+        font-weight: 600;
+
+      }
+      .subtotal { grid-area: 2 / 3 / 3 / 4;  position: relative; }
+      .subtotal::before {
+        content: "Subtotal";
+        position: absolute;
+        margin-top: -23px;
+        font-weight: 600;
+      }
+      .button__container { grid-area: 2 / 4 / 3 / 5; }
+  
+}
+
 .leftButtons > a{
   margin-right: 1rem;
   @media screen and (max-width: 720px) {
@@ -195,7 +226,7 @@
 }
 .rightButtons > button{
   @media screen and (max-width: 720px) {
-    width: 22rem;
+    width: 20rem;
     height: 3rem;
     margin-left: -1rem;
   }
