@@ -14,23 +14,12 @@ import AuthGuardLoader from './pages/AuthGuardLoader';
 import UserProfile from './pages/user/UserProfile';
 import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
-// eslint-disable-next-line import/no-cycle
 import CatalogPage from './pages/catalog/CatalogPage';
-// eslint-disable-next-line import/no-cycle
 import ProductPage from './pages/product/ProductPage';
 import Crumb from './components/breadcrumbs/Crumb';
+import ROUTES_PATHS from './routesPaths';
 
 const store = setupStore();
-
-// eslint-disable-next-line import/prefer-default-export
-export const ROUTES_PATHS = {
-  main: '/',
-  login: '/login',
-  register: '/register',
-  userProfile: '/profile',
-  catalog: '/catalog',
-  product: '/product',
-};
 
 const router = createBrowserRouter([
   {

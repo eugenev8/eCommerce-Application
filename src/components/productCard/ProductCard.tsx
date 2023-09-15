@@ -1,5 +1,4 @@
 import { LineItem, ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
-
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import styles from './ProductCard.module.scss';
@@ -7,8 +6,7 @@ import FlexContainer from '../containers/FlexContainer';
 import useManageCart from '../../hooks/useManageCart';
 import Button from '../buttons/Buttons';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
-// eslint-disable-next-line import/no-cycle
-import { ROUTES_PATHS } from '../../main';
+import ROUTES_PATHS from '../../routesPaths';
 
 type ProductCardProps = {
   productProjection: ProductProjection;

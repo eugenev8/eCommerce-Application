@@ -11,8 +11,7 @@ import ModalContainer from '../../components/modal/ModalContainer';
 import Button from '../../components/buttons/Buttons';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import useManageCart from '../../hooks/useManageCart';
-// eslint-disable-next-line import/no-cycle
-import { ROUTES_PATHS } from '../../main';
+import ROUTES_PATHS from '../../routesPaths';
 
 type CurrencyCode = 'USD' | 'EUR';
 

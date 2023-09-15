@@ -7,8 +7,7 @@ import { useAppSelector } from '../../hooks/redux';
 
 import './CategoryFilter.scss';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
-// eslint-disable-next-line import/no-cycle
-import { ROUTES_PATHS } from '../../main';
+import ROUTES_PATHS from '../../routesPaths';
 
 export default function CategoryFilter() {
   const checkedCat = useAppSelector((state) => state.queryReducer.category);
