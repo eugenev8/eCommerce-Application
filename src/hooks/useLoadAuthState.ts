@@ -3,10 +3,10 @@ import { useAppDispatch } from './redux';
 import { getRefreshTokenFlowApiRoot, getTokenFlowApiRoot } from '../sdk/auth';
 import apiRoots from '../sdk/apiRoots';
 import { authActions, AuthStatus } from '../reducers/AuthSlice';
-import { customerSlice } from '../reducers/CustomerSlice';
 import { getCart } from '../reducers/ActionCreators/Cart';
 import tokenStores, { anonymousTokenCache, customerTokenCache } from '../sdk/tokenStores';
-import { cartSlice } from '../reducers/CartSlice';
+import { customerActions } from '../reducers/CustomerSlice';
+import { cartActions } from '../reducers/CartSlice';
 
 export default function useLoadAuthState() {
   const dispatch = useAppDispatch();
@@ -27,7 +27,7 @@ export default function useLoadAuthState() {
 
           dispatch(authActions.setAuthStatus(AuthStatus.CustomerFlow));
           apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStores.customer.token);
-          dispatch(customerSlice.actions.setCustomer(customerResponse.body));
+          dispatch(customerActions.setCustomer(customerResponse.body));
           dispatch(getCart(apiRoots.CustomerFlow));
           return;
         }
@@ -43,7 +43,7 @@ export default function useLoadAuthState() {
 
           dispatch(authActions.setAuthStatus(AuthStatus.AnonymousFlow));
           apiRoots.AnonymousFlow = getTokenFlowApiRoot(tokenStores.anonymous.token);
-          dispatch(cartSlice.actions.setCart(cartRes.body));
+          dispatch(cartActions.setCart(cartRes.body));
           return;
         }
         dispatch(authActions.setAuthStatus(AuthStatus.CredentialsFlow));

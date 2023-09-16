@@ -39,8 +39,7 @@ export default function useManageCart() {
     switch (authStatus) {
       case AuthStatus.Initial:
         throw new Error('Error with initialization!');
-      case AuthStatus.CredentialsFlow:
-        // eslint-disable-next-line no-case-declarations
+      case AuthStatus.CredentialsFlow: {
         const newAnonymousCart = await initAnonymousFlowWithEmptyCart();
         if (typeof newAnonymousCart === 'object') {
           apiRoot = apiRoots.AnonymousFlow;
@@ -49,6 +48,7 @@ export default function useManageCart() {
           throw new Error('Error with initialization anonymous flow!');
         }
         break;
+      }
       case AuthStatus.AnonymousFlow:
         apiRoot = apiRoots.AnonymousFlow;
         break;
