@@ -1,5 +1,8 @@
 @use 'src/common/styles/colors.module.scss' as *;
 
+body{
+  overflow-x:hidden;
+}
 .container {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
@@ -94,8 +97,7 @@
   }
 
   &__button,
-  &__promo > button {
-    width: 19rem;
+  &__promo > button { 
     height: 3rem;
     border-radius: 45px;
     margin-bottom: 0.6rem;
@@ -105,6 +107,9 @@
     outline: none;
     border: none;
     cursor: pointer;
+    @media screen and (max-width: 420px) {
+      width: 18rem;
+     }
 
     &:hover {
       background-color: scale-color($color: $color-3, $saturation: 2%, $lightness: 10%);
@@ -173,9 +178,11 @@
     height: 4rem;
   }
   @media screen and (max-width: 720px) {
-    max-width: 20rem;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(2, 1fr);
+  }
+  @media screen and (max-width: 420px) {
+   min-width: 20rem;
   }
 }
 @media screen and (max-width: 720px) {
@@ -185,14 +192,14 @@
       .price::before {
         content: "Price";
         position: absolute;
-        margin-top: -30px;
+        margin-top: -28px;
         font-weight: 600;
       }
       .quantity { grid-area: 2 / 2 / 3 / 3; position: relative; }
       .quantity::before{
         content: "Qty";
         position: absolute;
-        margin-top: -23px;
+        margin-top: -22px;
         font-weight: 600;
 
       }
@@ -200,8 +207,9 @@
       .subtotal::before {
         content: "Subtotal";
         position: absolute;
-        margin-top: -23px;
+        margin-top: -29px;
         font-weight: 600;
+        margin-left: -8px;
       }
       .button__container { grid-area: 2 / 4 / 3 / 5; }
   
