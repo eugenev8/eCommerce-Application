@@ -7,7 +7,7 @@ import useManageCart from '../../hooks/useManageCart';
 import Button from '../buttons/Buttons';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 import ROUTES_PATHS from '../../routesPaths';
-import { NAME_LOCALE } from '../../pages/catalog/types';
+import { NAME_LOCALE } from '../../sdk/types';
 
 type ProductCardProps = {
   productProjection: ProductProjection;

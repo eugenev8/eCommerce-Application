@@ -1,6 +1,6 @@
 import { Category } from '@commercetools/platform-sdk';
 import { useAppSelector } from './redux';
-import { NAME_LOCALE } from '../pages/catalog/types';
+import { NAME_LOCALE } from '../sdk/types';
 import { ROOT_CATEGORY } from '../reducers/QuerySlice';
 
 interface CategoryNode {

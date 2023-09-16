@@ -2,7 +2,7 @@ import { LineItem } from '@commercetools/platform-sdk';
 import useManageCart from '../../hooks/useManageCart';
 import IconBasket from '../icons/IconBasket';
 import styles from './CartMenu.module.scss';
-import { NAME_LOCALE } from '../../pages/catalog/types';
+import { NAME_LOCALE } from '../../sdk/types';
 
 function lineItem(lineItemInCart: LineItem) {
   return (

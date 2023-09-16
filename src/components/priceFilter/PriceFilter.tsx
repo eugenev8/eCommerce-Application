@@ -6,7 +6,7 @@ import {
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import React, { useState } from 'react';
 import styles from './PriceFilter.module.scss';
-import { PRICE_FACET } from '../../pages/catalog/types';
+import { PRICE_FACET } from '../../sdk/types';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { queryActions } from '../../reducers/QuerySlice';
 

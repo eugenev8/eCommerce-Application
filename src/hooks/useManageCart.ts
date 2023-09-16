@@ -36,16 +36,27 @@ export default function useManageCart() {
     let userCart = cart;
     let apiRoot = apiRoots.CustomerFlow;
 
-    if (authStatus === AuthStatus.Initial) {
-      throw new Error('Error with initialization!');
-    }
+    switch (authStatus) {
+      case AuthStatus.Initial:
+        throw new Error('Error with initialization!');
 
-    if (authStatus === AuthStatus.CredentialsFlow) {
-      const anonymousCart = await initAnonymousFlowWithEmptyCart();
-      if (typeof anonymousCart === 'object') {
-        userCart = anonymousCart;
+      case AuthStatus.CredentialsFlow:
+        // eslint-disable-next-line no-case-declarations
+        const newAnonymousCart = await initAnonymousFlowWithEmptyCart();
+        if (typeof newAnonymousCart === 'object') {
+          apiRoot = apiRoots.AnonymousFlow;
+          userCart = newAnonymousCart;
+        } else {
+          throw new Error('Error with initialization anonymous flow!');
+        }
+        break;
+      case AuthStatus.AnonymousFlow:
         apiRoot = apiRoots.AnonymousFlow;
-      }
+        break;
+      case AuthStatus.CustomerFlow:
+        apiRoot = apiRoots.CustomerFlow;
+        break;
+      default:
     }
 
     if (!userCart) {
@@ -73,15 +84,16 @@ export default function useManageCart() {
   }
 
   function removeLineItem(lineItemId: string, quantity?: number) {
-    if (authStatus === AuthStatus.Initial) {
-      throw new Error('Error with initialization!');
-    }
+    let apiRoot;
 
-    if (authStatus === AuthStatus.CredentialsFlow) {
-      throw new Error(`Credentials Flow has no carts!`);
+    switch (authStatus) {
+      case AuthStatus.Initial:
+        throw new Error('Error with initialization!');
+      case AuthStatus.CredentialsFlow:
+        throw new Error(`Credentials Flow has no carts!`);
+      default:
+        apiRoot = apiRoots[authStatus];
     }
-
-    const apiRoot = apiRoots[authStatus];
 
     if (!apiRoot) {
       throw new Error('Error - apiRoot is not initialized!');

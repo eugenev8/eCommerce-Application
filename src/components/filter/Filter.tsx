@@ -6,7 +6,7 @@ import {
   TermFacetResult,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import React from 'react';
-import { FACETS_NAMES } from '../../pages/catalog/types';
+import { FACETS_NAMES } from '../../sdk/types';
 import styles from './Filter.module.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { queryActions } from '../../reducers/QuerySlice';

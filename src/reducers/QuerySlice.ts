@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FacetName, INITIAL_SORTING_TYPE } from '../pages/catalog/types';
+import { FacetName, INITIAL_SORTING_TYPE } from '../sdk/types';
+
+export const ROOT_CATEGORY = 'root';
 
 interface FilterQuery extends FacetName {
   values: string[];
@@ -15,8 +17,6 @@ export type QueryState = {
   limit: number;
   offset: number;
 };
-
-export const ROOT_CATEGORY = 'root';
 
 const initialState: QueryState = {
   filters: [],

@@ -76,5 +76,20 @@ const INITIAL_SORTING_TYPE = SORTING_TYPES[0];
 
 const NAME_LOCALE = 'en-US';
 
+type SearchQueryType = {
+  queryArgs: {
+    markMatchingVariants?: boolean;
+    filter: string[];
+    'filter.facets'?: string | string[];
+    'filter.query'?: string | string[];
+    facet?: string[];
+    sort?: string | string[];
+    limit?: number;
+    offset?: number;
+    'text.EN-US'?: string;
+    fuzzy?: boolean;
+  };
+};
+
 export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET, NAME_LOCALE, INITIAL_SORTING_TYPE };
-export type { FacetName };
+export type { FacetName, SearchQueryType };

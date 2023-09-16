@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import styles from './CatalogPage.module.scss';
 import Filter from '../../components/filter/Filter';
 import Wrapper from '../../components/wrapper/Wrapper';
-import { PRICE_FACET, SORTING_TYPES } from './types';
+import { PRICE_FACET, SORTING_TYPES } from '../../sdk/types';
 import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
 import { queryActions } from '../../reducers/QuerySlice';
@@ -34,7 +34,7 @@ function createPriceFilterQuery(values: string[]) {
 export default function CatalogPage() {
   const navigate = useNavigate();
   const queryState = useAppSelector((state) => state.queryReducer);
-  const { facets, products } = useUrlParams();
+  const { facets, products, pagination } = useUrlParams();
   const dispatch = useAppDispatch();
   const [currentSort, setCurrentSort] = useState(queryState.sort);
   const { getCategoriesPathByCategoryId } = useCategoriesMethods();
@@ -159,7 +159,7 @@ export default function CatalogPage() {
             {products && !products.length && <p>Items not found, disable some filters!</p>}
             {products && products.length > 0 && (
               <>
-                <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
+                {/* <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p> */}
                 <ProductCardsContainer>
                   {products.map((productToRender) => {
                     return (
