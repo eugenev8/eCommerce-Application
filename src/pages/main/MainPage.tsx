@@ -1,9 +1,22 @@
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styles from './MainPage.module.scss';
 
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import toaster from '../../services/toaster';
+import useManageCart from '../../hooks/useManageCart';
 
 function MainPage() {
+  const { applyPromoCode } = useManageCart();
+  const [promoCode, setPromoCode] = useState<string>('');
+  function handleApplyPromoCode() {
+    applyPromoCode(promoCode).then((data) => {
+      if (data.type.includes('fulfilled')) {
+        toaster.showSuccess('Success!');
+      }
+    });
+  }
+
   return (
     <div className={`${styles.mainPage}`}>
       <AnimatedContainer>
@@ -15,6 +28,21 @@ function MainPage() {
         <NavLink to="/register">Sign up</NavLink>
         <br />
         <br />
+        <button type="button" onClick={handleApplyPromoCode}>
+          Apply promo-code
+        </button>
+        <br />
+        <input
+          type="text"
+          value={promoCode}
+          onChange={(e) => setPromoCode(e.target.value)}
+          placeholder="promo-code"
+          style={{ width: '200px' }}
+        />
+        <p>
+          Есть промокод demo9 которые делает скидку на все товары в корзине на 5% за исключением товаров, у которых уже
+          есть скидка
+        </p>
       </AnimatedContainer>
     </div>
   );
