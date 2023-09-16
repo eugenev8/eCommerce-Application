@@ -5,6 +5,7 @@ const ROUTES_PATHS = {
   userProfile: '/profile',
   catalog: '/catalog',
   product: '/product',
+  about: '/about',
 } as const;
 
 export default ROUTES_PATHS;

@@ -18,6 +18,7 @@ import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
 import Crumb from './components/breadcrumbs/Crumb';
 import ROUTES_PATHS from './routesPaths';
+import AboutPage from './pages/about_us/about';
 
 const store = setupStore();
 
@@ -170,6 +171,14 @@ const router = createBrowserRouter([
             element: <UserAddresses />,
           },
         ],
+      },
+      {
+        path: ROUTES_PATHS.about,
+        element: <AboutPage />,
+        loader: AuthGuardLoader,
+        handle: {
+          crumb: () => <Crumb key="About" title="About Us" path={ROUTES_PATHS.about} />,
+        },
       },
     ],
   },
