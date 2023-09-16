@@ -49,6 +49,4 @@ const customerSlice = createSlice({
   },
 });
 
-export { customerSlice };
-
-export default customerSlice.reducer;
+export const { reducer: customerReducer, actions: customerActions } = customerSlice;

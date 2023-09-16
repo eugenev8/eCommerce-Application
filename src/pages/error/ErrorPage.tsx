@@ -3,6 +3,7 @@ import styles from './ErrorPage.module.scss';
 import Navigation from '../../components/navigation/Navigation';
 import useLoadAuthState from '../../hooks/useLoadAuthState';
 import FlexContainer from '../../components/containers/FlexContainer';
+import ROUTES_PATHS from '../../routesPaths';
 
 function generateErrorContent(error: unknown) {
   return (
@@ -35,7 +36,7 @@ function generateErrorContent(error: unknown) {
             <i>{error.message}</i>
           </p>
         )}
-        <NavLink to="/">Return to main page</NavLink>
+        <NavLink to={ROUTES_PATHS.main}>Return to main page</NavLink>
       </FlexContainer>
     </div>
   );

@@ -8,6 +8,7 @@ import FlexContainer from '../../components/containers/FlexContainer';
 import ColoredContainer from '../../components/containers/ColoredContainer';
 import Button from '../../components/buttons/Buttons';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import ROUTES_PATHS from '../../routesPaths';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ function LoginPage() {
                     <li>Track orders and more</li>
                   </ul>
                   <Button
-                    onClick={() => navigate('/register')}
+                    onClick={() => navigate(ROUTES_PATHS.register)}
                     addedClass=""
                     innerText="Create an account"
                     styling="primary"

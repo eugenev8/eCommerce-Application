@@ -10,10 +10,10 @@ import { getCustomerData, getTokenFlowApiRoot } from '../../sdk/auth';
 import apiRoots from '../../sdk/apiRoots';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
 import tokenStores from '../../sdk/tokenStores';
-import { authSlice, AuthStatus } from '../AuthSlice';
+import { authActions, AuthStatus } from '../AuthSlice';
 
 import { createCart, getCart } from './Cart';
-import { cartSlice } from '../CartSlice';
+import { cartActions } from '../CartSlice';
 
 function eraseAnonymousDataInLocalStorage() {
   localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
@@ -23,17 +23,17 @@ const loginCustomer = createAsyncThunk<Customer, CustomerSignin, { rejectValue: 
   'customer/loginWithPassword',
   async (customerSignin, { rejectWithValue, dispatch }) => {
     try {
-      dispatch(authSlice.actions.setIsPending());
+      dispatch(authActions.setIsPending());
       const customerRes = await getCustomerData(customerSignin);
 
-      dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
+      dispatch(authActions.setAuthStatus(AuthStatus.CustomerFlow));
 
       apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStores.customer.token);
       eraseAnonymousDataInLocalStorage();
       if (customerRes.body.cart) {
-        dispatch(cartSlice.actions.setCart(customerRes.body.cart));
+        dispatch(cartActions.setCart(customerRes.body.cart));
       } else {
-        dispatch(getCart(AuthStatus.CustomerFlow));
+        dispatch(getCart(apiRoots.CustomerFlow));
       }
       return customerRes.body.customer;
     } catch (error) {
@@ -48,20 +48,20 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
   'customer/signup',
   async (customerDraft, { rejectWithValue, dispatch }) => {
     try {
-      dispatch(authSlice.actions.setIsPending());
+      dispatch(authActions.setIsPending());
 
       await apiRoots.CredentialsFlow.customers().post({ body: customerDraft }).execute();
 
       const customerRes = await getCustomerData({ email: customerDraft.email, password: customerDraft.password! });
 
-      dispatch(authSlice.actions.setAuthStatus(AuthStatus.CustomerFlow));
+      dispatch(authActions.setAuthStatus(AuthStatus.CustomerFlow));
       apiRoots.CustomerFlow = getTokenFlowApiRoot(tokenStores.customer.token);
 
       eraseAnonymousDataInLocalStorage();
       if (customerRes.body.cart) {
-        dispatch(cartSlice.actions.setCart(customerRes.body.cart));
+        dispatch(cartActions.setCart(customerRes.body.cart));
       } else {
-        dispatch(createCart(AuthStatus.CustomerFlow));
+        dispatch(createCart(apiRoots.CustomerFlow));
       }
       return customerRes.body.customer;
     } catch (error) {
@@ -81,7 +81,7 @@ const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswo
   async (values, { rejectWithValue }) => {
     try {
       if (!apiRoots.CustomerFlow) {
-        return rejectWithValue('Error with token flow');
+        return rejectWithValue('Error with customer apiRoot flow');
       }
 
       await apiRoots.CustomerFlow.me().password().post({ body: values }).execute();

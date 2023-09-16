@@ -4,27 +4,12 @@ import {
   ProductProjection,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { querySlice, QueryState } from '../reducers/QuerySlice';
-import { FACETS_NAMES, PRICE_FACET, SEARCH_FACET, SORTING_TYPES } from '../pages/catalog/types';
+import { queryActions, QueryState } from '../reducers/QuerySlice';
+import { FACETS_NAMES, INITIAL_SORTING_TYPE, PRICE_FACET, SEARCH_FACET, SearchQueryType } from '../sdk/types';
 import apiRoots from '../sdk/apiRoots';
 import { useAppDispatch, useAppSelector } from './redux';
 import useCategoriesMethods from './useCategoriesMethods';
 import { PaginationType } from '../components/pagination/Pagination';
-
-type QueryType = {
-  queryArgs: {
-    markMatchingVariants?: boolean;
-    filter: string[];
-    'filter.facets'?: string | string[];
-    'filter.query'?: string | string[];
-    facet?: string[];
-    sort?: string | string[];
-    limit?: number;
-    offset?: number;
-    'text.EN-US'?: string;
-    fuzzy?: boolean;
-  };
-};
 
 function getPriceParamsFromString(stringValues: string) {
   const values = stringValues.slice(1, -1).split(' ');
@@ -48,7 +33,7 @@ export default function useUrlParams() {
     }
 
     const urlQueryState: QueryState = {
-      sort: SORTING_TYPES[0].queryString,
+      sort: INITIAL_SORTING_TYPE.queryString,
       filters: [],
       search: '',
       priceFilter: null,
@@ -95,9 +80,9 @@ export default function useUrlParams() {
       facetQueries.push(PRICE_FACET.query);
 
       const urlQueryState = getQueryStateFromSearchParams(searchParams);
-      dispatch(querySlice.actions.loadQueriesFromParams(urlQueryState));
+      dispatch(queryActions.loadQueriesFromParams(urlQueryState));
 
-      const query: QueryType = {
+      const query: SearchQueryType = {
         queryArgs: {
           facet: facetQueries,
           sort: [urlQueryState.sort],

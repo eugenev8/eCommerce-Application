@@ -1,6 +1,7 @@
 import { Category } from '@commercetools/platform-sdk';
 import { useAppSelector } from './redux';
-import { NAME_LOCALE } from '../pages/catalog/types';
+import { NAME_LOCALE } from '../sdk/types';
+import { ROOT_CATEGORY } from '../reducers/QuerySlice';
 
 interface CategoryNode {
   key: string;
@@ -14,7 +15,7 @@ export default function useCategoriesMethods() {
   function createCategoriesTree(category: Category): CategoryNode {
     return {
       key: category.id,
-      title: category.name['en-US'],
+      title: category.name[NAME_LOCALE],
       children: categories?.filter((cat) => cat.parent?.id === category.id).map((cat) => createCategoriesTree(cat)),
     };
   }
@@ -22,7 +23,7 @@ export default function useCategoriesMethods() {
   function getCategoriesTree(): CategoryNode[] {
     return [
       {
-        key: 'root',
+        key: ROOT_CATEGORY,
         title: 'All products',
         children: categories?.filter((cat) => !Object.hasOwn(cat, 'parent')).map((cat) => createCategoriesTree(cat)),
       },
