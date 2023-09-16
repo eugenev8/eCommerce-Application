@@ -1,6 +1,6 @@
 import { TokenCache, TokenStore } from '@commercetools/sdk-client-v2';
 
-const initialTokenStore = { token: '', expirationTime: 0 };
+const initialTokenStore: TokenStore = { token: '', expirationTime: 0 };
 
 type TokenStores = {
   customer: TokenStore;

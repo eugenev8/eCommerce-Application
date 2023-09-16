@@ -24,7 +24,7 @@ const errorMessages: ErrorMessage[] = [
 
 function getErrorMessageForUser(serverMessage: string) {
   const errorMessage = errorMessages.find((error) => error.serverMessage === serverMessage);
-  return errorMessage?.userMessage || 'Sorry! Unknown error!';
+  return errorMessage?.userMessage || serverMessage;
 }
 
 export default getErrorMessageForUser;

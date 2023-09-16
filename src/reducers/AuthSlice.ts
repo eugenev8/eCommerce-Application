@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-enum AuthStatus {
+export enum AuthStatus {
   Initial = 'Initial',
   CredentialsFlow = 'CredentialsFlow',
   AnonymousFlow = 'AnonymousFlow',
@@ -45,6 +45,4 @@ const authSlice = createSlice({
   },
 });
 
-export { authSlice, AuthStatus };
-
-export default authSlice.reducer;
+export const { reducer: authReducer, actions: authActions } = authSlice;

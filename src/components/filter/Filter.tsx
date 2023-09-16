@@ -6,10 +6,10 @@ import {
   TermFacetResult,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import React from 'react';
-import { FACETS_NAMES } from '../../pages/catalog/types';
+import { FACETS_NAMES } from '../../sdk/types';
 import styles from './Filter.module.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { querySlice } from '../../reducers/QuerySlice';
+import { queryActions } from '../../reducers/QuerySlice';
 
 type FilterProps = {
   facet: [string, FacetResult];
@@ -52,9 +52,9 @@ export default function Filter({ facet }: FilterProps) {
 
   function handleClickCheckbox(isChecked: boolean, attributeValue: string) {
     if (isChecked) {
-      dispatch(querySlice.actions.addFilterQuery({ ...facetInfo!, value: attributeValue }));
+      dispatch(queryActions.addFilterQuery({ ...facetInfo!, value: attributeValue }));
     } else {
-      dispatch(querySlice.actions.removeFilterQuery({ ...facetInfo!, value: attributeValue }));
+      dispatch(queryActions.removeFilterQuery({ ...facetInfo!, value: attributeValue }));
     }
   }
 

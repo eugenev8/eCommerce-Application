@@ -2,18 +2,18 @@ import { NavLink } from 'react-router-dom';
 import UserPageLayout from './UserPageLayout';
 import FlexContainer from '../../components/containers/FlexContainer';
 import { useAppDispatch } from '../../hooks/redux';
-import { authSlice } from '../../reducers/AuthSlice';
-import { customerSlice } from '../../reducers/CustomerSlice';
+import { authActions } from '../../reducers/AuthSlice';
 import Button from '../../components/buttons/Buttons';
-import { cartSlice } from '../../reducers/CartSlice';
+import { customerActions } from '../../reducers/CustomerSlice';
+import { cartActions } from '../../reducers/CartSlice';
 
 function UserProfile() {
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    dispatch(authSlice.actions.logout());
-    dispatch(customerSlice.actions.clearCustomerData());
-    dispatch(cartSlice.actions.clearCart());
+    dispatch(authActions.logout());
+    dispatch(customerActions.clearCustomerData());
+    dispatch(cartActions.clearCart());
     localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
   };
 

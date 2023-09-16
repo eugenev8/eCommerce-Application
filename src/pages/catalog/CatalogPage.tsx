@@ -5,10 +5,10 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import styles from './CatalogPage.module.scss';
 import Filter from '../../components/filter/Filter';
 import Wrapper from '../../components/wrapper/Wrapper';
-import { PRICE_FACET, SORTING_TYPES } from './types';
+import { PRICE_FACET, SORTING_TYPES } from '../../sdk/types';
 import PriceFilter from '../../components/priceFilter/PriceFilter';
 import useUrlParams from '../../hooks/useUrlParams';
-import { querySlice } from '../../reducers/QuerySlice';
+import { queryActions } from '../../reducers/QuerySlice';
 import toaster from '../../services/toaster';
 import ProductCard from '../../components/productCard/ProductCard';
 import ProductCardsContainer from '../../components/containers/ProductCardsContainer';
@@ -19,6 +19,7 @@ import LoaderSpinner from '../../components/loader/Loader';
 import FlexContainer from '../../components/containers/FlexContainer';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
+import ROUTES_PATHS from '../../routesPaths';
 import Pagination from '../../components/pagination/Pagination';
 
 function createPriceFilterQuery(values: string[]) {
@@ -43,6 +44,7 @@ export default function CatalogPage() {
 
   const handleFilter = () => {
     const queryUrl = new URLSearchParams();
+
     queryState.filters.forEach((filter) => {
       queryUrl.set(filter.attribute, filter.values.join(','));
     });
@@ -61,11 +63,11 @@ export default function CatalogPage() {
     if (queryState.sort) queryUrl.set('sort', queryState.sort);
 
     const categoriesPath = queryState.category ? getCategoriesPathByCategoryId(queryState.category) : '';
-    navigate(`./${categoriesPath}?${queryUrl.toString()}`);
+    navigate(`${ROUTES_PATHS.catalog}/${categoriesPath}?${queryUrl.toString()}`);
   };
 
   function handleChangeSortType(newSortType: string) {
-    dispatch(querySlice.actions.setSortType(newSortType));
+    dispatch(queryActions.setSortType(newSortType));
   }
 
   const getVariantIdForRender = (product: ProductProjection) => {
@@ -149,34 +151,29 @@ export default function CatalogPage() {
           </div>
 
           <div className={`${styles.catalog__rightBlock}`}>
-            {/* eslint-disable-next-line no-nested-ternary */}
-            {products ? (
-              products.length ? (
-                <>
-                  <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p>
-                  <ProductCardsContainer>
-                    {products &&
-                      products.map((productToRender) => {
-                        return (
-                          <ProductCard
-                            key={productToRender.id}
-                            productProjection={productToRender}
-                            variantID={getVariantIdForRender(productToRender)}
-                            type="small"
-                          />
-                        );
-                      })}
-                  </ProductCardsContainer>
-
-                  <Pagination total={pagination?.total} offset={pagination?.offset} limit={pagination?.limit} />
-                </>
-              ) : (
-                <p>Items not found, disable some filters!</p>
-              )
-            ) : (
+            {!products && (
               <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '40vh' }}>
                 <LoaderSpinner />
               </FlexContainer>
+            )}
+            {products && !products.length && <p>Items not found, disable some filters!</p>}
+            {products && products.length > 0 && (
+              <>
+                {/* <p className={`${styles.catalog__productsFound}`}>Products found: {products.length}</p> */}
+                <ProductCardsContainer>
+                  {products.map((productToRender) => {
+                    return (
+                      <ProductCard
+                        key={productToRender.id}
+                        productProjection={productToRender}
+                        variantID={getVariantIdForRender(productToRender)}
+                        type="small"
+                      />
+                    );
+                  })}
+                </ProductCardsContainer>
+                <Pagination total={pagination?.total} offset={pagination?.offset} limit={pagination?.limit} />
+              </>
             )}
           </div>
         </div>
