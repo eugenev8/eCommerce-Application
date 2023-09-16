@@ -2,8 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { Cart, CartDraft, MyCartUpdate } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
-
-const PROJECT_CURRENCY = 'USD';
+import { PROJECT_CURRENCY } from '../../sdk/types';
 
 export interface MyCartUpdateAdvanced extends MyCartUpdate {
   cartId: string;
@@ -58,4 +57,4 @@ const updateCart = createAsyncThunk<Cart, MyCartUpdateAdvanced, { rejectValue: s
   }
 );
 
-export { PROJECT_CURRENCY, createCart, getCart, updateCart };
+export { createCart, getCart, updateCart };

@@ -1,3 +1,5 @@
+const PROJECT_CURRENCY = 'USD';
+
 interface FacetName {
   attribute: string;
   nameEn: string;
@@ -91,5 +93,5 @@ type SearchQueryType = {
   };
 };
 
-export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET, NAME_LOCALE, INITIAL_SORTING_TYPE };
+export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET, NAME_LOCALE, INITIAL_SORTING_TYPE, PROJECT_CURRENCY };
 export type { FacetName, SearchQueryType };

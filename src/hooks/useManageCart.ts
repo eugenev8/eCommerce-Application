@@ -34,12 +34,11 @@ export default function useManageCart() {
 
   async function addLineItem(productId: string, variantId: number) {
     let userCart = cart;
-    let apiRoot = apiRoots.CustomerFlow;
+    let apiRoot;
 
     switch (authStatus) {
       case AuthStatus.Initial:
         throw new Error('Error with initialization!');
-
       case AuthStatus.CredentialsFlow:
         // eslint-disable-next-line no-case-declarations
         const newAnonymousCart = await initAnonymousFlowWithEmptyCart();
