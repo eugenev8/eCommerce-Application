@@ -18,6 +18,7 @@ import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
 import Crumb from './components/breadcrumbs/Crumb';
 import ROUTES_PATHS from './routesPaths';
+import BasketPage from './pages/basket/Basket';
 
 const store = setupStore();
 
