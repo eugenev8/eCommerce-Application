@@ -28,18 +28,24 @@ function AboutPage() {
         <p>Team members</p>
         <div className={styles.team}>
           <div className={styles.teamMember}>
-            <img src={github} alt="github" />
-            <p>John Doe</p>
+            <a href="http://github.com">
+              <img src={github} alt="github" />
+            </a>
+            <p>Viktor TWA</p>
             <p>description</p>
           </div>
           <div className={styles.teamMember}>
-            <img src="https://picsum.photos/200" alt="team member" />
-            <p>John Doe</p>
+            <a href="http://github.com">
+              <img src={github} alt="github" />
+            </a>
+            <p>Zhenya V8</p>
             <p>description</p>
           </div>
           <div className={styles.teamMember}>
-            <img src="https://picsum.photos/200" alt="team member" />
-            <p>John Doe</p>
+            <a href="http://github.com">
+              <img src={github} alt="github" />
+            </a>
+            <p>Artem TS enjoer</p>
             <p>description</p>
           </div>
         </div>
