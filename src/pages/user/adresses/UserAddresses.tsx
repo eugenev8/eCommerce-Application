@@ -14,6 +14,7 @@ import CreateAddressForm from '../../../components/forms/create/CreateAddressFor
 import { updateCustomerData } from '../../../reducers/ActionCreators/Customer';
 import toaster from '../../../services/toaster';
 import { AddressType } from './types';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,
@@ -106,6 +107,7 @@ export default function UserAddresses() {
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedAddAddress, setSelectedAddAddress] = useState<AddressType | null>(null);
   const dispatch = useAppDispatch();
+  const { deleteAddress } = useManageCustomer();
 
   if (!customer) {
     return <h2>No customer</h2>;
@@ -152,29 +154,13 @@ export default function UserAddresses() {
   };
 
   const handleDeleteAddress = (address: Address, addressType: AddressType) => {
-    if (addressType === AddressType.Shipping) {
-      if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
-        toaster.showError('This is the last shipping address. Do not delete');
-        return;
-      }
-    } else if (customer.billingAddressIds && customer.billingAddressIds.length < 2) {
-      toaster.showError('This is the last billing address. Do not delete');
-      return;
-    }
-
-    const deleteAddressUpdate: MyCustomerUpdate = {
-      version: customer.version,
-      actions: [{ action: 'removeAddress', addressId: address.id }],
-    };
-
-    dispatch(updateCustomerData(deleteAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        toaster.showError('Something went wrong.');
-
-        return;
-      }
-      toaster.showSuccess('Address deleted!');
-    });
+    deleteAddress(address, addressType)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Address deleted!');
+        }
+      })
+      .catch((error) => toaster.showError(error.message));
   };
 
   const handleClearDefaultAddress = (addressType: AddressType) => {

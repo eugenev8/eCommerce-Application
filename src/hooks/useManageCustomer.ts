@@ -1,4 +1,4 @@
-import { CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address, CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import { useAppDispatch, useAppSelector } from './redux';
 import {
   changeCustomerPassword,
@@ -9,6 +9,7 @@ import {
 } from '../reducers/ActionCreators/Customer';
 
 import useManageCart from './useManageCart';
+import { AddressType } from '../pages/user/adresses/types';
 
 export interface CustomerPersonalData {
   email: string;
@@ -28,7 +29,7 @@ export default function useManageCustomer() {
   const dispatch = useAppDispatch();
   const { getAnonCartResourceIdentifier } = useManageCart();
 
-  function createCustomerUpdate(values: CustomerPersonalData) {
+  function createCustomerPersonalDataUpdate(values: CustomerPersonalData) {
     if (!customer) throw new Error('No customer!');
 
     const updates: MyCustomerUpdate = { version: customer.version, actions: [] };
@@ -61,7 +62,7 @@ export default function useManageCustomer() {
   }
 
   function updatePersonalData(customerPersonalData: CustomerPersonalData) {
-    const updates = createCustomerUpdate(customerPersonalData);
+    const updates = createCustomerPersonalDataUpdate(customerPersonalData);
     if (updates.actions.length === 0) return Promise.reject(new Error('Nothing to change!'));
     return dispatch(updateCustomerData(updates));
   }
@@ -76,6 +77,24 @@ export default function useManageCustomer() {
     return dispatch(changeCustomerPassword(myCustomerChangePasswordWithEmail));
   }
 
+  function deleteAddress(address: Address, addressType: AddressType) {
+    if (!customer) throw new Error('No customer!');
+    if (addressType === AddressType.Shipping) {
+      if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
+        return Promise.reject(new Error('This is the last shipping address. Do not delete'));
+      }
+    } else if (customer.billingAddressIds && customer.billingAddressIds.length < 2) {
+      return Promise.reject(new Error('This is the last billing address. Do not delete'));
+    }
+
+    const deleteAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [{ action: 'removeAddress', addressId: address.id }],
+    };
+
+    return dispatch(updateCustomerData(deleteAddressUpdate));
+  }
+
   function login(customerSignin: CustomerSignin) {
     const anonymousCart = getAnonCartResourceIdentifier();
     return dispatch(loginCustomer({ ...customerSignin, anonymousCart }));
@@ -86,5 +105,5 @@ export default function useManageCustomer() {
     return dispatch(signupCustomer({ ...customerDraft, anonymousCart }));
   }
 
-  return { customer, login, signup, updatePersonalData, changePassword };
+  return { customer, login, signup, updatePersonalData, changePassword, deleteAddress };
 }
