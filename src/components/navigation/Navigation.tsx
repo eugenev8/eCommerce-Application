@@ -106,7 +106,7 @@ function BurgerMenu({ isMenuShown, closeMenu, isLoggedIn }: BurgerMenuProps) {
       <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
         Catalog
       </NavLinkWithCheck>
-      <NavLinkWithCheck id={styles.cartLink} to="/cart" onClick={closeMenu}>
+      <NavLinkWithCheck to="/basket" onClick={closeMenu}>
         <CartMenu />
       </NavLinkWithCheck>
       <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
@@ -162,7 +162,7 @@ export default function Navigation() {
           </div>
 
           <div className={`${styles.navbar__block}`}>
-            <NavLinkWithCheck id={styles.cartLink} to="/cart" onClick={closeMenu}>
+            <NavLinkWithCheck id={styles.cartLink} to="/basket" onClick={closeMenu}>
               <CartMenu />
             </NavLinkWithCheck>
             {isDataLoading && <LoaderSpinner />}
