@@ -1,0 +1,122 @@
+body{
+    overflow-x: hidden;
+}
+a {
+    font-weight: 300;
+    color: black;
+    text-decoration: none;
+}
+a:hover{
+    color: rgba(25, 111, 1, 0.798);
+    scale: 1.1;
+    font-weight: 600;
+    filter: contrast(1.8);
+    filter: brightness(1.7)
+}
+
+.description {
+    font-size: 1rem;
+    line-height: 1.25rem;
+    font-weight: 300;
+    letter-spacing: 0.05rem;
+
+}
+
+.team {
+    display: grid;
+    grid-template-columns: 1fr;
+
+    &__member {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border-bottom: 0.1rem solid black;
+        margin-top: 1rem;
+        padding-bottom: 1rem;
+        gap: 1rem;
+
+        &>div>img {
+            width: 9rem;
+            border-radius: 50%;
+            border: 0.15rem solid rgb(121, 255, 157);
+            &:hover{
+                cursor: pointer;
+                border: double 0.25rem transparent;
+                background-image: linear-gradient(white, white),
+                    linear-gradient(var(--angle), rgb(151, 255, 151), rgba(244, 55, 244, 0.458));
+                background-origin: border-box;
+                background-clip: content-box, border-box;
+                animation: 1.2s rotate linear infinite;
+            }
+        }
+
+        &>div>p,
+        &>p {
+            font-size: 1rem;
+            line-height: 1.25rem;
+            font-weight: 300;
+        }
+
+        &>p {
+            font-size: 1.4rem;
+            font-weight: 200;
+            letter-spacing: 0.05rem;
+        }
+
+        @media screen and (max-width: 600px) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__mentor {
+        justify-content: space-evenly;
+        justify-items: center;
+        align-content: space-evenly;
+        align-items: center;
+
+        &>div>img {
+            width: 9rem;
+            border-radius: 50%;
+            border: double 0.5rem transparent;
+            background-image: linear-gradient(white, white),
+                linear-gradient(var(--angle), rgb(151, 255, 151), rgba(244, 55, 244, 0.458));
+            background-origin: border-box;
+            background-clip: content-box, border-box;
+            animation: 1.2s rotate linear infinite;
+        }
+
+        @media screen and (max-width: 600px) {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr 1fr;
+        }
+    }
+}
+
+footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    justify-content: space-evenly;
+    justify-items: center;
+    align-content: space-evenly;
+    align-items: center;
+
+    &>a>img {
+        width: 6rem;
+    }
+
+    @media screen and (max-width: 600px) {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+    }
+}
+
+@keyframes rotate {
+    to {
+        --angle: 360deg;
+    }
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}

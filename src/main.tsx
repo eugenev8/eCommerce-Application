@@ -19,6 +19,7 @@ import ProductPage from './pages/product/ProductPage';
 import Crumb from './components/breadcrumbs/Crumb';
 import ROUTES_PATHS from './routesPaths';
 import BasketPage from './pages/basket/Basket';
+import AboutPage from './pages/about_us/AboutPage';
 
 const store = setupStore();
 
@@ -177,6 +178,13 @@ const router = createBrowserRouter([
         element: <BasketPage />,
         handle: {
           crumb: () => <Crumb key="Basket" title="Basket" path={ROUTES_PATHS.basket} />,
+        },
+      },
+      {
+        path: ROUTES_PATHS.about,
+        element: <AboutPage />,
+        handle: {
+          crumb: () => <Crumb key="About" title="About" path={ROUTES_PATHS.about} />,
         },
       },
     ],
