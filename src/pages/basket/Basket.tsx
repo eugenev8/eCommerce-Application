@@ -30,7 +30,10 @@ export default function BasketPage() {
 
   function lineItem(item: LineItem) {
     const itemPrice = item.price.value.centAmount / 10 ** item.price.value.fractionDigits;
-    const discountedPrice = item.discountedPricePerQuantity[0]
+    const discountedPrice = item.price.discounted
+      ? item.price.discounted.value.centAmount / 10 ** item.price.discounted.value.fractionDigits
+      : null;
+    const promoPrice = item.discountedPricePerQuantity[0]
       ? item.discountedPricePerQuantity[0].discountedPrice.value.centAmount /
         10 ** item.discountedPricePerQuantity[0].discountedPrice.value.fractionDigits
       : null;
@@ -68,10 +71,11 @@ export default function BasketPage() {
             />
           </div>
           <div className={styles.item__subtotal}>
-            <p className={discountedPrice ? styles.item__oldPrice : ''}>
+            <p className={discountedPrice || promoPrice ? styles.item__oldPrice : ''}>
               {`$${(itemPrice * item.quantity).toFixed(2)}`}
             </p>
-            {discountedPrice && <p>{`$${(discountedPrice * item.quantity).toFixed(2)}`}</p>}
+            {(promoPrice && <p>{`$${(promoPrice * item.quantity).toFixed(2)}`}</p>) ||
+              (discountedPrice && <p>{`$${(discountedPrice * item.quantity).toFixed(2)}`}</p>)}
           </div>
         </div>
         <button className={styles.item__delete} type="button" onClick={() => removeLineItem(item.id)}>
