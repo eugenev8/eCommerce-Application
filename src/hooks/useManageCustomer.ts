@@ -1,4 +1,4 @@
-import { Address, CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address, Customer, CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import { useAppDispatch, useAppSelector } from './redux';
 import {
   changeCustomerPassword,
@@ -87,6 +87,37 @@ export default function useManageCustomer() {
     return dispatch(changeCustomerPassword(myCustomerChangePasswordWithEmail));
   }
 
+  function isCustomer(value: string | Customer | undefined): value is Customer {
+    return !!(value && typeof value !== 'string');
+  }
+
+  async function createNewAddress(addressType: AddressType, newAddressData: Address) {
+    if (!customer) throw new Error('No customer!');
+
+    const newAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [{ action: 'addAddress', address: newAddressData }],
+    };
+
+    const payloadAction = await dispatch(updateCustomerData(newAddressUpdate));
+    if (!isCustomer(payloadAction.payload)) {
+      return Promise.reject();
+    }
+    const newVersionCustomer = payloadAction.payload;
+
+    const addedAddress = newVersionCustomer.addresses.at(-1);
+    const setAddressTypeUpdate: MyCustomerUpdate = {
+      version: newVersionCustomer.version,
+      actions: [],
+    };
+    if (addressType === AddressType.Billing) {
+      setAddressTypeUpdate.actions.push({ action: 'addBillingAddressId', addressId: addedAddress?.id });
+    } else {
+      setAddressTypeUpdate.actions.push({ action: 'addShippingAddressId', addressId: addedAddress?.id });
+    }
+    return dispatch(updateCustomerData(setAddressTypeUpdate));
+  }
+
   function updateAddressData(newAddressData: Address) {
     if (!customer) throw new Error('No customer!');
     const changeAddressUpdate: MyCustomerUpdate = {
@@ -151,6 +182,7 @@ export default function useManageCustomer() {
     login,
     updatePersonalData,
     changePassword,
+    createNewAddress,
     updateAddressData,
     setDefaultAddress,
     clearDefaultAddress,

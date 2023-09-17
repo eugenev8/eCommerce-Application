@@ -228,10 +228,8 @@ export default function UserAddresses() {
           {selectedAddAddress && (
             <CreateAddressForm
               addressType={selectedAddAddress}
-              version={customer.version}
               onSave={(isSuccess) => {
                 if (isSuccess) {
-                  toaster.showSuccess('Address added successfully!');
                   handleModalClose();
                 }
               }}
