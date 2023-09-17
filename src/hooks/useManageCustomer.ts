@@ -3,26 +3,18 @@ import { useAppDispatch, useAppSelector } from './redux';
 import {
   changeCustomerPassword,
   loginCustomer,
-  MyCustomerChangePasswordWithEmail,
   signupCustomer,
   updateCustomerData,
 } from '../reducers/ActionCreators/Customer';
 
 import useManageCart from './useManageCart';
-import { AddressType } from '../pages/user/adresses/types';
 
-export interface CustomerPersonalData {
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  dateOfBirth?: string;
-}
-
-export interface ChangePasswordData {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
+import {
+  AddressType,
+  ChangePasswordData,
+  CustomerPersonalData,
+  MyCustomerChangePasswordWithEmail,
+} from '../models/customerTypes';
 
 export default function useManageCustomer() {
   const { customer } = useAppSelector((state) => state.customerReducer);

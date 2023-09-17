@@ -7,9 +7,9 @@ import { AddressValidaiton } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import CountryInput from '../inputs/CountryInput';
-import { AddressType } from '../../../pages/user/adresses/types';
 import toaster from '../../../services/toaster';
 import useManageCustomer from '../../../hooks/useManageCustomer';
+import { AddressType } from '../../../models/customerTypes';
 
 interface AddAddressFormProps {
   addressType: AddressType;

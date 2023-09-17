@@ -82,7 +82,7 @@ export default function RegisterForm() {
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { signup: signupCustomer } = useManageCustomer();
 
   const handleChangeDefaultShippingAddress = () => {
@@ -131,11 +131,11 @@ export default function RegisterForm() {
   }
 
   const handleSubmit = (values: RegisterFormValues) => {
-    setIsSubmiting(true);
+    setIsSubmitting(true);
     const customerDraft = createCustomerDraft(values);
     signupCustomer(customerDraft)
       .then(() => toaster.showSuccess("Registration successful! You're now login in!"))
-      .finally(() => setIsSubmiting(false));
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -223,8 +223,8 @@ export default function RegisterForm() {
           </div>
 
           <Button
-            disabled={isSubmiting}
-            innerText={isSubmiting ? 'Submiting...' : 'Join us'}
+            disabled={isSubmitting}
+            innerText={isSubmitting ? 'Submitting...' : 'Join us'}
             styling="primary"
             type="submit"
             variant="default"

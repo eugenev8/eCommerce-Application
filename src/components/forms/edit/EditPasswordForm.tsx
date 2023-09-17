@@ -5,10 +5,9 @@ import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
 import PasswordInput from '../inputs/PasswordInput';
-
-// eslint-disable-next-line import/no-named-as-default
-import useManageCustomer, { ChangePasswordData } from '../../../hooks/useManageCustomer';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
+import { ChangePasswordData } from '../../../models/customerTypes';
 
 interface EditEmailFormProps {
   onSave: (updatedPassword: boolean) => void;

@@ -12,8 +12,8 @@ import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
 import Button from '../../../components/buttons/Buttons';
 import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
 import toaster from '../../../services/toaster';
-import { AddressType } from './types';
 import useManageCustomer from '../../../hooks/useManageCustomer';
+import { AddressType } from '../../../models/customerTypes';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,

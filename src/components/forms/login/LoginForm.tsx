@@ -21,15 +21,15 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm() {
-  const [isSubmiting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login: loginCustomer } = useManageCustomer();
 
   const handleSubmit = (values: CustomerSignin) => {
-    setIsSubmiting(true);
+    setIsSubmitting(true);
 
     loginCustomer(values)
       .then(() => toaster.showSuccess('Login successful!'))
-      .finally(() => setIsSubmiting(false));
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -49,12 +49,12 @@ function LoginForm() {
           <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
 
           <Button
-            innerText={isSubmiting ? 'Submiting...' : 'Sign In'}
+            innerText={isSubmitting ? 'Submitting...' : 'Sign In'}
             styling="primary"
             type="submit"
             variant="default"
             addedClass=""
-            disabled={isSubmiting}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>

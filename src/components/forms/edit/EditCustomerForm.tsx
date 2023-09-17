@@ -1,14 +1,13 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-
 import { useState } from 'react';
 import CommonInput from '../inputs/CommonInput';
 import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
-// eslint-disable-next-line import/no-named-as-default
-import useManageCustomer, { CustomerPersonalData } from '../../../hooks/useManageCustomer';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
+import { CustomerPersonalData } from '../../../models/customerTypes';
 
 interface EditCustomerFormProps {
   onSave: (isUpdated: boolean) => void;

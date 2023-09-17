@@ -1,11 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import {
-  Customer,
-  CustomerDraft,
-  CustomerSignin,
-  MyCustomerChangePassword,
-  MyCustomerUpdate,
-} from '@commercetools/platform-sdk';
+import { Customer, CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import { getCustomerData, getTokenFlowApiRoot } from '../../sdk/auth';
 import apiRoots from '../../sdk/apiRoots';
 import getErrorMessageForUser from '../../utils/getErrorMessageForUser';
@@ -14,6 +8,7 @@ import { authActions, AuthStatus } from '../AuthSlice';
 
 import { createCart, getCart } from './Cart';
 import { cartActions } from '../CartSlice';
+import { MyCustomerChangePasswordWithEmail } from '../../models/customerTypes';
 
 function eraseAnonymousDataInLocalStorage() {
   localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_ANONYMOUS_TOKENS);
@@ -71,10 +66,6 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
     }
   }
 );
-
-export interface MyCustomerChangePasswordWithEmail extends MyCustomerChangePassword {
-  email: string;
-}
 
 const changeCustomerPassword = createAsyncThunk<Customer, MyCustomerChangePasswordWithEmail, { rejectValue: string }>(
   'customer/changePassword',
