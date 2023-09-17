@@ -11,9 +11,11 @@ import FlexContainer from '../../components/containers/FlexContainer';
 import ROUTES_PATHS from '../../routesPaths';
 import QuantityInput from '../../components/forms/inputs/QuantityInput';
 import IconClose from '../../components/icons/IconClose';
+import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 
 export default function BasketPage() {
   const { cart, isCartLoading, clearCart, addLineItem, removeLineItem } = useManageCart();
+  const { getCategoriesPathByCategoryId } = useCategoriesMethods();
   const navigate = useNavigate();
   const lineItems: LineItem[] = cart?.lineItems ?? [];
 
@@ -42,7 +44,13 @@ export default function BasketPage() {
           </div>
           <div className={styles.item__productInfo}>
             <div className={styles.item__name}>
-              <Link to={`/product/${item.productKey}?variant=${item.variant?.id}`}>{item.name[`en-US`]}</Link>
+              <Link
+                to={`/product/${getCategoriesPathByCategoryId(item.custom?.fields?.categoryId)}/${
+                  item.productKey
+                }?variant=${item.variant?.id}`}
+              >
+                {item.name[`en-US`]}
+              </Link>
             </div>
             <div className={styles.item__attributes}>{itemAttributes}</div>
           </div>
@@ -52,7 +60,7 @@ export default function BasketPage() {
             <QuantityInput
               quantity={item.quantity}
               addItem={() => {
-                return addLineItem(item.productId, item.variant.id);
+                return addLineItem(item.productId, item.variant.id, item.custom?.fields?.categoryId);
               }}
               removeItem={() => {
                 return removeLineItem(item.id, 1);
