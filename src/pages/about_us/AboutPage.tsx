@@ -19,7 +19,9 @@ function AboutPage() {
               <img src={viktor} alt="Viktor" />
               <p>Viktor Trachenko </p>
               <p>role: Software Developer</p>
-              <a href="https://github.com/TvaExperts">Github</a>
+              <a className={styles.a} href="https://github.com/TvaExperts">
+                Github
+              </a>
               <p>
                 I am 34 years old, At one time, in addition to the institute, I completed postgraduate studies (without
                 defending a dissertation). During my studies, I acquired additional skills in teaching, organizing work
@@ -50,7 +52,9 @@ function AboutPage() {
               <img src={eugene} alt="Eugene" />
               <p>Zhenya Vasilev</p>
               <p>role: Software Developer</p>
-              <a href="http://github.com">Github</a>
+              <a className={styles.a} href="https://github.com/eugenev8">
+                Github
+              </a>
               <p>I am 25. Previously studied in the oil and gas industry. Now I am learning programming</p>
             </div>
             <p>
@@ -72,7 +76,7 @@ function AboutPage() {
               <img src={artem} alt="Artem" />
               <p>Artem Pleskunou</p>
               <p>role: Software Developer</p>
-              <a href="http://github.com">Github</a>
+              <a className={styles.a} href="https://github.com/mgg43err">Github</a>
               <p>
                 Hi there! I&apos;m 23 years old and a Frontend Developer. I have dedicated approximately 2 years to
                 intensive studying of JavaScript, HTML, and CSS. Throughout this period, I have gained proficiency in
@@ -87,13 +91,17 @@ function AboutPage() {
               <img src={kirill} alt="Kirill Mosk" />
               <p>Kirill Mosk</p>
               <p>role: Mentor</p>
-              <a href="https://github.com/moskkir">Github</a>
+              <a className={styles.a} href="https://github.com/moskkir">
+                Github
+              </a>
             </div>
             <div>
               <img src={andrei} alt="Andrei" />
               <p>Andrei Amelchenia</p>
               <p>role: Mentor</p>
-              <a href="https://github.com/andreyamelchenia">Github</a>
+              <a className={styles.a} href="https://github.com/andreyamelchenia">
+                Github
+              </a>
             </div>
           </div>
         </div>
@@ -126,10 +134,12 @@ function AboutPage() {
         </p>
       </section>
       <footer>
-        <a href="https://rs.school/">
+        <a className={styles.a} href="https://rs.school/">
           <img src={rsschool} alt="rsschool logo" />
         </a>
-        <a href="https://docs.app.rs.school/#/">Learn more about RS School</a>
+        <a className={styles.a} href="https://docs.app.rs.school/#/">
+          Learn more about RS School
+        </a>
         <p>© 2023 Syberian</p>
       </footer>
     </Wrapper>
