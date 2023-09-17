@@ -1,4 +1,5 @@
 import {
+  CartResourceIdentifier,
   MyCartAddDiscountCodeAction,
   MyCartAddLineItemAction,
   MyCartRemoveLineItemAction,
@@ -71,13 +72,8 @@ export default function useManageCart() {
   }
 
   async function addLineItem(productId: string, variantId: number, categoryId: string) {
-    try {
-      if (authStatus === AuthStatus.CredentialsFlow) {
-        await initAnonymousFlowWithEmptyCart();
-      }
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
+    if (authStatus === AuthStatus.CredentialsFlow) {
+      await initAnonymousFlowWithEmptyCart();
     }
 
     const customFieldDraft: CustomFieldsDraft = {
@@ -108,12 +104,21 @@ export default function useManageCart() {
     return sendUpdate([updateAction]);
   }
 
+  function getAnonCartResourceIdentifier() {
+    let anonCartResourceIdentifier: CartResourceIdentifier | undefined;
+    if (authStatus === AuthStatus.AnonymousFlow && cart) {
+      anonCartResourceIdentifier = { id: cart.id, key: cart.key, typeId: 'cart' };
+    }
+    return anonCartResourceIdentifier;
+  }
+
   return {
     cart,
     findItemInCart,
     addLineItem,
     removeLineItem,
     applyPromoCode,
+    getAnonCartResourceIdentifier,
     isCartLoading,
   };
 }

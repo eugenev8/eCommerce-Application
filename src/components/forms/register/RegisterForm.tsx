@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 
-import styles from './RegisterForm.module.scss'; // Import the module SCSS styles
+import styles from './RegisterForm.module.scss';
 import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
 import AddressInputContainer from '../inputs/AddressInput';
@@ -19,7 +19,7 @@ import Button from '../../buttons/Buttons';
 import { useAppDispatch } from '../../../hooks/redux';
 import { signupCustomer } from '../../../reducers/ActionCreators/Customer';
 import CheckboxInput from '../inputs/CheckboxInput';
-import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
+import useManageCart from '../../../hooks/useManageCart';
 import toaster from '../../../services/toaster';
 
 interface RegisterFormValues {
@@ -86,7 +86,8 @@ export default function RegisterForm() {
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const anonymousCart = useCreateAnonymousCartIdentifier();
+  const { getAnonCartResourceIdentifier } = useManageCart();
+
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
       setIsDefaultBillingAddress(!isDefaultShippingAddress);
@@ -127,7 +128,7 @@ export default function RegisterForm() {
       lastName: values.lastName,
       dateOfBirth: values.dateOfBirth,
       ...newCustomerAddresses,
-      anonymousCart,
+      anonymousCart: getAnonCartResourceIdentifier(),
     };
 
     return customerDraft;
