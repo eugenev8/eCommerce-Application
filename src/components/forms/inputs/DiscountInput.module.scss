@@ -1,6 +1,6 @@
 @use 'src/common/styles/colors.module.scss' as *;
 
-.dicountInput {
+.discountInput {
   flex: 1 1 100%;
 
   padding: 3% 1%;
@@ -42,6 +42,11 @@
   display: flex;
 }
 
+.discountInput:placeholder-shown ~ .discountButton {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 .discountButton {
   background-color: transparent;
 
@@ -52,7 +57,16 @@
 
   transition: all 250ms ease;
 
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+
   &:hover {
-    border-bottom: 2px solid $color-7;
+    color: $color-3;
+    border-bottom: 2px solid $color-3;
   }
+}
+
+.cancelDiscount {
+  padding: 7px 20px;
 }

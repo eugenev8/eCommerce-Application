@@ -1,6 +1,8 @@
 @use 'src/common/styles/colors.module.scss' as *;
 
 .cartContainer {
+  position: relative;
+
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
@@ -20,12 +22,16 @@
 }
 
 .summary {
+  position: sticky;
+  top: 80px;
+
   display: flex;
   flex-direction: column;
 
   flex: 1 1 40%;
 
   min-width: 200px;
+  height: fit-content;
 }
 
 .cart__item {
@@ -40,6 +46,8 @@
   padding: 0 0 2rem;
 
   border-bottom: 1px solid $color-6;
+
+  position: relative;
 }
 
 .item__info {
@@ -102,6 +110,21 @@
   align-items: center;
 
   gap: 3rem;
+
+  .item__subtotal {
+    font-weight: 500;
+
+    p {
+      margin: 0.3rem;
+    }
+  }
+
+  .item__oldPrice {
+    font-size: 0.7rem;
+    text-decoration: line-through;
+
+    opacity: 0.5;
+  }
 }
 
 .orderInfo {
@@ -123,4 +146,55 @@
   display: flex;
 
   margin: 1rem 0;
+}
+
+.discountCode__message {
+  font-size: 0.8rem;
+}
+
+.waiting {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.item__delete {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 25px;
+  height: 25px;
+
+  border: 1px solid $color-5;
+  border-radius: 50%;
+
+  background-color: #fff;
+  color: $color-5;
+
+  font-weight: 100;
+
+  cursor: pointer;
+
+  transition: all 250ms ease;
+
+  svg {
+    path {
+      transition: all 250ms ease;
+    }
+  }
+
+  &:hover {
+    background-color: $color-3;
+    border: 1px solid $color-3;
+
+    svg {
+      path {
+        fill: #fff;
+      }
+    }
+  }
 }

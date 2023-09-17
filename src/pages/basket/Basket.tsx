@@ -10,14 +10,15 @@ import Button from '../../components/buttons/Buttons';
 import FlexContainer from '../../components/containers/FlexContainer';
 import ROUTES_PATHS from '../../routesPaths';
 import QuantityInput from '../../components/forms/inputs/QuantityInput';
+import IconClose from '../../components/icons/IconClose';
 
 export default function BasketPage() {
-  const { cart } = useManageCart();
+  const { cart, isCartLoading, clearCart, addLineItem, removeLineItem } = useManageCart();
   const navigate = useNavigate();
   const lineItems: LineItem[] = cart?.lineItems ?? [];
 
-  const clearCart = () => {
-    // Shoud clear cart
+  const clearCurrentCart = () => {
+    return clearCart();
   };
 
   let totalPrice = '0';
@@ -27,6 +28,10 @@ export default function BasketPage() {
 
   function lineItem(item: LineItem) {
     const itemPrice = item.price.value.centAmount / 10 ** item.price.value.fractionDigits;
+    const discountedPrice = item.discountedPricePerQuantity[0]
+      ? item.discountedPricePerQuantity[0].discountedPrice.value.centAmount /
+        10 ** item.discountedPricePerQuantity[0].discountedPrice.value.fractionDigits
+      : null;
     const itemAttributes = item.variant?.attributes?.map((a) => <p key={a.name}>{`${a.name}: ${a.value}`}</p>);
 
     return (
@@ -44,10 +49,26 @@ export default function BasketPage() {
         </div>
         <div className={styles.item_inCartInfo}>
           <div className={styles.item__quantity}>
-            <QuantityInput quantity={item.quantity} addItem={() => {}} removeItem={() => {}} />
+            <QuantityInput
+              quantity={item.quantity}
+              addItem={() => {
+                return addLineItem(item.productId, item.variant.id);
+              }}
+              removeItem={() => {
+                return removeLineItem(item.id, 1);
+              }}
+            />
           </div>
-          <div className={styles.item__subtotal}>{`$${(itemPrice * item.quantity).toFixed(2)}`}</div>
+          <div className={styles.item__subtotal}>
+            <p className={discountedPrice ? styles.item__oldPrice : ''}>
+              {`$${(itemPrice * item.quantity).toFixed(2)}`}
+            </p>
+            {discountedPrice && <p>{`$${(discountedPrice * item.quantity).toFixed(2)}`}</p>}
+          </div>
         </div>
+        <button className={styles.item__delete} type="button" onClick={() => removeLineItem(item.id)}>
+          <IconClose />
+        </button>
       </div>
     );
   }
@@ -76,7 +97,7 @@ export default function BasketPage() {
 
   return (
     <AnimatedContainer>
-      <Wrapper>
+      <Wrapper className={isCartLoading ? styles.waiting : ''}>
         <h2>Shopping Cart</h2>
         <FlexContainer style={{ gap: '1rem' }}>
           <Button
@@ -86,7 +107,7 @@ export default function BasketPage() {
             type="button"
             variant="default"
             style={{ margin: '1rem 0', padding: '0.5rem 1rem', minWidth: 'auto', fontSize: '.9rem' }}
-            onClick={clearCart}
+            onClick={clearCurrentCart}
           />
           <Button
             addedClass=""
@@ -108,6 +129,7 @@ export default function BasketPage() {
               <div className={styles.promocode}>
                 <DiscountInput />
               </div>
+              {!!cart.discountCodes.length && <p className={styles.discountCode__message}>Discount code applied</p>}
               <div className={styles.orderInfo}>
                 <div className={styles.orderInfo__line}>
                   <p>Items quantity</p>

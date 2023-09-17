@@ -76,8 +76,7 @@ export default function useManageCart() {
         await initAnonymousFlowWithEmptyCart();
       }
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log(e);
+      return Promise.reject(e);
     }
 
     const customFieldDraft: CustomFieldsDraft = {
@@ -91,25 +90,30 @@ export default function useManageCart() {
       variantId,
       custom: customFieldDraft,
     };
-    return sendUpdate([updateAction]);
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
   }
 
-  function removeLineItem(lineItemId: string, quantity?: number) {
+  async function removeLineItem(lineItemId: string, quantity?: number) {
     const updateAction: MyCartRemoveLineItemAction = { action: 'removeLineItem', lineItemId, quantity };
 
-    return sendUpdate([updateAction]);
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
+  }
+  async function clearCart() {
+    const newCart = await dispatch(createCart(getCurrentApiRoot()));
+    return newCart.meta.requestStatus === 'fulfilled';
   }
 
-  function applyPromoCode(code: string) {
+  async function applyPromoCode(code: string) {
     const updateAction: MyCartAddDiscountCodeAction = {
       action: 'addDiscountCode',
       code,
     };
-    return sendUpdate([updateAction]);
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
   }
 
   return {
     cart,
+    clearCart,
     findItemInCart,
     addLineItem,
     removeLineItem,
