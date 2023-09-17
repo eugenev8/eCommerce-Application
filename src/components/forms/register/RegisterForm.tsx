@@ -16,10 +16,8 @@ import {
   PasswordValidation,
 } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
-import { useAppDispatch } from '../../../hooks/redux';
-import { signupCustomer } from '../../../reducers/ActionCreators/Customer';
 import CheckboxInput from '../inputs/CheckboxInput';
-import useManageCart from '../../../hooks/useManageCart';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
 
 interface RegisterFormValues {
@@ -81,12 +79,11 @@ const validationSchemaSingleAddress = Yup.object({
 });
 
 export default function RegisterForm() {
-  const dispatch = useAppDispatch();
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const { getAnonCartResourceIdentifier } = useManageCart();
+  const { signup: signupCustomer } = useManageCustomer();
 
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
@@ -128,7 +125,6 @@ export default function RegisterForm() {
       lastName: values.lastName,
       dateOfBirth: values.dateOfBirth,
       ...newCustomerAddresses,
-      anonymousCart: getAnonCartResourceIdentifier(),
     };
 
     return customerDraft;
@@ -137,12 +133,8 @@ export default function RegisterForm() {
   const handleSubmit = (values: RegisterFormValues) => {
     setIsSubmiting(true);
     const customerDraft = createCustomerDraft(values);
-    dispatch(signupCustomer(customerDraft))
-      .then((data) => {
-        if (data.type.includes('fulfilled')) {
-          toaster.showSuccess("Registration successful! You're now login in!");
-        }
-      })
+    signupCustomer(customerDraft)
+      .then(() => toaster.showSuccess("Registration successful! You're now login in!"))
       .finally(() => setIsSubmiting(false));
   };
 

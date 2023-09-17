@@ -2,15 +2,12 @@ import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { CustomerSignin } from '@commercetools/platform-sdk';
-
 import styles from './LoginForm.module.scss';
 import PasswordInput from '../inputs/PasswordInput';
 import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
-import { useAppDispatch } from '../../../hooks/redux';
-import { loginCustomer } from '../../../reducers/ActionCreators/Customer';
-import useManageCart from '../../../hooks/useManageCart';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
 
 const initialValues: CustomerSignin = {
@@ -25,21 +22,14 @@ const validationSchema = Yup.object({
 
 function LoginForm() {
   const [isSubmiting, setIsSubmiting] = useState(false);
-  const dispatch = useAppDispatch();
-  const { getAnonCartResourceIdentifier } = useManageCart();
+  const { login: loginCustomer } = useManageCustomer();
 
   const handleSubmit = (values: CustomerSignin) => {
     setIsSubmiting(true);
 
-    dispatch(loginCustomer({ ...values, anonymousCart: getAnonCartResourceIdentifier() }))
-      .then((data) => {
-        if (data.type.includes('fulfilled')) {
-          toaster.showSuccess('Login successful!');
-        }
-      })
-      .finally(() => {
-        setIsSubmiting(false);
-      });
+    loginCustomer(values)
+      .then(() => toaster.showSuccess('Login successful!'))
+      .finally(() => setIsSubmiting(false));
   };
 
   return (
