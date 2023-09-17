@@ -1,6 +1,12 @@
 import { CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import { useAppDispatch, useAppSelector } from './redux';
-import { loginCustomer, signupCustomer, updateCustomerData } from '../reducers/ActionCreators/Customer';
+import {
+  changeCustomerPassword,
+  loginCustomer,
+  MyCustomerChangePasswordWithEmail,
+  signupCustomer,
+  updateCustomerData,
+} from '../reducers/ActionCreators/Customer';
 
 import useManageCart from './useManageCart';
 
@@ -9,6 +15,12 @@ export interface CustomerPersonalData {
   firstName?: string;
   lastName?: string;
   dateOfBirth?: string;
+}
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
 }
 
 export default function useManageCustomer() {
@@ -54,6 +66,16 @@ export default function useManageCustomer() {
     return dispatch(updateCustomerData(updates));
   }
 
+  function changePassword(changePasswordData: ChangePasswordData) {
+    if (!customer) throw new Error('No customer!');
+    const myCustomerChangePasswordWithEmail: MyCustomerChangePasswordWithEmail = {
+      ...changePasswordData,
+      email: customer.email,
+      version: customer.version,
+    };
+    return dispatch(changeCustomerPassword(myCustomerChangePasswordWithEmail));
+  }
+
   function login(customerSignin: CustomerSignin) {
     const anonymousCart = getAnonCartResourceIdentifier();
     return dispatch(loginCustomer({ ...customerSignin, anonymousCart }));
@@ -64,5 +86,5 @@ export default function useManageCustomer() {
     return dispatch(signupCustomer({ ...customerDraft, anonymousCart }));
   }
 
-  return { customer, login, signup, updatePersonalData };
+  return { customer, login, signup, updatePersonalData, changePassword };
 }

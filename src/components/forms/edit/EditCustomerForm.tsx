@@ -6,6 +6,7 @@ import CommonInput from '../inputs/CommonInput';
 import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
+// eslint-disable-next-line import/no-named-as-default
 import useManageCustomer, { CustomerPersonalData } from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
 

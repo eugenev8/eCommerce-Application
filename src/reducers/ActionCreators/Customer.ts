@@ -72,7 +72,7 @@ const signupCustomer = createAsyncThunk<Customer, CustomerDraft, { rejectValue: 
   }
 );
 
-interface MyCustomerChangePasswordWithEmail extends MyCustomerChangePassword {
+export interface MyCustomerChangePasswordWithEmail extends MyCustomerChangePassword {
   email: string;
 }
 
