@@ -4,6 +4,7 @@ import {
   MyCartRemoveLineItemAction,
   MyCartUpdateAction,
 } from '@commercetools/platform-sdk';
+import { CustomFieldsDraft } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/type';
 import { MyCartUpdateAdvanced, createCart, updateCart } from '../reducers/ActionCreators/Cart';
 import { authActions, AuthStatus } from '../reducers/AuthSlice';
 import apiRoots from '../sdk/apiRoots';
@@ -69,7 +70,7 @@ export default function useManageCart() {
     return dispatch(updateCart(updates));
   }
 
-  async function addLineItem(productId: string, variantId: number) {
+  async function addLineItem(productId: string, variantId: number, categoryId: string) {
     try {
       if (authStatus === AuthStatus.CredentialsFlow) {
         await initAnonymousFlowWithEmptyCart();
@@ -79,10 +80,16 @@ export default function useManageCart() {
       console.log(e);
     }
 
+    const customFieldDraft: CustomFieldsDraft = {
+      type: { typeId: 'type', key: 'lineitemCategoryId' },
+      fields: { categoryId },
+    };
+
     const updateAction: MyCartAddLineItemAction = {
       action: 'addLineItem',
       productId,
       variantId,
+      custom: customFieldDraft,
     };
     return sendUpdate([updateAction]);
   }
