@@ -1,17 +1,16 @@
 import Modal from 'react-modal';
 import { useState } from 'react';
 
-import { Address, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address } from '@commercetools/platform-sdk';
 
 import FlexContainer from '../../../components/containers/FlexContainer';
 import UserAddressInfo from '../../../components/userInfo/adress/UserAddress';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useAppSelector } from '../../../hooks/redux';
 
 import styles from './UserAddresses.module.scss';
 import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
 import Button from '../../../components/buttons/Buttons';
 import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
-import { updateCustomerData } from '../../../reducers/ActionCreators/Customer';
 import toaster from '../../../services/toaster';
 import { AddressType } from './types';
 import useManageCustomer from '../../../hooks/useManageCustomer';
@@ -47,8 +46,8 @@ function renderAddresses(
   addressesArray: Address[],
   defaultAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
-  handleSetDefaultAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address, addressType: AddressType) => void,
+  handleSetDefaultAddress: (addressId: string, addressType: AddressType) => void,
+  handleDeleteAddress: (addressId: string, addressType: AddressType) => void,
   handleClearDefaultAddress: (addressType: AddressType) => void
 ) {
   return (
@@ -76,7 +75,7 @@ function renderAddresses(
                   <button
                     type="button"
                     className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefaultAddress(address, addressType)}
+                    onClick={() => handleSetDefaultAddress(address.id!, addressType)}
                   >
                     Set as default
                   </button>
@@ -88,7 +87,7 @@ function renderAddresses(
                 <button
                   type="button"
                   className={`${styles.fakeLink}`}
-                  onClick={() => handleDeleteAddress(address, addressType)}
+                  onClick={() => handleDeleteAddress(address.id!, addressType)}
                 >
                   Delete address
                 </button>
@@ -106,8 +105,7 @@ export default function UserAddresses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedAddAddress, setSelectedAddAddress] = useState<AddressType | null>(null);
-  const dispatch = useAppDispatch();
-  const { deleteAddress } = useManageCustomer();
+  const { deleteAddress, clearDefaultAddress, setDefaultAddress } = useManageCustomer();
 
   if (!customer) {
     return <h2>No customer</h2>;
@@ -134,27 +132,16 @@ export default function UserAddresses() {
     setIsModalOpen(true);
   };
 
-  const handleSetDefaultAddress = (address: Address, addressType: AddressType) => {
-    const setDefaultAddressUpdate: MyCustomerUpdate = {
-      version: customer.version,
-      actions: [],
-    };
-    if (addressType === AddressType.Shipping) {
-      setDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId: address.id });
-    } else {
-      setDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: address.id });
-    }
-    dispatch(updateCustomerData(setDefaultAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        toaster.showError('Something went wrong.');
-        return;
+  const handleSetDefaultAddress = (addressId: string, addressType: AddressType) => {
+    setDefaultAddress(addressId, addressType).then((data) => {
+      if (data.type.includes('fulfilled')) {
+        toaster.showSuccess('Address is set as default successfully!');
       }
-      toaster.showSuccess('Address is set as default successfully!');
     });
   };
 
-  const handleDeleteAddress = (address: Address, addressType: AddressType) => {
-    deleteAddress(address, addressType)
+  const handleDeleteAddress = (addressId: string, addressType: AddressType) => {
+    deleteAddress(addressId, addressType)
       .then((data) => {
         if (data.type.includes('fulfilled')) {
           toaster.showSuccess('Address deleted!');
@@ -164,23 +151,10 @@ export default function UserAddresses() {
   };
 
   const handleClearDefaultAddress = (addressType: AddressType) => {
-    const clearDefaultAddressUpdate: MyCustomerUpdate = {
-      version: customer.version,
-      actions: [],
-    };
-    if (addressType === AddressType.Shipping) {
-      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId: undefined });
-    } else {
-      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: undefined });
-    }
-
-    dispatch(updateCustomerData(clearDefaultAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        toaster.showError('Something went wrong.');
-
-        return;
+    clearDefaultAddress(addressType).then((data) => {
+      if (data.type.includes('fulfilled')) {
+        toaster.showSuccess('Default address cleared!');
       }
-      toaster.showSuccess('Default address cleared!');
     });
   };
 

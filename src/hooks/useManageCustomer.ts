@@ -1,4 +1,4 @@
-import { Address, CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import { useAppDispatch, useAppSelector } from './redux';
 import {
   changeCustomerPassword,
@@ -28,6 +28,16 @@ export default function useManageCustomer() {
   const { customer } = useAppSelector((state) => state.customerReducer);
   const dispatch = useAppDispatch();
   const { getAnonCartResourceIdentifier } = useManageCart();
+
+  function signup(customerDraft: CustomerDraft) {
+    const anonymousCart = getAnonCartResourceIdentifier();
+    return dispatch(signupCustomer({ ...customerDraft, anonymousCart }));
+  }
+
+  function login(customerSignin: CustomerSignin) {
+    const anonymousCart = getAnonCartResourceIdentifier();
+    return dispatch(loginCustomer({ ...customerSignin, anonymousCart }));
+  }
 
   function createCustomerPersonalDataUpdate(values: CustomerPersonalData) {
     if (!customer) throw new Error('No customer!');
@@ -77,7 +87,38 @@ export default function useManageCustomer() {
     return dispatch(changeCustomerPassword(myCustomerChangePasswordWithEmail));
   }
 
-  function deleteAddress(address: Address, addressType: AddressType) {
+  function setDefaultAddress(addressId: string, addressType: AddressType) {
+    if (!customer) throw new Error('No customer!');
+    const setDefaultAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [],
+    };
+    if (addressType === AddressType.Shipping) {
+      setDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId });
+    } else {
+      setDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId });
+    }
+    return dispatch(updateCustomerData(setDefaultAddressUpdate));
+  }
+
+  function clearDefaultAddress(addressType: AddressType) {
+    if (!customer) throw new Error('No customer!');
+
+    const clearDefaultAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [],
+    };
+
+    if (addressType === AddressType.Shipping) {
+      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress' });
+    } else {
+      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress' });
+    }
+
+    return dispatch(updateCustomerData(clearDefaultAddressUpdate));
+  }
+
+  function deleteAddress(addressId: string, addressType: AddressType) {
     if (!customer) throw new Error('No customer!');
     if (addressType === AddressType.Shipping) {
       if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
@@ -89,21 +130,20 @@ export default function useManageCustomer() {
 
     const deleteAddressUpdate: MyCustomerUpdate = {
       version: customer.version,
-      actions: [{ action: 'removeAddress', addressId: address.id }],
+      actions: [{ action: 'removeAddress', addressId }],
     };
 
     return dispatch(updateCustomerData(deleteAddressUpdate));
   }
 
-  function login(customerSignin: CustomerSignin) {
-    const anonymousCart = getAnonCartResourceIdentifier();
-    return dispatch(loginCustomer({ ...customerSignin, anonymousCart }));
-  }
-
-  function signup(customerDraft: CustomerDraft) {
-    const anonymousCart = getAnonCartResourceIdentifier();
-    return dispatch(signupCustomer({ ...customerDraft, anonymousCart }));
-  }
-
-  return { customer, login, signup, updatePersonalData, changePassword, deleteAddress };
+  return {
+    customer,
+    signup,
+    login,
+    updatePersonalData,
+    changePassword,
+    setDefaultAddress,
+    clearDefaultAddress,
+    deleteAddress,
+  };
 }
