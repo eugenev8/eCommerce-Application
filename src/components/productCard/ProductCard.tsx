@@ -84,7 +84,7 @@ export default function ProductCard({ productProjection, variantID, type }: Prod
             type="button"
             variant="default"
             onClick={() => {
-              addLineItem(productProjection.id, variant.id);
+              addLineItem(productProjection.id, variant.id, productProjection.categories[0].id);
             }}
             disabled={isCartLoading}
           />

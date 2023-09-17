@@ -177,6 +177,7 @@ export default function ProductPage() {
 
   const { description } = product.masterData.current;
   const formattedDescription = (description && description['en-US']) || 'No description';
+  const categoryId = product.masterData.current.categories[0].id;
 
   const renderAddToCart = () => {
     if (!lineItem) {
@@ -188,7 +189,7 @@ export default function ProductPage() {
           type="button"
           variant="default"
           onClick={() => {
-            addLineItem(product.id, selectedVariant.id);
+            addLineItem(product.id, selectedVariant.id, categoryId);
           }}
           disabled={isCartLoading}
         />
