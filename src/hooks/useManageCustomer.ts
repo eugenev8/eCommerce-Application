@@ -1,4 +1,4 @@
-import { CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address, CustomerDraft, CustomerSignin, MyCustomerUpdate } from '@commercetools/platform-sdk';
 import { useAppDispatch, useAppSelector } from './redux';
 import {
   changeCustomerPassword,
@@ -87,6 +87,15 @@ export default function useManageCustomer() {
     return dispatch(changeCustomerPassword(myCustomerChangePasswordWithEmail));
   }
 
+  function updateAddressData(newAddressData: Address) {
+    if (!customer) throw new Error('No customer!');
+    const changeAddressUpdate: MyCustomerUpdate = {
+      version: customer.version,
+      actions: [{ action: 'changeAddress', address: newAddressData, addressId: newAddressData.id }],
+    };
+    return dispatch(updateCustomerData(changeAddressUpdate));
+  }
+
   function setDefaultAddress(addressId: string, addressType: AddressType) {
     if (!customer) throw new Error('No customer!');
     const setDefaultAddressUpdate: MyCustomerUpdate = {
@@ -142,6 +151,7 @@ export default function useManageCustomer() {
     login,
     updatePersonalData,
     changePassword,
+    updateAddressData,
     setDefaultAddress,
     clearDefaultAddress,
     deleteAddress,

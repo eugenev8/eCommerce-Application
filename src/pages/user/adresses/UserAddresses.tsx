@@ -165,12 +165,8 @@ export default function UserAddresses() {
     setIsModalOpen(false);
   };
 
-  const hasBillingAddress = !!customer.billingAddressIds?.length;
-
   const defaultShippingAddress = customer.addresses.find((address) => address.id === customer.defaultShippingAddressId);
-  const defaultBillingAddress = hasBillingAddress
-    ? customer.addresses.find((address) => address.id === customer.defaultBillingAddressId)
-    : undefined;
+  const defaultBillingAddress = customer.addresses.find((address) => address.id === customer.defaultBillingAddressId);
 
   return (
     <>
@@ -221,10 +217,8 @@ export default function UserAddresses() {
           {selectedAddress && (
             <EditAddressForm
               address={selectedAddress}
-              version={customer.version}
               onSave={(isUpdated) => {
                 if (isUpdated) {
-                  toaster.showSuccess('Address updated successfully!');
                   handleModalClose();
                 }
               }}
