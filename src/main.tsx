@@ -18,6 +18,7 @@ import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
 import Crumb from './components/breadcrumbs/Crumb';
 import ROUTES_PATHS from './routesPaths';
+import BasketPage from './pages/basket/Basket';
 
 const store = setupStore();
 
@@ -170,6 +171,13 @@ const router = createBrowserRouter([
             element: <UserAddresses />,
           },
         ],
+      },
+      {
+        path: ROUTES_PATHS.basket,
+        element: <BasketPage />,
+        handle: {
+          crumb: () => <Crumb key="Basket" title="Basket" path={ROUTES_PATHS.basket} />,
+        },
       },
     ],
   },
