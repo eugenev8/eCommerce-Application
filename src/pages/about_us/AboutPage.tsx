@@ -76,7 +76,9 @@ function AboutPage() {
               <img src={artem} alt="Artem" />
               <p>Artem Pleskunou</p>
               <p>role: Software Developer</p>
-              <a className={styles.a} href="https://github.com/mgg43err">Github</a>
+              <a className={styles.a} href="https://github.com/mgg43err">
+                Github
+              </a>
               <p>
                 Hi there! I&apos;m 23 years old and a Frontend Developer. I have dedicated approximately 2 years to
                 intensive studying of JavaScript, HTML, and CSS. Throughout this period, I have gained proficiency in
