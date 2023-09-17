@@ -4,7 +4,7 @@ import useManageCart from '../../../hooks/useManageCart';
 import Button from '../../buttons/Buttons';
 
 export default function DiscountInput() {
-  const { cart, applyPromoCode } = useManageCart();
+  const { cart, applyPromoCode, removePromoCode } = useManageCart();
   const [promocode, setPromocode] = useState('');
 
   const isPromocodeActive = !!cart?.discountCodes.length;
@@ -28,6 +28,7 @@ export default function DiscountInput() {
         styling="tertiary"
         type="button"
         variant="default"
+        onClick={removePromoCode}
       />
     );
   }

@@ -1,6 +1,7 @@
 import {
   MyCartAddDiscountCodeAction,
   MyCartAddLineItemAction,
+  MyCartRemoveDiscountCodeAction,
   MyCartRemoveLineItemAction,
   MyCartUpdateAction,
 } from '@commercetools/platform-sdk';
@@ -111,6 +112,17 @@ export default function useManageCart() {
     return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
   }
 
+  async function removePromoCode() {
+    if (!cart || !cart?.discountCodes[0].discountCode.id) {
+      return false;
+    }
+    const updateAction: MyCartRemoveDiscountCodeAction = {
+      action: 'removeDiscountCode',
+      discountCode: { typeId: 'discount-code', id: cart?.discountCodes[0].discountCode.id },
+    };
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
+  }
+
   return {
     cart,
     clearCart,
@@ -118,6 +130,7 @@ export default function useManageCart() {
     addLineItem,
     removeLineItem,
     applyPromoCode,
+    removePromoCode,
     isCartLoading,
   };
 }

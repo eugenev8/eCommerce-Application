@@ -1,5 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { LineItem } from '@commercetools/platform-sdk';
+import {
+  CentPrecisionMoney,
+  DiscountedLineItemPrice,
+  DiscountedPrice,
+  LineItem,
+  Price,
+} from '@commercetools/platform-sdk';
 import Wrapper from '../../components/wrapper/Wrapper';
 import styles from './basket.module.scss';
 import useManageCart from '../../hooks/useManageCart';
@@ -12,6 +18,19 @@ import ROUTES_PATHS from '../../routesPaths';
 import QuantityInput from '../../components/forms/inputs/QuantityInput';
 import IconClose from '../../components/icons/IconClose';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
+import { NAME_LOCALE } from '../../sdk/types';
+
+function getPrice(priceData: Price | DiscountedPrice | DiscountedLineItemPrice) {
+  return priceData.value.centAmount / 10 ** priceData.value.fractionDigits;
+}
+
+function getPriceStr(priceData: CentPrecisionMoney) {
+  return (priceData.centAmount / 10 ** priceData.fractionDigits).toFixed(priceData.fractionDigits);
+}
+
+function countSumStr(price: number, quantity: number, fractionDigits = 2) {
+  return (price * quantity).toFixed(fractionDigits);
+}
 
 export default function BasketPage() {
   const { cart, isCartLoading, clearCart, addLineItem, removeLineItem } = useManageCart();
@@ -24,18 +43,22 @@ export default function BasketPage() {
   };
 
   let totalPrice = '0';
+  let oldPrice = '';
+  if (cart?.discountCodes.length) {
+    oldPrice = cart.lineItems
+      .reduce((sum, lineitem) => {
+        return sum + getPrice(lineitem.price);
+      }, 0)
+      .toFixed(2);
+  }
   if (cart && cart.totalPrice) {
-    totalPrice = (cart.totalPrice.centAmount / 100).toFixed(cart.totalPrice.fractionDigits);
+    totalPrice = getPriceStr(cart.totalPrice);
   }
 
   function lineItem(item: LineItem) {
-    const itemPrice = item.price.value.centAmount / 10 ** item.price.value.fractionDigits;
-    const discountedPrice = item.price.discounted
-      ? item.price.discounted.value.centAmount / 10 ** item.price.discounted.value.fractionDigits
-      : null;
+    const discountedPrice = item.price.discounted ? getPrice(item.price.discounted) : null;
     const promoPrice = item.discountedPricePerQuantity[0]
-      ? item.discountedPricePerQuantity[0].discountedPrice.value.centAmount /
-        10 ** item.discountedPricePerQuantity[0].discountedPrice.value.fractionDigits
+      ? getPrice(item.discountedPricePerQuantity[0].discountedPrice)
       : null;
     const itemAttributes = item.variant?.attributes?.map((a) => <p key={a.name}>{`${a.name}: ${a.value}`}</p>);
 
@@ -43,16 +66,16 @@ export default function BasketPage() {
       <div key={item.id} className={styles.cart__item}>
         <div className={styles.item__info}>
           <div className={styles.item__image}>
-            <img src={item?.variant?.images?.[0]?.url} alt={item.name[`en-US`]} />
+            <img src={item?.variant?.images?.[0]?.url} alt={item.name[NAME_LOCALE]} />
           </div>
           <div className={styles.item__productInfo}>
             <div className={styles.item__name}>
               <Link
-                to={`/product/${getCategoriesPathByCategoryId(item.custom?.fields?.categoryId)}/${
+                to={`${ROUTES_PATHS.product}/${getCategoriesPathByCategoryId(item.custom?.fields?.categoryId)}/${
                   item.productKey
                 }?variant=${item.variant?.id}`}
               >
-                {item.name[`en-US`]}
+                {item.name[NAME_LOCALE]}
               </Link>
             </div>
             <div className={styles.item__attributes}>{itemAttributes}</div>
@@ -72,10 +95,10 @@ export default function BasketPage() {
           </div>
           <div className={styles.item__subtotal}>
             <p className={discountedPrice || promoPrice ? styles.item__oldPrice : ''}>
-              {`$${(itemPrice * item.quantity).toFixed(2)}`}
+              {`$${countSumStr(getPrice(item.price), item.quantity)}`}
             </p>
-            {(promoPrice && <p>{`$${(promoPrice * item.quantity).toFixed(2)}`}</p>) ||
-              (discountedPrice && <p>{`$${(discountedPrice * item.quantity).toFixed(2)}`}</p>)}
+            {(promoPrice && <p>{`$${countSumStr(promoPrice, item.quantity)}`}</p>) ||
+              (discountedPrice && <p>{`$${countSumStr(discountedPrice, item.quantity)}`}</p>)}
           </div>
         </div>
         <button className={styles.item__delete} type="button" onClick={() => removeLineItem(item.id)}>
@@ -149,7 +172,10 @@ export default function BasketPage() {
                 </div>
                 <div className={styles.orderInfo__line}>
                   <p>Total price</p>
-                  <p>${totalPrice}</p>
+                  <div className={styles.orderInfo__prices}>
+                    {oldPrice && <p className={styles.orderInfo__oldPrice}>${oldPrice}</p>}
+                    <p>${totalPrice}</p>
+                  </div>
                 </div>
               </div>
               <Button
