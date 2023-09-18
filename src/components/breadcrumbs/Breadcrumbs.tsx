@@ -1,4 +1,3 @@
-/* eslint-disable react/no-array-index-key */
 import { Params, useMatches } from 'react-router-dom';
 import React from 'react';
 import FlexContainer from '../containers/FlexContainer';
@@ -33,7 +32,7 @@ export default function Breadcrumbs() {
     <Wrapper style={{ height: '40px', margin: '20px auto' }}>
       <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%' }}>
         {crumbs.map((crumb, index) => (
-          <FlexContainer key={index} style={{ gap: '20px', alignItems: 'center' }}>
+          <FlexContainer key={crumb.path + crumb.title} style={{ gap: '20px', alignItems: 'center' }}>
             {index !== 0 && (
               <FlexContainer style={{ height: '100%', width: '20px' }}>
                 <IconChevronRight />
