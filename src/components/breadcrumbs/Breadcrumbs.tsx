@@ -24,8 +24,8 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <Wrapper style={{ height: '40px', margin: '20px auto' }}>
-      <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%' }}>
+    <Wrapper style={{ margin: '20px auto' }}>
+      <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%', flexWrap: 'wrap' }}>
         {crumbs.map((crumb, index) => (
           <FlexContainer key={index} style={{ gap: '20px', alignItems: 'center' }}>
             {index !== 0 && (
