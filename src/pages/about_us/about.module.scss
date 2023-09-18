@@ -7,8 +7,8 @@
     color: rgba(25, 111, 1, 0.798);
     scale: 1.1;
     font-weight: 600;
-    filter: contrast(1.8);
-    filter: brightness(1.7)
+    filter: contrast(1.4);
+    filter: brightness(1.1)
 }
 
 .description {
@@ -31,7 +31,7 @@
         padding-bottom: 1rem;
         gap: 1rem;
 
-        &>div>img {
+        &>div > a >img {
             width: 9rem;
             border-radius: 50%;
             border: 0.15rem solid rgb(121, 255, 157);
@@ -70,7 +70,7 @@
         align-content: space-evenly;
         align-items: center;
 
-        &>div>img {
+        &>div>a>img {
             width: 9rem;
             border-radius: 50%;
             border: double 0.5rem transparent;

@@ -16,7 +16,9 @@ function AboutPage() {
         <div className={styles.team}>
           <div className={styles.team__member}>
             <div>
-              <img src={viktor} alt="Viktor" />
+              <a href="https://github.com/TvaExperts" target="_blank">
+                <img src={viktor} alt="Viktor" />
+              </a>
               <p>Viktor Trachenko </p>
               <p>role: Software Developer</p>
               <a className={styles.a} href="https://github.com/TvaExperts">
@@ -49,7 +51,9 @@ function AboutPage() {
           </div>
           <div className={styles.team__member}>
             <div>
-              <img src={eugene} alt="Eugene" />
+              <a href="https://github.com/eugenev8" target="_blank">
+                <img src={eugene} alt="Eugene" />
+              </a>
               <p>Zhenya Vasilev</p>
               <p>role: Software Developer</p>
               <a className={styles.a} href="https://github.com/eugenev8">
@@ -73,7 +77,9 @@ function AboutPage() {
           </div>
           <div className={styles.team__member}>
             <div>
-              <img src={artem} alt="Artem" />
+              <a href="https://github.com/mgg43err" target="_blank">
+                <img src={artem} alt="Artem" />
+              </a>
               <p>Artem Pleskunou</p>
               <p>role: Software Developer</p>
               <a className={styles.a} href="https://github.com/mgg43err">
@@ -90,7 +96,9 @@ function AboutPage() {
           </div>
           <div className={`${styles.team__mentor} ${styles.team__member}`}>
             <div>
-              <img src={kirill} alt="Kirill Mosk" />
+              <a href="https://github.com/moskkir" target="_blank" rel="noopener noreferrer">
+                <img src={kirill} alt="Kirill Mosk" />
+              </a>
               <p>Kirill Mosk</p>
               <p>role: Mentor</p>
               <a className={styles.a} href="https://github.com/moskkir">
@@ -98,7 +106,9 @@ function AboutPage() {
               </a>
             </div>
             <div>
-              <img src={andrei} alt="Andrei" />
+              <a href="http://github.com/andreyamelchenia" target="_blank" >
+                <img src={andrei} alt="Andrei" />
+              </a>
               <p>Andrei Amelchenia</p>
               <p>role: Mentor</p>
               <a className={styles.a} href="https://github.com/andreyamelchenia">
