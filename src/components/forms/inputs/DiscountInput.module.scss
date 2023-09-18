@@ -2,7 +2,7 @@
 
 .discountInput {
   flex: 1 1 100%;
-
+ 
   padding: 3% 1%;
 
   background-color: transparent;
@@ -26,6 +26,7 @@
       color: $color-7;
     }
   }
+
 }
 
 .discountLabel {
@@ -40,6 +41,10 @@
 
 .discount {
   display: flex;
+  @media screen and (max-width: 505px) {
+    flex-direction: column;
+    
+  }
 }
 
 .discountInput:placeholder-shown ~ .discountButton {
