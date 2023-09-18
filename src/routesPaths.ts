@@ -6,6 +6,7 @@ const ROUTES_PATHS = {
   catalog: '/catalog',
   product: '/product',
   basket: '/basket',
+  about: '/about',
 } as const;
 
 export default ROUTES_PATHS;
