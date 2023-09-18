@@ -1,0 +1,43 @@
+@use 'src/common/styles/colors.module.scss' as *;
+
+.quantity {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+
+  border-radius: 8px;
+
+  overflow: hidden;
+
+  button {
+    padding: 5px 10px;
+    border: 1px solid $color-1;
+    background-color: $color-1;
+
+    cursor: pointer;
+
+    transition: all 250ms ease;
+
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+
+    &:hover {
+      background-color: $color-2;
+      border: 1px solid $color-2;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+
+      pointer-events: none;
+    }
+  }
+}

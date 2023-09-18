@@ -3,11 +3,12 @@ import styles from './Wrapper.module.scss';
 
 interface WrapperProps extends React.ComponentProps<'div'> {
   style?: React.CSSProperties;
+  className?: string;
 }
 
-export default function Wrapper({ children, style }: WrapperProps) {
+export default function Wrapper({ children, style, className }: WrapperProps) {
   return (
-    <div className={styles.wrapper} style={style}>
+    <div className={`${styles.wrapper} ${className}`} style={style}>
       {children}
     </div>
   );
@@ -15,4 +16,5 @@ export default function Wrapper({ children, style }: WrapperProps) {
 
 Wrapper.defaultProps = {
   style: undefined,
+  className: '',
 };

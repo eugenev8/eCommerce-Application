@@ -106,7 +106,7 @@ function AboutPage() {
               </a>
             </div>
             <div>
-              <a href="http://github.com/andreyamelchenia" target="_blank" >
+              <a href="http://github.com/andreyamelchenia" target="_blank">
                 <img src={andrei} alt="Andrei" />
               </a>
               <p>Andrei Amelchenia</p>

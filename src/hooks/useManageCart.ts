@@ -2,6 +2,7 @@ import {
   CartResourceIdentifier,
   MyCartAddDiscountCodeAction,
   MyCartAddLineItemAction,
+  MyCartRemoveDiscountCodeAction,
   MyCartRemoveLineItemAction,
   MyCartUpdateAction,
 } from '@commercetools/platform-sdk';
@@ -87,21 +88,36 @@ export default function useManageCart() {
       variantId,
       custom: customFieldDraft,
     };
-    return sendUpdate([updateAction]);
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
   }
 
-  function removeLineItem(lineItemId: string, quantity?: number) {
+  async function removeLineItem(lineItemId: string, quantity?: number) {
     const updateAction: MyCartRemoveLineItemAction = { action: 'removeLineItem', lineItemId, quantity };
 
-    return sendUpdate([updateAction]);
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
+  }
+  async function clearCart() {
+    const newCart = await dispatch(createCart(getCurrentApiRoot()));
+    return newCart.meta.requestStatus === 'fulfilled';
   }
 
-  function applyPromoCode(code: string) {
+  async function applyPromoCode(code: string) {
     const updateAction: MyCartAddDiscountCodeAction = {
       action: 'addDiscountCode',
       code,
     };
-    return sendUpdate([updateAction]);
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
+  }
+
+  async function removePromoCode() {
+    if (!cart || !cart?.discountCodes[0].discountCode.id) {
+      return false;
+    }
+    const updateAction: MyCartRemoveDiscountCodeAction = {
+      action: 'removeDiscountCode',
+      discountCode: { typeId: 'discount-code', id: cart?.discountCodes[0].discountCode.id },
+    };
+    return (await sendUpdate([updateAction])).meta.requestStatus === 'fulfilled';
   }
 
   function getAnonCartResourceIdentifier() {
@@ -114,10 +130,12 @@ export default function useManageCart() {
 
   return {
     cart,
+    clearCart,
     findItemInCart,
     addLineItem,
     removeLineItem,
     applyPromoCode,
+    removePromoCode,
     getAnonCartResourceIdentifier,
     isCartLoading,
   };

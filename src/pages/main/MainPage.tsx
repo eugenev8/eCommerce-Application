@@ -10,8 +10,8 @@ function MainPage() {
   const { applyPromoCode } = useManageCart();
   const [promoCode, setPromoCode] = useState<string>('');
   function handleApplyPromoCode() {
-    applyPromoCode(promoCode).then((data) => {
-      if (data.type.includes('fulfilled')) {
+    applyPromoCode(promoCode).then((isSuccess) => {
+      if (isSuccess) {
         toaster.showSuccess('Success!');
       }
     });
