@@ -94,7 +94,7 @@ const router = createBrowserRouter([
             handle: {
               crumb: (params: Params<string>) => (
                 <Crumb
-                  key="Subcategory"
+                  key="Category"
                   title={params.categoryName || 'Category'}
                   path={`${ROUTES_PATHS.catalog}/${params.categoryName}`}
                 />
