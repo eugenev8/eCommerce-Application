@@ -74,7 +74,6 @@ export default function UserAccount() {
         <FlexContainer style={{ flexDirection: 'column', gap: '20px' }}>
           {selectedCustomer && (
             <EditCustomerSmallForm
-              customer={customer}
               onSave={(isUpdated) => {
                 if (isUpdated) {
                   handleModalClose();
@@ -85,8 +84,6 @@ export default function UserAccount() {
 
           {selectedPassword && (
             <EditPasswordForm
-              email={customer.email}
-              version={customer.version}
               onSave={(isUpdated) => {
                 if (isUpdated) {
                   handleModalClose();

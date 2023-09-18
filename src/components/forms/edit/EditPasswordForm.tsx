@@ -5,43 +5,37 @@ import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
 import PasswordInput from '../inputs/PasswordInput';
-import { useAppDispatch } from '../../../hooks/redux';
-import { changeCustomerPassword } from '../../../reducers/ActionCreators/Customer';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
+import { ChangePasswordData } from '../../../models/customerTypes';
 
 interface EditEmailFormProps {
   onSave: (updatedPassword: boolean) => void;
-  email: string;
-  version: number;
 }
 
 const validationSchema = Yup.object({
-  oldPassword: PasswordValidation,
+  currentPassword: PasswordValidation,
   newPassword: PasswordValidation,
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('newPassword'), undefined], 'Passwords must match')
     .required('Required'),
 });
 
-export default function EditPasswordForm({ onSave, email, version }: EditEmailFormProps) {
+export default function EditPasswordForm({ onSave }: EditEmailFormProps) {
+  const { changePassword: changeCustomerPassword } = useManageCustomer();
   const [isSubmitting, setSubmitting] = useState(false);
 
-  const initialValues = {
-    oldPassword: '',
+  const initialValues: ChangePasswordData = {
+    currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   };
 
-  const dispatch = useAppDispatch();
-
-  const handleSubmit = (values: typeof initialValues) => {
+  const handleSubmit = (values: ChangePasswordData) => {
     setSubmitting(true);
-
-    dispatch(
-      changeCustomerPassword({ currentPassword: values.oldPassword, newPassword: values.newPassword, version, email })
-    )
-      .then((payloadAction) => {
-        if (payloadAction.type.includes('fulfilled')) {
+    changeCustomerPassword(values)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
           toaster.showSuccess('Password changed successfully!');
           onSave(true);
         } else {
@@ -69,7 +63,12 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
         onSubmit={handleSubmit}
       >
         <Form>
-          <PasswordInput id="oldPassword" labelText="Old password" name="oldPassword" placeholder="Type old password" />
+          <PasswordInput
+            id="currentPassword"
+            labelText="Current password"
+            name="currentPassword"
+            placeholder="Type current password"
+          />
 
           <PasswordInput id="newPassword" labelText="New password" name="newPassword" placeholder="Type new password" />
 
