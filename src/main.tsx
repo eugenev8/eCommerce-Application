@@ -128,7 +128,7 @@ const router = createBrowserRouter([
                       crumb: (params: Params<string>) => {
                         return {
                           title: params.productKey || 'Product',
-                          path: `${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`,
+                          path: `${ROUTES_PATHS.product}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`,
                         };
                       },
                     },
