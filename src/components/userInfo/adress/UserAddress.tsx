@@ -11,7 +11,7 @@ export default function UserAddressInfo({ address }: AddressContactInfoProps) {
   }
 
   return (
-    <FlexContainer style={{ flexDirection: 'column' }}>
+    <FlexContainer style={{ flexDirection: 'column', minWidth: '240px' }}>
       <div>
         <p>{address.streetName}</p>
         <p>

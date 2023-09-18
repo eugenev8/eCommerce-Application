@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import UserPageLayout from './UserPageLayout';
-import FlexContainer from '../../components/containers/FlexContainer';
+import styles from './UserProfile.module.scss';
 import { useAppDispatch } from '../../hooks/redux';
 import { authActions } from '../../reducers/AuthSlice';
 import Button from '../../components/buttons/Buttons';
@@ -19,7 +19,7 @@ function UserProfile() {
 
   return (
     <UserPageLayout>
-      <FlexContainer style={{ flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+      <div className={styles.userPage__menu}>
         <NavLink to="">Account info</NavLink>
         <NavLink to="address">Address Book</NavLink>
         <Button
@@ -30,7 +30,7 @@ function UserProfile() {
           addedClass=""
           variant="default"
         />
-      </FlexContainer>
+      </div>
     </UserPageLayout>
   );
 }

@@ -4,7 +4,6 @@ import ColoredContainer from '../../components/containers/ColoredContainer';
 import FlexContainer from '../../components/containers/FlexContainer';
 import Wrapper from '../../components/wrapper/Wrapper';
 import { useAppSelector } from '../../hooks/redux';
-import styles from './UserPage.module.scss';
 import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
 import LoaderSpinner from '../../components/loader/Loader';
 import AnimatedContainer from '../../components/containers/AnimatedContainer';
@@ -36,7 +35,7 @@ function UserPageLayout({ children }: { children: ReactNode }) {
       <Wrapper>
         <h2>Hello, {customer.firstName}</h2>
         <FlexContainer style={{ gap: '10%', flexWrap: 'wrap' }}>
-          <ColoredContainer className={`${styles.userPage__menu}`}>{children}</ColoredContainer>
+          <ColoredContainer style={{ flexGrow: '1' }}>{children}</ColoredContainer>
           <Outlet />
         </FlexContainer>
       </Wrapper>

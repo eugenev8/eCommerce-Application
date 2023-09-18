@@ -22,15 +22,15 @@ export function DefaultAddresses(
   return (
     <>
       <h3 className={`${styles['block-heading']}`}>Address Book</h3>
-      <FlexContainer style={{ gap: '25%', flexWrap: 'wrap' }}>
-        <FlexContainer style={{ gap: '1rem' }}>
+      <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <FlexContainer style={{ gap: '1rem', minWidth: '240px' }}>
           <FlexContainer style={{ flexDirection: 'column' }}>
             <h4>Default Shipping Address</h4>
             <UserAddressInfo address={defaultShippingAddress} />
           </FlexContainer>
         </FlexContainer>
 
-        <FlexContainer style={{ gap: '1rem' }}>
+        <FlexContainer style={{ gap: '1rem', minWidth: '240px' }}>
           <FlexContainer style={{ flexDirection: 'column' }}>
             <h4>Default Billing Address</h4>
             <UserAddressInfo address={defaultBillingAddress} />
@@ -59,10 +59,10 @@ function renderAddresses(
             <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
               <UserAddressInfo address={address} />
 
-              <FlexContainer style={{ flexDirection: 'column' }}>
+              <FlexContainer style={{ flexDirection: 'column', minWidth: '240px' }}>
                 {(defaultAddress === address && (
-                  <p>
-                    <span className={`${styles.defaultAddress}`}>Default {addressType} address</span>
+                  <span className={`${styles.defaultAddress}`}>
+                    Default {addressType} address{' '}
                     <button
                       type="button"
                       className={`${styles.fakeLink}`}
@@ -70,7 +70,7 @@ function renderAddresses(
                     >
                       clear
                     </button>
-                  </p>
+                  </span>
                 )) || (
                   <button
                     type="button"
