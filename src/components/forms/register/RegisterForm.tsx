@@ -134,7 +134,11 @@ export default function RegisterForm() {
     setIsSubmitting(true);
     const customerDraft = createCustomerDraft(values);
     signupCustomer(customerDraft)
-      .then(() => toaster.showSuccess("Registration successful! You're now login in!"))
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess("Registration successful! You're now login in!");
+        }
+      })
       .finally(() => setIsSubmitting(false));
   };
 

@@ -28,7 +28,11 @@ function LoginForm() {
     setIsSubmitting(true);
 
     loginCustomer(values)
-      .then(() => toaster.showSuccess('Login successful!'))
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Login successful!');
+        }
+      })
       .finally(() => setIsSubmitting(false));
   };
 
