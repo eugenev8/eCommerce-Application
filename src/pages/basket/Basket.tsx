@@ -20,15 +20,15 @@ import IconClose from '../../components/icons/IconClose';
 import useCategoriesMethods from '../../hooks/useCategoriesMethods';
 import { NAME_LOCALE } from '../../sdk/types';
 
-function getPrice(priceData: Price | DiscountedPrice | DiscountedLineItemPrice) {
+function getPrice(priceData: Price | DiscountedPrice | DiscountedLineItemPrice): number {
   return priceData.value.centAmount / 10 ** priceData.value.fractionDigits;
 }
 
-function getPriceStr(priceData: CentPrecisionMoney) {
+function getPriceStr(priceData: CentPrecisionMoney): string {
   return (priceData.centAmount / 10 ** priceData.fractionDigits).toFixed(priceData.fractionDigits);
 }
 
-function countSumStr(price: number, quantity: number, fractionDigits = 2) {
+function countSumStr(price: number, quantity: number, fractionDigits = 2): string {
   return (price * quantity).toFixed(fractionDigits);
 }
 
@@ -43,11 +43,11 @@ export default function BasketPage() {
   };
 
   let totalPrice = '0';
-  let oldPrice = '';
-  if (cart?.discountCodes.length) {
+  let oldPrice: string | null = null;
+  if (cart?.discountCodes.length || cart?.lineItems.some((item) => item.price.discounted)) {
     oldPrice = cart.lineItems
       .reduce((sum, lineitem) => {
-        return sum + getPrice(lineitem.price);
+        return sum + getPrice(lineitem.price) * lineitem.quantity;
       }, 0)
       .toFixed(2);
   }
