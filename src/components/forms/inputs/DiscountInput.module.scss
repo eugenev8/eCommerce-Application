@@ -1,6 +1,8 @@
 @use 'src/common/styles/colors.module.scss' as *;
 
 .discountInput {
+  width: 4rem;
+
   flex: 1 1 100%;
  
   padding: 3% 1%;
@@ -41,10 +43,6 @@
 
 .discount {
   display: flex;
-  @media screen and (max-width: 505px) {
-    flex-direction: column;
-    
-  }
 }
 
 .discountInput:placeholder-shown ~ .discountButton {
