@@ -124,6 +124,7 @@ const router = createBrowserRouter([
                         <Crumb
                           title={params.productKey || 'productKey'}
                           path={`${ROUTES_PATHS.product}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`}
+                          isLast
                         />
                       ),
                     },
@@ -139,7 +140,7 @@ const router = createBrowserRouter([
         element: <LoginPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <Crumb title="Login" path={ROUTES_PATHS.login} />,
+          crumb: () => <Crumb title="Login" path={ROUTES_PATHS.login} isLast />,
         },
       },
       {
@@ -147,14 +148,14 @@ const router = createBrowserRouter([
         element: <RegisterPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <Crumb title="Register" path={ROUTES_PATHS.register} />,
+          crumb: () => <Crumb title="Register" path={ROUTES_PATHS.register} isLast />,
         },
       },
       {
         path: ROUTES_PATHS.userProfile,
         element: <UserProfile />,
         handle: {
-          crumb: () => <Crumb title="Profile" path={ROUTES_PATHS.userProfile} />,
+          crumb: () => <Crumb title="Profile" path={ROUTES_PATHS.userProfile} isLast />,
         },
         children: [
           {
@@ -171,7 +172,7 @@ const router = createBrowserRouter([
         path: ROUTES_PATHS.basket,
         element: <BasketPage />,
         handle: {
-          crumb: () => <Crumb title="Basket" path={ROUTES_PATHS.basket} />,
+          crumb: () => <Crumb title="Basket" path={ROUTES_PATHS.basket} isLast />,
         },
       },
     ],
