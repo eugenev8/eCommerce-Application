@@ -149,6 +149,9 @@ export default function Navigation() {
             <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
               Catalog
             </NavLinkWithCheck>
+            <NavLinkWithCheck to="/about" onClick={closeMenu}>
+              About us
+            </NavLinkWithCheck>
           </div>
           <div className={`${styles.navbar__block}`}>
             <input

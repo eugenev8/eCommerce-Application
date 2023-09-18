@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 
-import styles from './RegisterForm.module.scss'; // Import the module SCSS styles
+import styles from './RegisterForm.module.scss';
 import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
 import AddressInputContainer from '../inputs/AddressInput';
@@ -16,10 +16,8 @@ import {
   PasswordValidation,
 } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
-import { useAppDispatch } from '../../../hooks/redux';
-import { signupCustomer } from '../../../reducers/ActionCreators/Customer';
 import CheckboxInput from '../inputs/CheckboxInput';
-import useCreateAnonymousCartIdentifier from '../../../hooks/useCreateAnonymousCartIdentifier';
+import useManageCustomer from '../../../hooks/useManageCustomer';
 import toaster from '../../../services/toaster';
 
 interface RegisterFormValues {
@@ -81,12 +79,12 @@ const validationSchemaSingleAddress = Yup.object({
 });
 
 export default function RegisterForm() {
-  const dispatch = useAppDispatch();
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
-  const [isSubmiting, setIsSubmiting] = useState(false);
-  const anonymousCart = useCreateAnonymousCartIdentifier();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signup: signupCustomer } = useManageCustomer();
+
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
       setIsDefaultBillingAddress(!isDefaultShippingAddress);
@@ -127,22 +125,21 @@ export default function RegisterForm() {
       lastName: values.lastName,
       dateOfBirth: values.dateOfBirth,
       ...newCustomerAddresses,
-      anonymousCart,
     };
 
     return customerDraft;
   }
 
   const handleSubmit = (values: RegisterFormValues) => {
-    setIsSubmiting(true);
+    setIsSubmitting(true);
     const customerDraft = createCustomerDraft(values);
-    dispatch(signupCustomer(customerDraft))
+    signupCustomer(customerDraft)
       .then((data) => {
         if (data.type.includes('fulfilled')) {
           toaster.showSuccess("Registration successful! You're now login in!");
         }
       })
-      .finally(() => setIsSubmiting(false));
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -230,8 +227,8 @@ export default function RegisterForm() {
           </div>
 
           <Button
-            disabled={isSubmiting}
-            innerText={isSubmiting ? 'Submiting...' : 'Join us'}
+            disabled={isSubmitting}
+            innerText={isSubmitting ? 'Submitting...' : 'Join us'}
             styling="primary"
             type="submit"
             variant="default"
