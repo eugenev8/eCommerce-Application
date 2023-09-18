@@ -5,14 +5,20 @@ import FlexContainer from '../containers/FlexContainer';
 import Wrapper from '../wrapper/Wrapper';
 import IconChevronRight from '../icons/IconChevronRight';
 import styles from './Breadcrumbs.module.scss';
+import Crumb from './Crumb';
 
 interface Match {
   id: string;
   pathname: string;
   params: Params<string>;
-  data: { crumb: (data: unknown) => React.ReactNode };
-  handle: { crumb: (data: unknown) => React.ReactNode };
+  data: { crumb: (data: unknown) => CrumbData };
+  handle: { crumb: (data: unknown) => CrumbData };
 }
+
+type CrumbData = {
+  title: string;
+  path: string;
+};
 
 export default function Breadcrumbs() {
   const matches = useMatches() as Match[];
@@ -33,7 +39,9 @@ export default function Breadcrumbs() {
                 <IconChevronRight />
               </FlexContainer>
             )}
-            <div className={`${styles.breadcrumbText}`}>{crumb}</div>
+            <div className={`${styles.breadcrumbText}`}>
+              <Crumb path={crumb.path} title={crumb.title} isLast={index === crumbs.length - 1} />
+            </div>
           </FlexContainer>
         ))}
       </FlexContainer>

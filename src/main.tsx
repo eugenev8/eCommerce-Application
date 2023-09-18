@@ -16,7 +16,6 @@ import UserAddresses from './pages/user/adresses/UserAddresses';
 import UserAccount from './pages/user/account/UserAccount';
 import CatalogPage from './pages/catalog/CatalogPage';
 import ProductPage from './pages/product/ProductPage';
-import Crumb from './components/breadcrumbs/Crumb';
 import ROUTES_PATHS from './routesPaths';
 import BasketPage from './pages/basket/Basket';
 
@@ -28,7 +27,9 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     handle: {
-      crumb: () => <Crumb title="Home" path="/" />,
+      crumb: () => {
+        return { title: 'Main', path: ROUTES_PATHS.main };
+      },
     },
     children: [
       {
@@ -39,7 +40,9 @@ const router = createBrowserRouter([
         path: ROUTES_PATHS.catalog,
         element: <CatalogPage />,
         handle: {
-          crumb: () => <Crumb title="Catalog" path={ROUTES_PATHS.catalog} />,
+          crumb: () => {
+            return { title: 'Catalog', path: ROUTES_PATHS.catalog };
+          },
         },
         children: [
           {
@@ -49,12 +52,12 @@ const router = createBrowserRouter([
               return params;
             },
             handle: {
-              crumb: (params: Params<string>) => (
-                <Crumb
-                  title={params.categoryName || 'Category'}
-                  path={`${ROUTES_PATHS.catalog}/${params.categoryName}`}
-                />
-              ),
+              crumb: (params: Params<string>) => {
+                return {
+                  title: params.categoryName || 'Category',
+                  path: `${ROUTES_PATHS.catalog}/${params.categoryName}`,
+                };
+              },
             },
             children: [
               {
@@ -64,12 +67,12 @@ const router = createBrowserRouter([
                   return params;
                 },
                 handle: {
-                  crumb: (params: Params<string>) => (
-                    <Crumb
-                      title={params.subcategoryName || 'Subcategory'}
-                      path={`${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}`}
-                    />
-                  ),
+                  crumb: (params: Params<string>) => {
+                    return {
+                      title: params.subcategoryName || 'Subcategory',
+                      path: `${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}`,
+                    };
+                  },
                 },
               },
             ],
@@ -80,7 +83,9 @@ const router = createBrowserRouter([
         path: `${ROUTES_PATHS.product}`,
         element: <ProductPage />,
         handle: {
-          crumb: () => <Crumb key="Catalog" title="Catalog" path={ROUTES_PATHS.catalog} />,
+          crumb: () => {
+            return { title: 'Catalog', path: `${ROUTES_PATHS.catalog}` };
+          },
         },
         children: [
           {
@@ -90,12 +95,12 @@ const router = createBrowserRouter([
               return params;
             },
             handle: {
-              crumb: (params: Params<string>) => (
-                <Crumb
-                  title={params.categoryName || 'Category'}
-                  path={`${ROUTES_PATHS.catalog}/${params.categoryName}`}
-                />
-              ),
+              crumb: (params: Params<string>) => {
+                return {
+                  title: params.categoryName || 'Category',
+                  path: `${ROUTES_PATHS.catalog}/${params.categoryName}`,
+                };
+              },
             },
             children: [
               {
@@ -105,12 +110,12 @@ const router = createBrowserRouter([
                   return params;
                 },
                 handle: {
-                  crumb: (params: Params<string>) => (
-                    <Crumb
-                      title={params.subcategoryName || 'Subcategory'}
-                      path={`${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}`}
-                    />
-                  ),
+                  crumb: (params: Params<string>) => {
+                    return {
+                      title: params.subcategoryName || 'Subcategory',
+                      path: `${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}`,
+                    };
+                  },
                 },
                 children: [
                   {
@@ -120,13 +125,12 @@ const router = createBrowserRouter([
                       return params;
                     },
                     handle: {
-                      crumb: (params: Params<string>) => (
-                        <Crumb
-                          title={params.productKey || 'productKey'}
-                          path={`${ROUTES_PATHS.product}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`}
-                          isLast
-                        />
-                      ),
+                      crumb: (params: Params<string>) => {
+                        return {
+                          title: params.productKey || 'Product',
+                          path: `${ROUTES_PATHS.catalog}/${params.categoryName}/${params.subcategoryName}/${params.productKey}`,
+                        };
+                      },
                     },
                   },
                 ],
@@ -140,7 +144,9 @@ const router = createBrowserRouter([
         element: <LoginPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <Crumb title="Login" path={ROUTES_PATHS.login} isLast />,
+          crumb: () => {
+            return { title: 'Login', path: ROUTES_PATHS.login };
+          },
         },
       },
       {
@@ -148,14 +154,18 @@ const router = createBrowserRouter([
         element: <RegisterPage />,
         loader: AuthGuardLoader,
         handle: {
-          crumb: () => <Crumb title="Register" path={ROUTES_PATHS.register} isLast />,
+          crumb: () => {
+            return { title: 'Register', path: ROUTES_PATHS.register };
+          },
         },
       },
       {
         path: ROUTES_PATHS.userProfile,
         element: <UserProfile />,
         handle: {
-          crumb: () => <Crumb title="Profile" path={ROUTES_PATHS.userProfile} isLast />,
+          crumb: () => {
+            return { title: 'Profile', path: ROUTES_PATHS.userProfile };
+          },
         },
         children: [
           {
@@ -172,7 +182,9 @@ const router = createBrowserRouter([
         path: ROUTES_PATHS.basket,
         element: <BasketPage />,
         handle: {
-          crumb: () => <Crumb title="Basket" path={ROUTES_PATHS.basket} isLast />,
+          crumb: () => {
+            return { title: 'Basket', path: ROUTES_PATHS.basket };
+          },
         },
       },
     ],
