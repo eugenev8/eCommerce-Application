@@ -275,7 +275,7 @@ export default function ProductPage() {
           <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
             {images.length > 0 && (
               <>
-                <FlexContainer style={{ width: '80vmin' }}>
+                <FlexContainer style={{ width: '80vmin', height: '70vmin' }}>
                   <SwiperContainer imageUrlArray={images} initialSlide={selectedImageIndex} onImageClick={() => null} />
                 </FlexContainer>
                 <Button
