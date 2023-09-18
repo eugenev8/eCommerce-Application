@@ -41,6 +41,8 @@ export default function Filter({ facet }: FilterProps) {
 
   const [facetQuery, facetData] = facet;
 
+  if (isTermType(facetData) && facetData.terms.length === 0) return null;
+
   const facetInfo = FACETS_NAMES.find((item) => item.query === facetQuery);
   if (!facetInfo) {
     return null;
