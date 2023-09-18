@@ -3,11 +3,12 @@ import styles from './AnimatedContainer.module.scss';
 
 interface ContainerProps extends React.ComponentProps<'div'> {
   style?: React.CSSProperties;
+  className?: string;
 }
 
-export default function AnimatedContainer({ children, style }: ContainerProps) {
+export default function AnimatedContainer({ children, style, className }: ContainerProps) {
   return (
-    <div className={`${styles.animatedContainer}`} style={style}>
+    <div className={`${styles.animatedContainer} ${className || ''}`} style={style}>
       {children}
     </div>
   );
@@ -15,4 +16,5 @@ export default function AnimatedContainer({ children, style }: ContainerProps) {
 
 AnimatedContainer.defaultProps = {
   style: undefined,
+  className: undefined,
 };
