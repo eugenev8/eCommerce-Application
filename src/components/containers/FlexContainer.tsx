@@ -3,11 +3,12 @@ import styles from './FlexContainer.module.scss';
 
 interface ContainerProps extends React.ComponentProps<'div'> {
   style?: React.CSSProperties;
+  className?: string;
 }
 
-export default function FlexContainer({ children, style }: ContainerProps) {
+export default function FlexContainer({ children, style, className }: ContainerProps) {
   return (
-    <div className={styles['d-flex']} style={style}>
+    <div className={`${styles['d-flex']} ${className || ''}`} style={style}>
       {children}
     </div>
   );
@@ -15,4 +16,5 @@ export default function FlexContainer({ children, style }: ContainerProps) {
 
 FlexContainer.defaultProps = {
   style: undefined,
+  className: undefined,
 };

@@ -33,10 +33,12 @@ export default function PriceFilter({ facet }: FilterProps) {
   const priceState = useAppSelector((state) => state.queryReducer.priceFilter);
   const [isError, setIsError] = useState<boolean>(false);
 
+  const [, facetData] = facet;
+
+  if (isTermType(facetData) && facetData.terms.length === 0) return null;
+
   let globalMin: number = 0;
   let globalMax: number = 0;
-
-  const [, facetData] = facet;
 
   if (isTermType(facetData)) {
     globalMin = Math.min(...facetData.terms.map((term) => term.term));
@@ -55,6 +57,8 @@ export default function PriceFilter({ facet }: FilterProps) {
     }
     return '';
   }
+
+  if (isTermType(facetData) && facetData.terms.length === 0) return null;
 
   function handleChangeMinValue(value: string) {
     setIsError(false);
