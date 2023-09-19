@@ -192,7 +192,9 @@ const router = createBrowserRouter([
         path: ROUTES_PATHS.about,
         element: <AboutPage />,
         handle: {
-          crumb: () => <Crumb key="About" title="About" path={ROUTES_PATHS.about} />,
+          crumb: () => {
+            return { title: 'About', path: ROUTES_PATHS.about };
+          },
         },
       },
     ],
