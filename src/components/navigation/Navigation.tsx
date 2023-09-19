@@ -5,6 +5,9 @@ import useLoginStatus from '../../hooks/useLoginStatus';
 import Wrapper from '../wrapper/Wrapper';
 import FlexContainer from '../containers/FlexContainer';
 import styles from './Navigation.module.scss';
+import useLoadingStateStatus from '../../hooks/useLoadingStateStatus';
+import LoaderSpinner from '../loader/Loader';
+import CartMenu from '../cartMenu/CartMenu';
 
 function BurgerIcon({ onClick }: { onClick: () => void }) {
   return (
@@ -22,15 +25,34 @@ function checkActiveLink(isActive: boolean, isPending: boolean) {
   return `${activeClass} ${pendingClass}`;
 }
 
-function NavLinkWithCheck({ to, children, onClick }: { to: string; children: React.ReactNode; onClick: () => void }) {
+function NavLinkWithCheck({
+  to,
+  children,
+  onClick,
+  id,
+}: {
+  to: string;
+  children: React.ReactNode;
+  onClick: () => void;
+  id?: string;
+}) {
   return (
     <div className={`${styles.navbar__link}`}>
-      <NavLink to={to} onClick={onClick} className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}>
+      <NavLink
+        id={id}
+        to={to}
+        onClick={onClick}
+        className={({ isActive, isPending }) => checkActiveLink(isActive, isPending)}
+      >
         {children}
       </NavLink>
     </div>
   );
 }
+
+NavLinkWithCheck.defaultProps = {
+  id: undefined,
+};
 
 function AuthLinks({ isLoggedIn, closeMenu }: { isLoggedIn: boolean; closeMenu: () => void }) {
   if (!isLoggedIn) {
@@ -84,6 +106,9 @@ function BurgerMenu({ isMenuShown, closeMenu, isLoggedIn }: BurgerMenuProps) {
       <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
         Catalog
       </NavLinkWithCheck>
+      <NavLinkWithCheck to="/basket" onClick={closeMenu}>
+        <CartMenu />
+      </NavLinkWithCheck>
       <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
     </div>
   );
@@ -94,6 +119,7 @@ export default function Navigation() {
   const isLoggedIn = useLoginStatus();
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState<string>('');
+  const isDataLoading = useLoadingStateStatus();
 
   const handleOnClick = () => {
     setIsMenuShown(!isMenuShown);
@@ -123,6 +149,9 @@ export default function Navigation() {
             <NavLinkWithCheck to="/catalog" onClick={closeMenu}>
               Catalog
             </NavLinkWithCheck>
+            <NavLinkWithCheck to="/about" onClick={closeMenu}>
+              About us
+            </NavLinkWithCheck>
           </div>
           <div className={`${styles.navbar__block}`}>
             <input
@@ -136,7 +165,11 @@ export default function Navigation() {
           </div>
 
           <div className={`${styles.navbar__block}`}>
-            <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />
+            <NavLinkWithCheck id={styles.cartLink} to="/basket" onClick={closeMenu}>
+              <CartMenu />
+            </NavLinkWithCheck>
+            {isDataLoading && <LoaderSpinner />}
+            {!isDataLoading && <AuthLinks isLoggedIn={isLoggedIn} closeMenu={closeMenu} />}
           </div>
         </FlexContainer>
       </Wrapper>

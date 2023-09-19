@@ -3,21 +3,32 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navigation from './components/navigation/Navigation';
 import useToasterErrorMessage from './hooks/useToasterErrorMessage';
-import useLoadStateValues from './hooks/useLoadStateValues';
+import useLoadAuthState from './hooks/useLoadAuthState';
 import Breadcrumbs from './components/breadcrumbs/Breadcrumbs';
-import useLoadShopData from './hooks/useLoadShopData';
+import useLoadCategoriesData from './hooks/useLoadCategoriesData';
+import FlexContainer from './components/containers/FlexContainer';
+import LoaderSpinner from './components/loader/Loader';
 
 export default function App() {
   useToasterErrorMessage();
-  useLoadStateValues();
-  useLoadShopData();
+  const isAuthLoaded = useLoadAuthState();
+  useLoadCategoriesData();
 
   return (
     <>
-      <Navigation />
-      <Breadcrumbs />
-      <Outlet />
-      <ToastContainer />
+      {!isAuthLoaded && (
+        <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <LoaderSpinner />
+        </FlexContainer>
+      )}
+      {isAuthLoaded && (
+        <>
+          <Navigation />
+          <Breadcrumbs />
+          <Outlet />
+          <ToastContainer />
+        </>
+      )}
     </>
   );
 }

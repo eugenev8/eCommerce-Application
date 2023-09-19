@@ -3,11 +3,12 @@ import styles from './ColoredContainer.module.scss';
 
 interface ContainerProps extends React.ComponentProps<'div'> {
   style?: React.CSSProperties;
+  className?: string;
 }
 
-export default function ColoredContainer({ children, style }: ContainerProps) {
+export default function ColoredContainer({ children, style, className }: ContainerProps) {
   return (
-    <div className={styles['bg-colored']} style={style}>
+    <div className={`${styles['bg-colored']} ${className || ''}`} style={style}>
       {children}
     </div>
   );
@@ -15,4 +16,5 @@ export default function ColoredContainer({ children, style }: ContainerProps) {
 
 ColoredContainer.defaultProps = {
   style: undefined,
+  className: undefined,
 };

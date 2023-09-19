@@ -1,10 +1,11 @@
 /* eslint-disable no-param-reassign */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-enum AuthStatus {
+export enum AuthStatus {
+  Initial = 'Initial',
   CredentialsFlow = 'CredentialsFlow',
   AnonymousFlow = 'AnonymousFlow',
-  TokenFlow = 'TokenFlow',
+  CustomerFlow = 'CustomerFlow',
 }
 
 interface AuthState {
@@ -15,7 +16,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   isLoading: false,
-  authStatus: AuthStatus.CredentialsFlow,
+  authStatus: AuthStatus.Initial,
   error: '',
 };
 
@@ -23,11 +24,12 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    authSuccess(state) {
+    setAuthStatus(state, action: PayloadAction<AuthStatus>) {
+      state.error = '';
       state.isLoading = false;
-      state.authStatus = AuthStatus.TokenFlow;
+      state.authStatus = action.payload;
     },
-    isPending(state) {
+    setIsPending(state) {
       state.isLoading = true;
       state.error = '';
     },
@@ -35,12 +37,12 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    logout() {
-      return initialState;
+    logout(state) {
+      state.error = '';
+      state.isLoading = false;
+      state.authStatus = AuthStatus.CredentialsFlow;
     },
   },
 });
 
-export { authSlice, AuthStatus };
-
-export default authSlice.reducer;
+export const { reducer: authReducer, actions: authActions } = authSlice;

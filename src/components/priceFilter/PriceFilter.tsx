@@ -6,9 +6,9 @@ import {
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import React, { useState } from 'react';
 import styles from './PriceFilter.module.scss';
-import { PRICE_FACET } from '../../pages/catalog/types';
+import { PRICE_FACET } from '../../sdk/types';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { querySlice } from '../../reducers/QuerySlice';
+import { queryActions } from '../../reducers/QuerySlice';
 
 type FilterProps = {
   facet: [string, FacetResult];
@@ -25,7 +25,7 @@ function getCentPriceStr(price: string | number) {
 
 function getRealPriceStr(price: string | number) {
   if (!price || price === '0') return '';
-  return (Number(price) / 100).toString();
+  return Math.floor(Number(price) / 100).toString();
 }
 
 export default function PriceFilter({ facet }: FilterProps) {
@@ -33,10 +33,12 @@ export default function PriceFilter({ facet }: FilterProps) {
   const priceState = useAppSelector((state) => state.queryReducer.priceFilter);
   const [isError, setIsError] = useState<boolean>(false);
 
+  const [, facetData] = facet;
+
+  if (isTermType(facetData) && facetData.terms.length === 0) return null;
+
   let globalMin: number = 0;
   let globalMax: number = 0;
-
-  const [, facetData] = facet;
 
   if (isTermType(facetData)) {
     globalMin = Math.min(...facetData.terms.map((term) => term.term));
@@ -56,20 +58,22 @@ export default function PriceFilter({ facet }: FilterProps) {
     return '';
   }
 
+  if (isTermType(facetData) && facetData.terms.length === 0) return null;
+
   function handleChangeMinValue(value: string) {
     setIsError(false);
     const maxValue = getMaxValue();
 
     if (!value) {
       if (!maxValue) {
-        dispatch(querySlice.actions.deletePriceFilter());
+        dispatch(queryActions.deletePriceFilter());
       } else {
-        dispatch(querySlice.actions.changePriceFilter(['*', maxValue]));
+        dispatch(queryActions.changePriceFilter(['*', maxValue]));
       }
     } else if (!maxValue) {
-      dispatch(querySlice.actions.addPriceFilter({ ...PRICE_FACET, values: [value, '*'] }));
+      dispatch(queryActions.addPriceFilter({ ...PRICE_FACET, values: [value, '*'] }));
     } else {
-      dispatch(querySlice.actions.changePriceFilter([value, maxValue]));
+      dispatch(queryActions.changePriceFilter([value, maxValue]));
       if (Number(value) >= Number(maxValue)) setIsError(true);
     }
   }
@@ -79,14 +83,14 @@ export default function PriceFilter({ facet }: FilterProps) {
     const minValue = getMinValue();
     if (!value) {
       if (!minValue) {
-        dispatch(querySlice.actions.deletePriceFilter());
+        dispatch(queryActions.deletePriceFilter());
       } else {
-        dispatch(querySlice.actions.changePriceFilter([minValue, '*']));
+        dispatch(queryActions.changePriceFilter([minValue, '*']));
       }
     } else if (!minValue) {
-      dispatch(querySlice.actions.addPriceFilter({ ...PRICE_FACET, values: ['*', value] }));
+      dispatch(queryActions.addPriceFilter({ ...PRICE_FACET, values: ['*', value] }));
     } else {
-      dispatch(querySlice.actions.changePriceFilter([minValue, value]));
+      dispatch(queryActions.changePriceFilter([minValue, value]));
       if (Number(minValue) >= Number(value)) setIsError(true);
     }
   }

@@ -1,15 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { CustomerSignin } from '@commercetools/platform-sdk';
-
 import styles from './LoginForm.module.scss';
 import PasswordInput from '../inputs/PasswordInput';
 import { EmailValidation, PasswordValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import CommonInput from '../inputs/CommonInput';
-import { useAppDispatch } from '../../../hooks/redux';
-import { loginWithPassword } from '../../../reducers/ActionCreators';
+import useManageCustomer from '../../../hooks/useManageCustomer';
+import toaster from '../../../services/toaster';
 
 const initialValues: CustomerSignin = {
   email: '',
@@ -22,10 +21,19 @@ const validationSchema = Yup.object({
 });
 
 function LoginForm() {
-  const dispatch = useAppDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login: loginCustomer } = useManageCustomer();
 
   const handleSubmit = (values: CustomerSignin) => {
-    dispatch(loginWithPassword(values));
+    setIsSubmitting(true);
+
+    loginCustomer(values)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Login successful!');
+        }
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -44,7 +52,14 @@ function LoginForm() {
 
           <PasswordInput labelText="Password" placeholder="Type your password" id="password" name="password" />
 
-          <Button innerText="Sign In" styling="primary" type="submit" variant="default" addedClass="" />
+          <Button
+            innerText={isSubmitting ? 'Submitting...' : 'Sign In'}
+            styling="primary"
+            type="submit"
+            variant="default"
+            addedClass=""
+            disabled={isSubmitting}
+          />
         </Form>
       </Formik>
     </div>

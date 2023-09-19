@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 
-import styles from './RegisterForm.module.scss'; // Import the module SCSS styles
+import styles from './RegisterForm.module.scss';
 import PasswordInput from '../inputs/PasswordInput';
 import CommonInput from '../inputs/CommonInput';
 import AddressInputContainer from '../inputs/AddressInput';
@@ -16,9 +16,9 @@ import {
   PasswordValidation,
 } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
-import { useAppDispatch } from '../../../hooks/redux';
-import { signupCustomer } from '../../../reducers/ActionCreators';
 import CheckboxInput from '../inputs/CheckboxInput';
+import useManageCustomer from '../../../hooks/useManageCustomer';
+import toaster from '../../../services/toaster';
 
 interface RegisterFormValues {
   email: string;
@@ -79,10 +79,11 @@ const validationSchemaSingleAddress = Yup.object({
 });
 
 export default function RegisterForm() {
-  const dispatch = useAppDispatch();
   const [isBillingEqualShipping, setBillingEqualShipping] = useState(false);
   const [isDefaultShippingAddress, setIsDefaultShippingAddress] = useState(false);
   const [isDefaultBillingAddress, setIsDefaultBillingAddress] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signup: signupCustomer } = useManageCustomer();
 
   const handleChangeDefaultShippingAddress = () => {
     if (isBillingEqualShipping) {
@@ -130,8 +131,15 @@ export default function RegisterForm() {
   }
 
   const handleSubmit = (values: RegisterFormValues) => {
+    setIsSubmitting(true);
     const customerDraft = createCustomerDraft(values);
-    dispatch(signupCustomer(customerDraft));
+    signupCustomer(customerDraft)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess("Registration successful! You're now login in!");
+        }
+      })
+      .finally(() => setIsSubmitting(false));
   };
 
   return (
@@ -218,7 +226,14 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          <Button innerText="Join us" styling="primary" type="submit" variant="default" addedClass="" />
+          <Button
+            disabled={isSubmitting}
+            innerText={isSubmitting ? 'Submitting...' : 'Join us'}
+            styling="primary"
+            type="submit"
+            variant="default"
+            addedClass=""
+          />
         </Form>
       </Formik>
     </div>

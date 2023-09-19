@@ -1,16 +1,23 @@
-/* eslint-disable react/no-array-index-key */
 import { Params, useMatches } from 'react-router-dom';
 import React from 'react';
 import FlexContainer from '../containers/FlexContainer';
 import Wrapper from '../wrapper/Wrapper';
+import IconChevronRight from '../icons/IconChevronRight';
+import styles from './Breadcrumbs.module.scss';
+import Crumb from './Crumb';
 
 interface Match {
   id: string;
   pathname: string;
   params: Params<string>;
-  data: { crumb: (data: unknown) => React.ReactNode };
-  handle: { crumb: (data: unknown) => React.ReactNode };
+  data: { crumb: (data: unknown) => CrumbData };
+  handle: { crumb: (data: unknown) => CrumbData };
 }
+
+type CrumbData = {
+  title: string;
+  path: string;
+};
 
 export default function Breadcrumbs() {
   const matches = useMatches() as Match[];
@@ -22,8 +29,21 @@ export default function Breadcrumbs() {
   }
 
   return (
-    <Wrapper style={{ height: '40px', margin: '20px auto' }}>
-      <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%' }}>{crumbs}</FlexContainer>
+    <Wrapper style={{ margin: '20px auto' }}>
+      <FlexContainer style={{ gap: '20px', alignItems: 'center', height: '100%', flexWrap: 'wrap' }}>
+        {crumbs.map((crumb, index) => (
+          <FlexContainer key={crumb.path + crumb.title} style={{ gap: '20px', alignItems: 'center' }}>
+            {index !== 0 && (
+              <FlexContainer style={{ height: '100%', width: '20px' }}>
+                <IconChevronRight />
+              </FlexContainer>
+            )}
+            <div className={`${styles.breadcrumbText}`}>
+              <Crumb path={crumb.path} title={crumb.title} isLast={index === crumbs.length - 1} />
+            </div>
+          </FlexContainer>
+        ))}
+      </FlexContainer>
     </Wrapper>
   );
 }

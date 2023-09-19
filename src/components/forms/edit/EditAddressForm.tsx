@@ -1,47 +1,39 @@
 import { Formik, Form } from 'formik';
 
-import { Address, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address } from '@commercetools/platform-sdk';
+import { useState } from 'react';
 import CommonInput from '../inputs/CommonInput';
 import { AddressValidaiton } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import CountryInput from '../inputs/CountryInput';
-import { useAppDispatch } from '../../../hooks/redux';
-import { updateCustomerData } from '../../../reducers/ActionCreators';
+import useManageCustomer from '../../../hooks/useManageCustomer';
+import toaster from '../../../services/toaster';
 
 interface EditAddressFormProps {
   address: Address;
-  version: number;
   onSave: (isUpdated: boolean) => void;
 }
 
 const validationSchema = AddressValidaiton;
 
-export default function EditAddressForm({ address, version, onSave }: EditAddressFormProps) {
-  const dispatch = useAppDispatch();
+export default function EditAddressForm({ address, onSave }: EditAddressFormProps) {
+  const [isSubmitting, setSubmitting] = useState(false);
+  const { updateAddressData } = useManageCustomer();
 
-  const initialValues = {
-    additionalAddressInfo: address.additionalAddressInfo,
-    city: address.city,
-    streetName: address.streetName,
-    postalCode: address.postalCode,
-    country: address.country,
-  };
-
-  const handleSubmit = (values: Address) => {
-    const changeAddressUpdate: MyCustomerUpdate = {
-      version,
-      actions: [{ action: 'changeAddress', address: values, addressId: address.id }],
-    };
-
-    dispatch(updateCustomerData(changeAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        onSave(false);
-      } else {
-        onSave(true);
-      }
-    });
+  const initialValues: Address = { ...address };
+  const handleSubmit = (newAddressData: Address) => {
+    setSubmitting(true);
+    updateAddressData(newAddressData)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Address updated successfully!');
+          onSave(true);
+        } else {
+          onSave(false);
+        }
+      })
+      .finally(() => setSubmitting(false));
   };
 
   return (
@@ -86,11 +78,12 @@ export default function EditAddressForm({ address, version, onSave }: EditAddres
 
           <Button
             type="submit"
-            innerText="Update address"
+            innerText={isSubmitting ? 'Updating...' : 'Update address'}
             styling="primary"
             variant="default"
             addedClass=""
             style={{ margin: 'auto' }}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>

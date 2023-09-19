@@ -1,19 +1,19 @@
 import Modal from 'react-modal';
 import { useState } from 'react';
 
-import { Address, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { Address } from '@commercetools/platform-sdk';
 
 import FlexContainer from '../../../components/containers/FlexContainer';
 import UserAddressInfo from '../../../components/userInfo/adress/UserAddress';
-import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
+import { useAppSelector } from '../../../hooks/redux';
 
 import styles from './UserAddresses.module.scss';
 import EditAddressForm from '../../../components/forms/edit/EditAddressForm';
 import Button from '../../../components/buttons/Buttons';
 import CreateAddressForm from '../../../components/forms/create/CreateAddressForm';
-import { updateCustomerData } from '../../../reducers/ActionCreators';
 import toaster from '../../../services/toaster';
-import { AddressType } from './types';
+import useManageCustomer from '../../../hooks/useManageCustomer';
+import { AddressType } from '../../../models/customerTypes';
 
 export function DefaultAddresses(
   defaultShippingAddress: Address | undefined,
@@ -22,15 +22,15 @@ export function DefaultAddresses(
   return (
     <>
       <h3 className={`${styles['block-heading']}`}>Address Book</h3>
-      <FlexContainer style={{ gap: '25%', flexWrap: 'wrap' }}>
-        <FlexContainer style={{ gap: '1rem' }}>
+      <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+        <FlexContainer style={{ gap: '1rem', minWidth: '240px' }}>
           <FlexContainer style={{ flexDirection: 'column' }}>
             <h4>Default Shipping Address</h4>
             <UserAddressInfo address={defaultShippingAddress} />
           </FlexContainer>
         </FlexContainer>
 
-        <FlexContainer style={{ gap: '1rem' }}>
+        <FlexContainer style={{ gap: '1rem', minWidth: '240px' }}>
           <FlexContainer style={{ flexDirection: 'column' }}>
             <h4>Default Billing Address</h4>
             <UserAddressInfo address={defaultBillingAddress} />
@@ -46,8 +46,8 @@ function renderAddresses(
   addressesArray: Address[],
   defaultAddress: Address | undefined,
   handleEditAddress: (address: Address) => void,
-  handleSetDefaultAddress: (address: Address, addressType: AddressType) => void,
-  handleDeleteAddress: (address: Address, addressType: AddressType) => void,
+  handleSetDefaultAddress: (addressId: string, addressType: AddressType) => void,
+  handleDeleteAddress: (addressId: string, addressType: AddressType) => void,
   handleClearDefaultAddress: (addressType: AddressType) => void
 ) {
   return (
@@ -59,10 +59,10 @@ function renderAddresses(
             <FlexContainer style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
               <UserAddressInfo address={address} />
 
-              <FlexContainer style={{ flexDirection: 'column' }}>
+              <FlexContainer style={{ flexDirection: 'column', minWidth: '240px' }}>
                 {(defaultAddress === address && (
-                  <p>
-                    <span className={`${styles.defaultAddress}`}>Default {addressType} address</span>
+                  <span className={`${styles.defaultAddress}`}>
+                    Default {addressType} address{' '}
                     <button
                       type="button"
                       className={`${styles.fakeLink}`}
@@ -70,12 +70,12 @@ function renderAddresses(
                     >
                       clear
                     </button>
-                  </p>
+                  </span>
                 )) || (
                   <button
                     type="button"
                     className={`${styles.fakeLink}`}
-                    onClick={() => handleSetDefaultAddress(address, addressType)}
+                    onClick={() => handleSetDefaultAddress(address.id!, addressType)}
                   >
                     Set as default
                   </button>
@@ -87,7 +87,7 @@ function renderAddresses(
                 <button
                   type="button"
                   className={`${styles.fakeLink}`}
-                  onClick={() => handleDeleteAddress(address, addressType)}
+                  onClick={() => handleDeleteAddress(address.id!, addressType)}
                 >
                   Delete address
                 </button>
@@ -105,7 +105,7 @@ export default function UserAddresses() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [selectedAddAddress, setSelectedAddAddress] = useState<AddressType | null>(null);
-  const dispatch = useAppDispatch();
+  const { deleteAddress, clearDefaultAddress, setDefaultAddress } = useManageCustomer();
 
   if (!customer) {
     return <h2>No customer</h2>;
@@ -132,67 +132,29 @@ export default function UserAddresses() {
     setIsModalOpen(true);
   };
 
-  const handleSetDefaultAddress = (address: Address, addressType: AddressType) => {
-    const setDefaultAddressUpdate: MyCustomerUpdate = {
-      version: customer.version,
-      actions: [],
-    };
-    if (addressType === AddressType.Shipping) {
-      setDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId: address.id });
-    } else {
-      setDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: address.id });
-    }
-    dispatch(updateCustomerData(setDefaultAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        return;
+  const handleSetDefaultAddress = (addressId: string, addressType: AddressType) => {
+    setDefaultAddress(addressId, addressType).then((data) => {
+      if (data.type.includes('fulfilled')) {
+        toaster.showSuccess('Address is set as default successfully!');
       }
-      toaster.showSuccess('Address is set as default successfully!');
     });
   };
 
-  const handleDeleteAddress = (address: Address, addressType: AddressType) => {
-    if (addressType === AddressType.Shipping) {
-      if (customer.shippingAddressIds && customer.shippingAddressIds?.length < 2) {
-        console.log('This is the last shipping address. Do not delete'); // show error on the form
-        return;
-      }
-    } else if (customer.billingAddressIds && customer.billingAddressIds.length < 2) {
-      console.log('This is the last billing address. Do not delete'); // show error on the form
-      return;
-    }
-
-    const deleteAddressUpdate: MyCustomerUpdate = {
-      version: customer.version,
-      actions: [{ action: 'removeAddress', addressId: address.id }],
-    };
-
-    dispatch(updateCustomerData(deleteAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        return;
-      }
-      toaster.showSuccess('Address deleted!');
-    });
+  const handleDeleteAddress = (addressId: string, addressType: AddressType) => {
+    deleteAddress(addressId, addressType)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Address deleted!');
+        }
+      })
+      .catch((error) => toaster.showError(error.message));
   };
 
   const handleClearDefaultAddress = (addressType: AddressType) => {
-    const clearDefaultAddressUpdate: MyCustomerUpdate = {
-      version: customer.version,
-      actions: [],
-    };
-    if (addressType === AddressType.Shipping) {
-      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultShippingAddress', addressId: undefined });
-    } else {
-      clearDefaultAddressUpdate.actions.push({ action: 'setDefaultBillingAddress', addressId: undefined });
-    }
-
-    dispatch(updateCustomerData(clearDefaultAddressUpdate)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        return;
+    clearDefaultAddress(addressType).then((data) => {
+      if (data.type.includes('fulfilled')) {
+        toaster.showSuccess('Default address cleared!');
       }
-      toaster.showSuccess('Default address cleared!');
     });
   };
 
@@ -203,12 +165,8 @@ export default function UserAddresses() {
     setIsModalOpen(false);
   };
 
-  const hasBillingAddress = !!customer.billingAddressIds?.length;
-
   const defaultShippingAddress = customer.addresses.find((address) => address.id === customer.defaultShippingAddressId);
-  const defaultBillingAddress = hasBillingAddress
-    ? customer.addresses.find((address) => address.id === customer.defaultBillingAddressId)
-    : undefined;
+  const defaultBillingAddress = customer.addresses.find((address) => address.id === customer.defaultBillingAddressId);
 
   return (
     <>
@@ -259,10 +217,8 @@ export default function UserAddresses() {
           {selectedAddress && (
             <EditAddressForm
               address={selectedAddress}
-              version={customer.version}
               onSave={(isUpdated) => {
                 if (isUpdated) {
-                  toaster.showSuccess('Address updated successfully!');
                   handleModalClose();
                 }
               }}
@@ -272,10 +228,8 @@ export default function UserAddresses() {
           {selectedAddAddress && (
             <CreateAddressForm
               addressType={selectedAddAddress}
-              version={customer.version}
               onSave={(isSuccess) => {
                 if (isSuccess) {
-                  toaster.showSuccess('Address added successfully!');
                   handleModalClose();
                 }
               }}

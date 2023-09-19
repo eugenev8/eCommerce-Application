@@ -11,7 +11,7 @@
 
   backdrop-filter: blur(20px) saturate(120%);
 
-  z-index: 2;
+  z-index: 3;
 
   &__block {
     display: flex;
@@ -56,6 +56,7 @@
     height: 100vh;
 
     display: flex;
+    align-items: center;
     flex-direction: column;
 
     gap: 2rem;
@@ -102,7 +103,7 @@
     }
   }
 
-  @media screen and (max-width: 720px) {
+  @media screen and (max-width: 905px) {
     &__burgerButton {
       display: flex;
     }
@@ -146,4 +147,9 @@
       color: $color-7;
     }
   }
+}
+
+#cartLink {
+  text-decoration: unset;
+  color: inherit;
 }

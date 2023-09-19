@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { FacetName, SORTING_TYPES } from '../pages/catalog/types';
+import { FacetName, INITIAL_SORTING_TYPE } from '../sdk/types';
+
+export const ROOT_CATEGORY = 'root';
 
 interface FilterQuery extends FacetName {
   values: string[];
@@ -9,17 +11,21 @@ interface FilterQuery extends FacetName {
 export type QueryState = {
   filters: FilterQuery[];
   priceFilter: FilterQuery | null;
-  category: string;
   sort: string;
   search: string;
+  category?: string;
+  limit: number;
+  offset: number;
 };
 
 const initialState: QueryState = {
   filters: [],
   priceFilter: null,
   search: '',
-  category: 'root',
-  sort: SORTING_TYPES[0].queryString,
+  category: ROOT_CATEGORY,
+  sort: INITIAL_SORTING_TYPE.queryString,
+  limit: 10,
+  offset: 0,
 };
 
 interface QueryData extends FacetName {
@@ -35,56 +41,45 @@ const querySlice = createSlice({
     },
     addFilterQuery(state, action: PayloadAction<QueryData>) {
       const { payload } = action;
-      const indexInState = state.filters.findIndex((filter) => filter.attribute === payload.attribute);
-      if (indexInState < 0) {
+      const filter = state.filters.find((filterItem) => filterItem.attribute === payload.attribute);
+      if (!filter) {
         state.filters.push({ ...payload, values: [payload.value] });
-        return state;
+      } else {
+        filter.values.push(payload.value);
       }
-      state.filters[indexInState].values.push(payload.value);
-      return state;
     },
     removeFilterQuery(state, action: PayloadAction<QueryData>) {
       const { payload } = action;
-      const indexInState = state.filters.findIndex((filter) => filter.attribute === payload.attribute);
-      if (indexInState < 0) return state;
-      if (!state.filters[indexInState].values.includes(payload.value)) return state;
+      const indexInState = state.filters.findIndex((filterItem) => filterItem.attribute === payload.attribute);
+      if (indexInState === -1) return;
+      if (!state.filters[indexInState].values.includes(payload.value)) return;
       if (state.filters[indexInState].values.length === 1) {
         state.filters.splice(indexInState, 1);
-        return state;
+        return;
       }
       state.filters[indexInState].values = state.filters[indexInState].values.filter(
         (value) => value !== payload.value
       );
-
-      return state;
     },
     setSortType(state, action: PayloadAction<string>) {
       state.sort = action.payload;
-      return state;
     },
     addPriceFilter(state, action: PayloadAction<FilterQuery>) {
       state.priceFilter = action.payload;
-      return state;
     },
     changePriceFilter(state, action: PayloadAction<string[]>) {
       if (state.priceFilter) state.priceFilter.values = action.payload;
-      return state;
     },
     deletePriceFilter(state) {
       state.priceFilter = null;
-      return state;
     },
     changeSearchText(state, action: PayloadAction<string>) {
       state.search = action.payload;
-      return state;
     },
     changeCategory(state, action: PayloadAction<string>) {
-      state.category = action.payload === 'root' ? '' : (state.category = action.payload);
-      return state;
+      state.category = action.payload;
     },
   },
 });
 
-export { querySlice };
-
-export default querySlice.reducer;
+export const { reducer: queryReducer, actions: queryActions } = querySlice;

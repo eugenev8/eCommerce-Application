@@ -6,10 +6,10 @@ import {
   TermFacetResult,
 } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/product';
 import React from 'react';
-import { FACETS_NAMES } from '../../pages/catalog/types';
+import { FACETS_NAMES } from '../../sdk/types';
 import styles from './Filter.module.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { querySlice } from '../../reducers/QuerySlice';
+import { queryActions } from '../../reducers/QuerySlice';
 
 type FilterProps = {
   facet: [string, FacetResult];
@@ -41,6 +41,8 @@ export default function Filter({ facet }: FilterProps) {
 
   const [facetQuery, facetData] = facet;
 
+  if (isTermType(facetData) && facetData.terms.length === 0) return null;
+
   const facetInfo = FACETS_NAMES.find((item) => item.query === facetQuery);
   if (!facetInfo) {
     return null;
@@ -52,9 +54,9 @@ export default function Filter({ facet }: FilterProps) {
 
   function handleClickCheckbox(isChecked: boolean, attributeValue: string) {
     if (isChecked) {
-      dispatch(querySlice.actions.addFilterQuery({ ...facetInfo!, value: attributeValue }));
+      dispatch(queryActions.addFilterQuery({ ...facetInfo!, value: attributeValue }));
     } else {
-      dispatch(querySlice.actions.removeFilterQuery({ ...facetInfo!, value: attributeValue }));
+      dispatch(queryActions.removeFilterQuery({ ...facetInfo!, value: attributeValue }));
     }
   }
 
@@ -65,7 +67,7 @@ export default function Filter({ facet }: FilterProps) {
         return (
           <label
             key={term.term + term.count + term.productCount + facetInfo.prefix}
-            className={`${styles.label}`}
+            className={`${styles.label} ${sortedFacetData.length === 1 && styles.disabled}`}
             htmlFor={term.term + term.count + term.productCount + facetInfo.prefix}
           >
             {`${term.term} `} {facetInfo.prefix}
@@ -74,6 +76,7 @@ export default function Filter({ facet }: FilterProps) {
               checked={!!(filter && filter.values.includes(`"${term.term}"`))}
               onChange={(e) => handleClickCheckbox(e.target.checked, `"${term.term}"`)}
               id={term.term + term.count + term.productCount + facetInfo.prefix}
+              disabled={sortedFacetData.length === 1}
             />
           </label>
         );

@@ -1,3 +1,5 @@
+const PROJECT_CURRENCY = 'USD';
+
 interface FacetName {
   attribute: string;
   nameEn: string;
@@ -72,7 +74,24 @@ const SORTING_TYPES: SortingType[] = [
   },
 ];
 
+const INITIAL_SORTING_TYPE = SORTING_TYPES[0];
+
 const NAME_LOCALE = 'en-US';
 
-export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET, NAME_LOCALE };
-export type { FacetName };
+type SearchQueryType = {
+  queryArgs: {
+    markMatchingVariants?: boolean;
+    filter: string[];
+    'filter.facets'?: string | string[];
+    'filter.query'?: string | string[];
+    facet?: string[];
+    sort?: string | string[];
+    limit?: number;
+    offset?: number;
+    'text.EN-US'?: string;
+    fuzzy?: boolean;
+  };
+};
+
+export { FACETS_NAMES, SORTING_TYPES, PRICE_FACET, SEARCH_FACET, NAME_LOCALE, INITIAL_SORTING_TYPE, PROJECT_CURRENCY };
+export type { FacetName, SearchQueryType };

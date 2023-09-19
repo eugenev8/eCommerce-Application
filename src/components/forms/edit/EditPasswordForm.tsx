@@ -1,46 +1,50 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
+import { useState } from 'react';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
 import { PasswordValidation } from '../CommonValidation';
 import PasswordInput from '../inputs/PasswordInput';
-import { useAppDispatch } from '../../../hooks/redux';
-import { changeCustomerPassword } from '../../../reducers/ActionCreators';
+import useManageCustomer from '../../../hooks/useManageCustomer';
+import toaster from '../../../services/toaster';
+import { ChangePasswordData } from '../../../models/customerTypes';
 
 interface EditEmailFormProps {
   onSave: (updatedPassword: boolean) => void;
-  email: string;
-  version: number;
 }
 
 const validationSchema = Yup.object({
-  oldPassword: PasswordValidation,
+  currentPassword: PasswordValidation,
   newPassword: PasswordValidation,
   confirmPassword: Yup.string()
     .oneOf([Yup.ref('newPassword'), undefined], 'Passwords must match')
     .required('Required'),
 });
 
-export default function EditPasswordForm({ onSave, email, version }: EditEmailFormProps) {
-  const initialValues = {
-    oldPassword: '',
+export default function EditPasswordForm({ onSave }: EditEmailFormProps) {
+  const { changePassword: changeCustomerPassword } = useManageCustomer();
+  const [isSubmitting, setSubmitting] = useState(false);
+
+  const initialValues: ChangePasswordData = {
+    currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   };
 
-  const dispatch = useAppDispatch();
-
-  const handleSubmit = (values: typeof initialValues) => {
-    dispatch(
-      changeCustomerPassword({ currentPassword: values.oldPassword, newPassword: values.newPassword, version, email })
-    ).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        onSave(false);
-      } else {
-        onSave(true);
-      }
-    });
+  const handleSubmit = (values: ChangePasswordData) => {
+    setSubmitting(true);
+    changeCustomerPassword(values)
+      .then((data) => {
+        if (data.type.includes('fulfilled')) {
+          toaster.showSuccess('Password changed successfully!');
+          onSave(true);
+        } else {
+          onSave(false);
+        }
+      })
+      .finally(() => {
+        setSubmitting(false);
+      });
   };
 
   return (
@@ -59,7 +63,12 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
         onSubmit={handleSubmit}
       >
         <Form>
-          <PasswordInput id="oldPassword" labelText="Old password" name="oldPassword" placeholder="Type old password" />
+          <PasswordInput
+            id="currentPassword"
+            labelText="Current password"
+            name="currentPassword"
+            placeholder="Type current password"
+          />
 
           <PasswordInput id="newPassword" labelText="New password" name="newPassword" placeholder="Type new password" />
 
@@ -72,11 +81,12 @@ export default function EditPasswordForm({ onSave, email, version }: EditEmailFo
 
           <Button
             type="submit"
-            innerText="Update password"
+            innerText={isSubmitting ? 'Updating...' : 'Update password'}
             styling="primary"
             variant="default"
             addedClass=""
             style={{ margin: 'auto' }}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>

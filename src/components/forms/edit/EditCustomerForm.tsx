@@ -1,16 +1,15 @@
 import { Formik, Form } from 'formik';
 import * as Yup from 'yup';
-
-import { Customer, MyCustomerUpdate } from '@commercetools/platform-sdk';
+import { useState } from 'react';
 import CommonInput from '../inputs/CommonInput';
 import { AgeValidation, EmailValidation, FirstNameValidation, LastNameValidation } from '../CommonValidation';
 import Button from '../../buttons/Buttons';
 import FlexContainer from '../../containers/FlexContainer';
-import { useAppDispatch } from '../../../hooks/redux';
-import { updateCustomerData } from '../../../reducers/ActionCreators';
+import useManageCustomer from '../../../hooks/useManageCustomer';
+import toaster from '../../../services/toaster';
+import { CustomerPersonalData } from '../../../models/customerTypes';
 
 interface EditCustomerFormProps {
-  customer: Customer;
   onSave: (isUpdated: boolean) => void;
 }
 
@@ -21,57 +20,31 @@ const validationSchema = Yup.object({
   dateOfBirth: AgeValidation,
 });
 
-export default function EditCustomerSmallForm({ customer, onSave }: EditCustomerFormProps) {
-  const dispatch = useAppDispatch();
+export default function EditCustomerSmallForm({ onSave }: EditCustomerFormProps) {
+  const [isSubmitting, setSubmitting] = useState(false);
+  const { customer, updatePersonalData: updateCustomerPersonalData } = useManageCustomer();
 
-  const initialValues = {
+  if (!customer) return null;
+
+  const initialValues: CustomerPersonalData = {
     firstName: customer.firstName,
     lastName: customer.lastName,
     email: customer.email,
     dateOfBirth: customer.dateOfBirth,
   };
 
-  function createMyCustomerUpdate(values: Pick<Customer, 'firstName' | 'lastName' | 'email' | 'dateOfBirth'>) {
-    const updates: MyCustomerUpdate = { version: customer.version, actions: [] };
-    if (customer.firstName !== values.firstName) {
-      updates.actions.push({
-        firstName: values.firstName,
-        action: 'setFirstName',
-      });
-    }
-    if (customer.lastName !== values.lastName) {
-      updates.actions.push({
-        lastName: values.lastName,
-        action: 'setLastName',
-      });
-    }
-    if (customer.email !== values.email) {
-      updates.actions.push({
-        email: values.email,
-        action: 'changeEmail',
-      });
-    }
-    if (customer.dateOfBirth !== values.dateOfBirth) {
-      updates.actions.push({
-        dateOfBirth: values.dateOfBirth,
-        action: 'setDateOfBirth',
-      });
-    }
-
-    return updates;
-  }
-
-  const handleSubmit = (values: Pick<Customer, 'firstName' | 'lastName' | 'email' | 'dateOfBirth'>) => {
-    const updates = createMyCustomerUpdate(values);
-    if (!updates.actions.length) return; // show "no changes"
-    dispatch(updateCustomerData(updates)).then((payloadAction) => {
-      if (payloadAction.type.includes('rejected')) {
-        // show error on the form
-        onSave(false);
-      } else {
+  const handleSubmit = (values: CustomerPersonalData) => {
+    setSubmitting(true);
+    updateCustomerPersonalData(values)
+      .then(() => {
+        toaster.showSuccess('Personal data changed successfully!');
         onSave(true);
-      }
-    });
+      })
+      .catch((error) => {
+        toaster.showError(error.message);
+        onSave(false);
+      })
+      .finally(() => setSubmitting(false));
   };
 
   return (
@@ -115,11 +88,12 @@ export default function EditCustomerSmallForm({ customer, onSave }: EditCustomer
 
           <Button
             type="submit"
-            innerText="Update"
+            innerText={isSubmitting ? 'Updating...' : 'Update'}
             styling="primary"
             variant="default"
             addedClass=""
             style={{ margin: 'auto' }}
+            disabled={isSubmitting}
           />
         </Form>
       </Formik>

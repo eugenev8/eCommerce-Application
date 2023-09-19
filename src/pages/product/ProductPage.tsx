@@ -1,87 +1,77 @@
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Product, ProductVariant } from '@commercetools/platform-sdk';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import styles from './ProductPage.module.scss';
 import Wrapper from '../../components/wrapper/Wrapper';
-
 import SwiperContainer from '../../components/swiper/Swiper';
 import FlexContainer from '../../components/containers/FlexContainer';
 import apiRoots from '../../sdk/apiRoots';
 import LoaderSpinner from '../../components/loader/Loader';
 import ModalContainer from '../../components/modal/ModalContainer';
 import Button from '../../components/buttons/Buttons';
+import AnimatedContainer from '../../components/containers/AnimatedContainer';
+import useManageCart from '../../hooks/useManageCart';
+import ROUTES_PATHS from '../../routesPaths';
 
 type CurrencyCode = 'USD' | 'EUR';
 
 export default function ProductPage() {
   const { productKey } = useParams();
-  const [product, setProduct] = useState<Product | null>();
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { addLineItem, findItemInCart, removeLineItem, isCartLoading } = useManageCart();
 
-  const searchProductMemoized = useMemo(() => {
-    return async (key: string) => {
+  useEffect(() => {
+    let ignore = false;
+
+    const fetchData = async () => {
       setIsLoading(true);
       setIsError(false);
 
       try {
-        const result = await apiRoots.CredentialsFlow.products()
-          .withKey({
-            key,
-          })
-          .get()
-          .execute();
+        if (!productKey) {
+          // throw new Error('Product key is missing');
+          setIsError(true);
+          return;
+        }
 
-        return result.body;
+        const result = await apiRoots.CredentialsFlow.products().withKey({ key: productKey }).get().execute();
+
+        if (!ignore) {
+          setProduct(result.body);
+        }
       } catch (error) {
-        setIsError(true);
-        return null;
+        if (!ignore) {
+          setIsError(true);
+        }
       } finally {
         setIsLoading(false);
       }
     };
-  }, []);
 
-  useEffect(() => {
-    if (!productKey) {
-      setProduct(null);
-      setIsError(false);
-    }
-
-    let ignore = false;
-
-    if (productKey) {
-      searchProductMemoized(productKey)
-        .then((data) => {
-          if (!ignore) {
-            setProduct(data);
-          }
-        })
-        .catch(() => setIsError(true));
-    }
+    fetchData();
 
     return () => {
       ignore = true;
     };
-  }, [productKey, searchProductMemoized]);
+  }, [productKey]);
 
   useEffect(() => {
     const oldTitle = document.title;
 
     if (product) {
-      if (searchParams.has('variant') && searchParams.get('variant') !== '1') {
-        const id = searchParams.get('variant') || '2';
-        const variant = product.masterData.current.variants.find((productVariant) => {
-          return productVariant.id === +id;
-        });
-        setSelectedVariant(variant);
-      } else {
-        setSelectedVariant(product.masterData.current.masterVariant);
-      }
+      const variantId = searchParams.get('variant');
+      const variant =
+        variantId && variantId !== '1'
+          ? product.masterData.current.variants.find((productVariant) => productVariant.id === +variantId)
+          : product.masterData.current.masterVariant;
+
+      setSelectedVariant(variant || null);
       document.title = product.masterData.current.name['en-US'];
     }
 
@@ -90,174 +80,218 @@ export default function ProductPage() {
     };
   }, [product, searchParams]);
 
-  if (isLoading)
+  if (isLoading || (!isLoading && isError)) {
     return (
-      <Wrapper>
-        <FlexContainer
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '60vh',
-          }}
-        >
-          <LoaderSpinner />
-        </FlexContainer>
-      </Wrapper>
+      <AnimatedContainer>
+        <Wrapper>
+          <FlexContainer
+            style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+          >
+            {isLoading ? <LoaderSpinner /> : <h2>Product not found!</h2>}
+            {!isLoading && isError && <Link to={ROUTES_PATHS.catalog}>Go to catalog</Link>}
+          </FlexContainer>
+        </Wrapper>
+      </AnimatedContainer>
     );
-
-  if (!isLoading && isError)
-    return (
-      <Wrapper>
-        <FlexContainer
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: '60vh',
-            flexDirection: 'column',
-          }}
-        >
-          <h2>Product not found!</h2>
-          <Link to=".." relative="path">
-            Go to catalog
-          </Link>
-        </FlexContainer>
-      </Wrapper>
-    );
+  }
 
   if (!product) {
-    return null;
+    return (
+      <AnimatedContainer>
+        <Wrapper>
+          <FlexContainer style={{ justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+            <LoaderSpinner />
+          </FlexContainer>
+        </Wrapper>
+      </AnimatedContainer>
+    );
+  }
+
+  if (!selectedVariant) {
+    return (
+      <Wrapper>
+        <FlexContainer
+          style={{ flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}
+        >
+          <h3>Variant doesnt exists!</h3>
+          <Button
+            addedClass=""
+            innerText="Go to master variant"
+            styling="primary"
+            type="button"
+            variant="default"
+            onClick={() => {
+              setSearchParams({ variant: '1' });
+              setSelectedVariant(product.masterData.current.masterVariant);
+            }}
+          />
+        </FlexContainer>
+      </Wrapper>
+    );
   }
 
   const { masterVariant, variants } = product.masterData.current;
   const allVariants = [masterVariant, ...variants];
+  const lineItem = findItemInCart(product.id, selectedVariant.id);
 
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
     setIsModalOpen(true);
   };
 
-  function getImagesForVariant() {
-    if (selectedVariant && selectedVariant.images) {
-      return selectedVariant.images.map((image) => image.url);
-    }
+  const getImagesForVariant = () => (selectedVariant?.images || []).map((image) => image.url);
 
-    return [];
-  }
-
-  function getPriceForCountry(data: ProductVariant, currencyCode: CurrencyCode) {
+  const getPriceForCountry = (data: ProductVariant, currencyCode: CurrencyCode) => {
     const price = data?.prices?.find((p) => p.value.currencyCode === currencyCode);
+    return price ? price.value.centAmount / 100 : null;
+  };
 
-    if (price) {
-      return price.value.centAmount / 100;
-    }
-
-    return null;
-  }
-
-  function getDiscountedPriceForCountry(data: ProductVariant, currencyCode: CurrencyCode) {
+  const getDiscountedPriceForCountry = (data: ProductVariant, currencyCode: CurrencyCode) => {
     const price = data?.prices?.find((p) => p.value.currencyCode === currencyCode);
-
-    if (price && price.discounted) {
-      return price.discounted.value.centAmount / 100;
-    }
-
-    return null;
-  }
+    return price && price.discounted ? price.discounted.value.centAmount / 100 : null;
+  };
 
   const images = getImagesForVariant();
 
   const renderPrice = () => {
-    if (!selectedVariant) {
-      return null;
-    }
+    if (!selectedVariant) return null;
+
     const price = getPriceForCountry(selectedVariant, 'USD');
     const discPrice = getDiscountedPriceForCountry(selectedVariant, 'USD');
 
     if (!price) return <p>Price not set yet!</p>;
 
-    if (!discPrice) {
-      return <div className={`${styles.price}`}>${price.toFixed(2)}</div>;
-    }
-
     return (
       <div className={`${styles.price}`}>
-        <span className={`${styles.product__oldPrice}`}>${price.toFixed(2)}</span>{' '}
-        <span className={`${styles.product__discPrice}`}>${discPrice.toFixed(2)}</span>
+        {discPrice ? (
+          <>
+            <span className={`${styles.product__oldPrice}`}>${price.toFixed(2)}</span>{' '}
+            <span className={`${styles.product__discPrice}`}>${discPrice.toFixed(2)}</span>
+          </>
+        ) : (
+          <span>${price.toFixed(2)}</span>
+        )}
       </div>
     );
   };
 
   const { description } = product.masterData.current;
   const formattedDescription = (description && description['en-US']) || 'No description';
+  const categoryId = product.masterData.current.categories[0].id;
+
+  const renderAddToCart = () => {
+    if (!lineItem) {
+      return (
+        <Button
+          addedClass={`${styles.product_cartButton}`}
+          innerText={isCartLoading ? 'Adding...' : 'Add to Cart'}
+          styling="secondary"
+          type="button"
+          variant="default"
+          onClick={() => {
+            addLineItem(product.id, selectedVariant.id, categoryId);
+          }}
+          disabled={isCartLoading}
+        />
+      );
+    }
+    return (
+      <FlexContainer style={{ flexDirection: 'column' }}>
+        <FlexContainer style={{ gap: '1rem' }}>
+          <Button
+            addedClass={`${styles.product_cartButton}`}
+            innerText={isCartLoading ? 'Removing...' : 'Remove from cart'}
+            styling="secondary"
+            type="button"
+            variant="default"
+            onClick={() => {
+              removeLineItem(lineItem.id);
+            }}
+            disabled={isCartLoading}
+          />
+        </FlexContainer>
+      </FlexContainer>
+    );
+  };
 
   return (
     <Suspense fallback={<LoaderSpinner />}>
-      <Wrapper>
-        <div className={`${styles.product__block}`}>
-          <div className={`${styles.product__description}`}>
-            <h2>{product.masterData.current.name['en-US']}</h2>
-            {!selectedVariant && <h3>Incorrect product variant. Please choose another variant!</h3>}
-            <p>{formattedDescription}</p>
-            <p>SKU: {selectedVariant?.sku}</p>
+      <div className={`${styles.product_header}`}>
+        <AnimatedContainer>
+          <Wrapper>
+            <div className={`${styles.product_headerInfo}`}>
+              {renderPrice()}
+              {lineItem && <p>In cart: {lineItem.quantity}</p>}
+              {renderAddToCart()}
+            </div>
+          </Wrapper>
+        </AnimatedContainer>
+      </div>
+      <AnimatedContainer>
+        <Wrapper>
+          <div className={`${styles.product__block}`}>
+            <div className={`${styles.product__description}`}>
+              <h2>{product.masterData.current.name['en-US']}</h2>
+              <p>{formattedDescription}</p>
+              <p>SKU: {selectedVariant?.sku}</p>
+            </div>
+
+            <div className={`${styles.product__slider}`}>
+              <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
+            </div>
           </div>
 
-          <div className={`${styles.product__slider}`}>
-            <SwiperContainer imageUrlArray={images} onImageClick={handleImageClick} />
-          </div>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Variant</th>
-              <th>Attributes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {allVariants.map((productVariant) => (
-              <tr
-                key={productVariant.id}
-                onClick={() => {
-                  const variantParam = { variant: productVariant.id.toString() };
-                  setSearchParams(variantParam);
-                  setSelectedVariant(productVariant);
-                }}
-                className={productVariant === selectedVariant ? styles.selectedVariant : ''}
-              >
-                <td>{productVariant.sku}</td>
-                <td>
-                  {productVariant.attributes?.map((attribute) => (
-                    <div key={attribute.name}>
-                      {attribute.name}: {attribute.value}
-                    </div>
-                  ))}
-                </td>
+          <table>
+            <thead>
+              <tr>
+                <th>Variant</th>
+                <th>Attributes</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {allVariants.map((productVariant) => (
+                <tr
+                  key={productVariant.id}
+                  onClick={() => {
+                    const variantParam = { variant: productVariant.id.toString() };
+                    setSearchParams(variantParam);
+                    setSelectedVariant(productVariant);
+                  }}
+                  className={productVariant === selectedVariant ? styles.selectedVariant : ''}
+                >
+                  <td>{productVariant.sku}</td>
+                  <td>
+                    {productVariant.attributes?.map((attribute) => (
+                      <div key={attribute.name}>
+                        {attribute.name}: {attribute.value}
+                      </div>
+                    ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        {renderPrice()}
-
-        <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
-          {images.length > 0 && (
-            <>
-              <FlexContainer style={{ width: '80vmin' }}>
-                <SwiperContainer imageUrlArray={images} initialSlide={selectedImageIndex} onImageClick={() => null} />
-              </FlexContainer>
-              <Button
-                styling="secondary"
-                innerText="Close"
-                variant="default"
-                type="button"
-                addedClass=""
-                style={{ margin: 'auto' }}
-                onClick={() => setIsModalOpen(false)}
-              />
-            </>
-          )}
-        </ModalContainer>
-      </Wrapper>
+          <ModalContainer isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}>
+            {images.length > 0 && (
+              <>
+                <FlexContainer style={{ width: '80vmin', height: '70vmin' }}>
+                  <SwiperContainer imageUrlArray={images} initialSlide={selectedImageIndex} onImageClick={() => null} />
+                </FlexContainer>
+                <Button
+                  styling="secondary"
+                  innerText="Close"
+                  variant="default"
+                  type="button"
+                  addedClass=""
+                  style={{ margin: 'auto' }}
+                  onClick={() => setIsModalOpen(false)}
+                />
+              </>
+            )}
+          </ModalContainer>
+        </Wrapper>
+      </AnimatedContainer>
     </Suspense>
   );
 }

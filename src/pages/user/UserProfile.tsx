@@ -1,23 +1,25 @@
 import { NavLink } from 'react-router-dom';
 import UserPageLayout from './UserPageLayout';
-import FlexContainer from '../../components/containers/FlexContainer';
+import styles from './UserProfile.module.scss';
 import { useAppDispatch } from '../../hooks/redux';
-import { authSlice } from '../../reducers/AuthSlice';
-import { customerSlice } from '../../reducers/CustomerSlice';
+import { authActions } from '../../reducers/AuthSlice';
 import Button from '../../components/buttons/Buttons';
+import { customerActions } from '../../reducers/CustomerSlice';
+import { cartActions } from '../../reducers/CartSlice';
 
 function UserProfile() {
   const dispatch = useAppDispatch();
 
   const handleLogout = () => {
-    dispatch(authSlice.actions.logout());
-    dispatch(customerSlice.actions.clearCustomerData());
-    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKEN);
+    dispatch(authActions.logout());
+    dispatch(customerActions.clearCustomerData());
+    dispatch(cartActions.clearCart());
+    localStorage.removeItem(import.meta.env.VITE_LOCALSTORAGE_KEY_CUSTOMER_TOKENS);
   };
 
   return (
     <UserPageLayout>
-      <FlexContainer style={{ flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+      <div className={styles.userPage__menu}>
         <NavLink to="">Account info</NavLink>
         <NavLink to="address">Address Book</NavLink>
         <Button
@@ -28,7 +30,7 @@ function UserProfile() {
           addedClass=""
           variant="default"
         />
-      </FlexContainer>
+      </div>
     </UserPageLayout>
   );
 }
